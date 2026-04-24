@@ -33,8 +33,8 @@ export default function ContactPage() {
                 <Phone className="text-[#95AEC1]" />
                 <div>
                   <p className="text-sm text-white/60">Telefoon</p>
-                  <a href="tel:+31648555476" className="font-semibold">
-                    +316 48555476
+                  <a href="tel:+31613672320" className="font-semibold">
+                    +316 13672320
                   </a>
                 </div>
               </div>
@@ -63,7 +63,7 @@ export default function ContactPage() {
             </div>
 
             <a
-              href="https://wa.me/31648555476"
+              href="https://wa.me/31613672320"
               className="flex items-center justify-center gap-3 rounded-full bg-green-500 px-6 py-4 font-semibold transition hover:scale-105"
             >
               <MessageCircle size={20} />
