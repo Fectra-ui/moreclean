@@ -34,7 +34,7 @@ export default function ContactPage() {
                 <div>
                   <p className="text-sm text-white/60">Telefoon</p>
                   <a href="tel:+31613672320" className="font-semibold">
-                    +316 13672320
+                    +31613672320
                   </a>
                 </div>
               </div>

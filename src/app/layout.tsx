@@ -68,7 +68,7 @@ export default function RootLayout({
     "@type": "LocalBusiness",
     name: "More Clean",
     url: "https://moreclean.nl",
-    telephone: "+31612345678",
+    telephone: "+31613672320",
     email: "info@moreclean.nl",
     address: {
       "@type": "PostalAddress",
