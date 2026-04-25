@@ -195,7 +195,7 @@ export default function HomePage() {
       
       {/* LEFT */}
       <div>
-        <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm backdrop-blur-xl">
+        <span className="inline-flex translate-y-3 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm backdrop-blur-xl md:translate-y-0">
           Binnen 24 uur reactie
         </span>
 
