@@ -6,7 +6,7 @@ export default function BedanktPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen px-6 pt-40 md:pt-28 pb-24 text-white">
+      <main className="page-offset min-h-screen px-6 pb-24 text-white">
         <div className="glass shadow-premium max-w-2xl rounded-3xl p-10 text-center">
           <CheckCircle2 className="mx-auto text-green-400" size={64} />
           <h1 className="mt-6 text-4xl font-bold">

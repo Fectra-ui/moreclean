@@ -84,9 +84,10 @@ export default function RootLayout({
 
   return (
     <html
-      lang="nl"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+        lang="nl"
+        data-scroll-behavior="smooth"
+        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      >
       <body className="min-h-full flex flex-col">
         <div className="flex-1">
         {children}
