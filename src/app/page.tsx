@@ -9,6 +9,7 @@ import {
   Sparkles,
   MapPin,
 } from "lucide-react";
+import { trackEvent } from "@/lib/gtag";
 
 const stats = [
   { end: 500, suffix: "+", label: "Tevreden klanten" },
@@ -19,8 +20,14 @@ const stats = [
 
 const reviews = [
   { name: "Mark", text: "Top service. Ramen perfect schoon en snel geholpen." },
-  { name: "Sanne", text: "Professioneel bedrijf. Zeer tevreden met het resultaat." },
-  { name: "Patrick", text: "Onze zonnepanelen zien er weer als nieuw uit." },
+  {
+    name: "Sanne",
+    text: "Professioneel bedrijf. Zeer tevreden met het resultaat.",
+  },
+  {
+    name: "Patrick",
+    text: "Onze zonnepanelen zien er weer als nieuw uit.",
+  },
 ];
 
 const faqs = [
@@ -81,12 +88,19 @@ export default function HomePage() {
               </h1>
 
               <p className="mt-6 max-w-xl text-lg text-white/80">
-                Professionele reiniging met oog voor detail, kwaliteit en resultaat.
+                Professionele reiniging met oog voor detail, kwaliteit en
+                resultaat.
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <Link
                   href="/offerte"
+                  onClick={() =>
+                    trackEvent("cta_click", {
+                      event_category: "Homepage",
+                      event_label: "Hero Offerte Klik",
+                    })
+                  }
                   className="rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105"
                 >
                   Vraag gratis offerte aan
@@ -94,6 +108,12 @@ export default function HomePage() {
 
                 <Link
                   href="/diensten"
+                  onClick={() =>
+                    trackEvent("cta_click", {
+                      event_category: "Homepage",
+                      event_label: "Bekijk Diensten Klik",
+                    })
+                  }
                   className="glass rounded-full px-8 py-4 font-semibold"
                 >
                   Bekijk diensten
@@ -104,6 +124,7 @@ export default function HomePage() {
                 <span className="flex items-center gap-2">
                   <ShieldCheck size={18} /> Betrouwbaar
                 </span>
+
                 <span className="flex items-center gap-2">
                   <Sparkles size={18} /> Premium service
                 </span>
@@ -125,6 +146,7 @@ export default function HomePage() {
                           decimals={item.decimals || 0}
                         />
                       </p>
+
                       <p className="mt-1 text-sm text-white/70">
                         {item.label}
                       </p>
@@ -136,13 +158,14 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* WERKGEBIEDEN */}
+        {/* WERKGEBIED */}
         <section className="px-6 py-24">
           <div className="mx-auto max-w-7xl">
             <div className="mb-12 text-center">
               <p className="text-sm uppercase tracking-[0.25em] text-[#95AEC1]">
                 Werkgebied
               </p>
+
               <h2 className="mt-4 text-4xl font-bold md:text-5xl">
                 Actief in Limburg & omgeving
               </h2>
@@ -153,6 +176,12 @@ export default function HomePage() {
                 <Link
                   key={area.name}
                   href={area.href}
+                  onClick={() =>
+                    trackEvent("location_click", {
+                      event_category: "Werkgebied",
+                      event_label: area.name,
+                    })
+                  }
                   className="glass rounded-3xl p-6 text-center transition hover:-translate-y-2"
                 >
                   <MapPin className="mx-auto mb-3 text-[#95AEC1]" size={22} />
@@ -170,6 +199,7 @@ export default function HomePage() {
               <p className="text-sm uppercase tracking-[0.25em] text-[#95AEC1]">
                 Reviews
               </p>
+
               <h2 className="mt-4 text-4xl font-bold md:text-5xl">
                 Klanten vertrouwen More Clean
               </h2>
@@ -220,12 +250,19 @@ export default function HomePage() {
             <h2 className="text-4xl font-bold">
               Klaar voor een brandschoon resultaat?
             </h2>
+
             <p className="mt-4 text-white/75">
               Vraag vandaag nog vrijblijvend uw offerte aan.
             </p>
 
             <Link
               href="/offerte"
+              onClick={() =>
+                trackEvent("cta_click", {
+                  event_category: "Homepage",
+                  event_label: "Bottom CTA Klik",
+                })
+              }
               className="mt-8 inline-block rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105"
             >
               Gratis Offerte
@@ -236,6 +273,14 @@ export default function HomePage() {
         {/* FLOATING WHATSAPP */}
         <a
           href="https://wa.me/31613672320"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() =>
+            trackEvent("whatsapp_click", {
+              event_category: "Homepage",
+              event_label: "Floating WhatsApp",
+            })
+          }
           className="fixed bottom-6 right-6 z-50 rounded-full bg-green-500 p-4 shadow-2xl transition hover:scale-110"
         >
           <MessageCircle />

@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { trackEvent } from "@/lib/gtag";
 
 export default function ContactPage() {
   return (
@@ -7,6 +8,7 @@ export default function ContactPage() {
       <Navbar />
 
       <main className="min-h-screen px-6 pt-32 pb-24 text-white">
+        {/* HERO */}
         <section className="mx-auto max-w-6xl text-center">
           <span className="glass inline-flex rounded-full px-4 py-2 text-sm">
             Contact
@@ -22,35 +24,63 @@ export default function ContactPage() {
           </p>
         </section>
 
+        {/* CONTENT */}
         <section className="mx-auto mt-20 grid max-w-7xl gap-8 md:grid-cols-2">
+          {/* LEFT SIDE */}
           <div className="space-y-6">
+            {/* PHONE */}
             <div className="glass shadow-premium rounded-3xl p-6">
               <div className="flex items-center gap-4">
                 <Phone className="text-[#95AEC1]" />
+
                 <div>
                   <p className="text-sm text-white/60">Telefoon</p>
-                  <a href="tel:+31613672320" className="font-semibold">
-                    +31613672320
+
+                  <a
+                    href="tel:+31613672320"
+                    className="font-semibold"
+                    onClick={() =>
+                      trackEvent("phone_click", {
+                        event_category: "Contact",
+                        event_label: "Telefoon Klik",
+                      })
+                    }
+                  >
+                    +31 6 13672320
                   </a>
                 </div>
               </div>
             </div>
 
+            {/* EMAIL */}
             <div className="glass shadow-premium rounded-3xl p-6">
               <div className="flex items-center gap-4">
                 <Mail className="text-[#95AEC1]" />
+
                 <div>
                   <p className="text-sm text-white/60">E-mail</p>
-                  <a href="mailto:info@moreclean.nl" className="font-semibold">
+
+                  <a
+                    href="mailto:info@moreclean.nl"
+                    className="font-semibold"
+                    onClick={() =>
+                      trackEvent("email_click", {
+                        event_category: "Contact",
+                        event_label: "Email Klik",
+                      })
+                    }
+                  >
                     info@moreclean.nl
                   </a>
                 </div>
               </div>
             </div>
 
+            {/* LOCATION */}
             <div className="glass shadow-premium rounded-3xl p-6">
               <div className="flex items-center gap-4">
                 <MapPin className="text-[#95AEC1]" />
+
                 <div>
                   <p className="text-sm text-white/60">Werkgebied</p>
                   <p className="font-semibold">Roermond, Limburg & omgeving</p>
@@ -58,8 +88,17 @@ export default function ContactPage() {
               </div>
             </div>
 
+            {/* WHATSAPP */}
             <a
               href="https://wa.me/31613672320"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                trackEvent("whatsapp_click", {
+                  event_category: "Contact",
+                  event_label: "WhatsApp Klik",
+                })
+              }
               className="flex items-center justify-center gap-3 rounded-full bg-green-500 px-6 py-4 font-semibold transition hover:scale-105"
             >
               <MessageCircle size={20} />
@@ -67,6 +106,7 @@ export default function ContactPage() {
             </a>
           </div>
 
+          {/* FORM */}
           <div className="glass shadow-premium rounded-3xl p-8">
             <h2 className="text-3xl font-bold">Stuur een bericht</h2>
 
@@ -74,12 +114,19 @@ export default function ContactPage() {
               action="https://formspree.io/f/xnjlwrpv"
               method="POST"
               className="mt-6 space-y-5"
+              onSubmit={() =>
+                trackEvent("contact_submit", {
+                  event_category: "Contact",
+                  event_label: "Contactformulier Verzonden",
+                })
+              }
             >
               <input
                 type="hidden"
                 name="_next"
                 value="https://moreclean.nl/bedankt"
-            />
+              />
+
               <input
                 type="text"
                 name="_gotcha"
@@ -87,6 +134,7 @@ export default function ContactPage() {
                 tabIndex={-1}
                 autoComplete="off"
               />
+
               <input
                 type="text"
                 name="naam"

@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import { CheckCircle2 } from "lucide-react";
+import { trackEvent } from "@/lib/gtag";
 
 export default function OffertePage() {
   return (
@@ -50,25 +51,24 @@ export default function OffertePage() {
             <h2 className="text-3xl font-bold">Offerteformulier</h2>
 
             <form
-              onSubmit={() => {
-                if (typeof window !== "undefined" && window.gtag) {
-                  window.gtag("event", "generate_lead", {
-                    event_category: "Offerte",
-                    event_label: "Offerte formulier verzonden",
-                    value: 1,
-                  });
-                }
-              }}
               action="https://formspree.io/f/xnjlwrpv"
               method="POST"
               encType="multipart/form-data"
               className="mt-6 space-y-5"
+              onSubmit={() =>
+                trackEvent("generate_lead", {
+                  event_category: "Offerte",
+                  event_label: "Offerte formulier verzonden",
+                  value: 1,
+                })
+              }
             >
               <input
                 type="hidden"
                 name="_next"
                 value="https://moreclean.nl/bedankt"
               />
+
               <input
                 type="text"
                 name="_gotcha"
@@ -76,6 +76,7 @@ export default function OffertePage() {
                 tabIndex={-1}
                 autoComplete="off"
               />
+
               <input
                 type="text"
                 name="naam"
