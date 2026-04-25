@@ -56,6 +56,11 @@ export default function OffertePage() {
               className="mt-6 space-y-5"
             >
               <input
+                type="hidden"
+                name="_next"
+                value="https://moreclean.nl/bedankt"
+              />
+              <input
                 type="text"
                 name="naam"
                 required
