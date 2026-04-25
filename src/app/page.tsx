@@ -97,7 +97,7 @@ export default function HomePage() {
                   Binnen 24 uur reactie
                 </span>
 
-                <h1 className="mt-6 text-5xl font-bold leading-[0.95] sm:text-6xl md:text-7xl">
+                <h1 className="mt-6 text-4xl font-bold md:text-6xl xl:text-7xl leading-tight">
                   Uw specialist in <br />
                   glasbewassing &{" "}
                   <span className="text-[#95AEC1]">

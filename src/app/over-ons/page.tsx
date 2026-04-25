@@ -36,7 +36,7 @@ export default function OverOnsPage() {
             Over More Clean
           </span>
 
-          <h1 className="mt-6 text-5xl font-bold md:text-7xl">
+          <h1 className="mt-6 text-4xl font-bold md:text-6xl xl:text-7xl leading-tight">
             Een bedrijf gebouwd op{" "}
             <span className="gradient-text">kwaliteit & vertrouwen</span>
           </h1>

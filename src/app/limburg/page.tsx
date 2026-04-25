@@ -29,7 +29,7 @@ export default function LimburgPage() {
             Werkgebied Limburg
           </span>
 
-          <h1 className="mt-6 text-5xl font-bold leading-tight md:text-7xl">
+          <h1 className="mt-6 text-4xl font-bold md:text-6xl xl:text-7xl leading-tight">
             Schoonmaakbedrijf, glasbewassing & ramen wassen in{" "}
             <span className="gradient-text">Limburg</span>
           </h1>
