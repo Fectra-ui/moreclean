@@ -49,34 +49,56 @@ export default function OffertePage() {
           <div className="glass shadow-premium rounded-3xl p-8">
             <h2 className="text-3xl font-bold">Offerteformulier</h2>
 
-            <form className="mt-6 space-y-5">
+            <form
+              action="https://formspree.io/f/xnjlwrpv"
+              method="POST"
+              encType="multipart/form-data"
+              className="mt-6 space-y-5"
+            >
               <input
                 type="text"
+                name="naam"
+                required
                 placeholder="Naam"
                 className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
               />
 
               <input
                 type="email"
+                name="email"
+                required
                 placeholder="E-mail"
                 className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
               />
 
               <input
                 type="tel"
+                name="telefoon"
                 placeholder="Telefoon"
                 className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
               />
 
-              <select className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none">
-                <option>Glasbewassing</option>
-                <option>Zonnepanelen Reinigen</option>
-                <option>Zakelijke Schoonmaak</option>
-                <option>Particuliere Schoonmaak</option>
+              <select
+                name="dienst"
+                required
+                className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
+              >
+                <option value="">Kies een dienst</option>
+                <option value="Glasbewassing">Glasbewassing</option>
+                <option value="Zonnepanelen Reinigen">
+                  Zonnepanelen Reinigen
+                </option>
+                <option value="Zakelijke Schoonmaak">
+                  Zakelijke Schoonmaak
+                </option>
+                <option value="Particuliere Schoonmaak">
+                  Particuliere Schoonmaak
+                </option>
               </select>
 
               <textarea
                 rows={5}
+                name="bericht"
                 placeholder="Extra informatie"
                 className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
               />
@@ -84,8 +106,14 @@ export default function OffertePage() {
               <label className="flex cursor-pointer items-center justify-center gap-3 rounded-2xl border border-dashed border-white/15 bg-white/5 px-5 py-5">
                 <Upload size={18} />
                 <span>Bestand uploaden</span>
-                <input type="file" className="hidden" />
+                <input type="file" name="bestand" className="hidden" />
               </label>
+
+              <input
+                type="hidden"
+                name="_subject"
+                value="Nieuwe offerte aanvraag - More Clean"
+              />
 
               <button
                 type="submit"
