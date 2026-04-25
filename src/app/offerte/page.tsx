@@ -50,6 +50,15 @@ export default function OffertePage() {
             <h2 className="text-3xl font-bold">Offerteformulier</h2>
 
             <form
+              onSubmit={() => {
+                if (typeof window !== "undefined" && window.gtag) {
+                  window.gtag("event", "generate_lead", {
+                    event_category: "Offerte",
+                    event_label: "Offerte formulier verzonden",
+                    value: 1,
+                  });
+                }
+              }}
               action="https://formspree.io/f/xnjlwrpv"
               method="POST"
               encType="multipart/form-data"
