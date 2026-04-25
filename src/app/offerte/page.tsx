@@ -53,18 +53,22 @@ export default function OffertePage() {
             <h2 className="text-3xl font-bold">Offerteformulier</h2>
 
             <form
-              action="https://formspree.io/f/xnjlwrpv"
-              method="POST"
-              encType="multipart/form-data"
-              className="mt-6 space-y-5"
-              onSubmit={() =>
-                trackEvent("generate_lead", {
-                  event_category: "Offerte",
-                  event_label: "Offerte formulier verzonden",
-                  value: 1,
-                })
-              }
-            >
+            action="https://formspree.io/f/xnjlwrpv"
+            method="POST"
+            encType="multipart/form-data"
+            className="mt-6 space-y-5"
+            onSubmit={() => {
+              trackEvent("generate_lead", {
+                event_category: "Offerte",
+                event_label: "Offerte formulier verzonden",
+                value: 1,
+              });
+
+              setTimeout(() => {
+                window.location.href = "/bedankt";
+              }, 500);
+            }}
+          >
               <input
                 type="hidden"
                 name="_next"
