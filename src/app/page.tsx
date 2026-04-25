@@ -172,44 +172,68 @@ export default function HomePage() {
         </section>
 
         {/* WERKGEBIED */}
-        <section className="px-6 py-24">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="mx-auto max-w-7xl"
-          >
-            <div className="mb-12 text-center">
-              <p className="text-sm uppercase tracking-[0.25em] text-[#95AEC1]">
-                Werkgebied
-              </p>
-              <h2 className="mt-4 text-4xl font-bold md:text-5xl">
-                Actief in Limburg & omgeving
-              </h2>
-            </div>
+        <section className="relative min-h-[100svh] overflow-hidden text-white">
+  {/* VIDEO BACKGROUND */}
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="absolute inset-0 h-full w-full object-cover"
+  >
+    <source src="/video/hero-video.mp4" type="video/mp4" />
+  </video>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              {areas.map((area, index) => (
-                <motion.div
-                  key={area.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.08 }}
-                >
-                  <Link
-                    href={area.href}
-                    className="glass block rounded-3xl p-6 text-center transition hover:-translate-y-2"
-                  >
-                    <MapPin className="mx-auto mb-3 text-[#95AEC1]" size={22} />
-                    <p className="font-semibold">{area.name}</p>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
+  {/* OVERLAYS */}
+  <div className="absolute inset-0 bg-black/45" />
+  <div className="absolute inset-0 bg-gradient-to-b from-[#101536]/30 via-[#101536]/40 to-[#101536]/85" />
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(77,126,186,0.25),transparent_30%)]" />
+
+  {/* CONTENT */}
+  <div className="relative z-10 flex min-h-[100svh] items-start px-6 pt-44 pb-28 md:items-center md:pt-32">
+    <div className="mx-auto grid w-full max-w-7xl gap-10 md:grid-cols-2 md:items-center">
+      
+      {/* LEFT */}
+      <div>
+        <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm backdrop-blur-xl">
+          Binnen 24 uur reactie
+        </span>
+
+        <h1 className="mt-6 text-5xl font-bold leading-[0.95] sm:text-6xl md:text-7xl">
+          Uw specialist in <br />
+          glasbewassing &{" "}
+          <span className="text-[#95AEC1]">zonnepanelen reinigen</span>
+        </h1>
+
+        <p className="mt-6 max-w-xl text-lg text-white/80">
+          Professionele reiniging met oog voor detail, kwaliteit en resultaat.
+          Voor woningen, bedrijven en panden in Limburg.
+        </p>
+
+        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+          <Link
+            href="/offerte"
+            className="rounded-full bg-[#4D7EBA] px-8 py-4 text-center font-semibold shadow-xl transition hover:scale-105"
+          >
+            Vraag gratis offerte aan
+          </Link>
+
+          <Link
+            href="/diensten"
+            className="rounded-full border border-white/15 bg-white/10 px-8 py-4 text-center font-semibold backdrop-blur-xl transition hover:bg-white/15"
+          >
+            Bekijk diensten
+          </Link>
+        </div>
+      </div>
+
+      {/* RIGHT DESKTOP */}
+      <div className="hidden md:block">
+        {/* stats box */}
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* REVIEWS */}
         <section className="px-6 py-24">
