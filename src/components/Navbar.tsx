@@ -34,7 +34,7 @@ export default function Navbar() {
         className={`fixed top-3 left-3 right-3 z-50 rounded-2xl border overflow-hidden transition-all duration-500 ${
           scrolled || open
             ? "translate-y-0 opacity-100 border-white/25 bg-white/[0.03] backdrop-blur-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
-            : "-translate-y-6 opacity-0 pointer-events-none border-transparent bg-transparent"
+            : "translate-y-0 opacity-100 border-transparent bg-transparent backdrop-blur-0"
         }`}
       >
         {/* HELDER GLASS */}
