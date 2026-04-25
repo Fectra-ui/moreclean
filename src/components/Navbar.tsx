@@ -10,59 +10,85 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
-
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
+    document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [open]);
 
-  const linkClass =
-    "text-white/90 transition hover:text-white";
+  const closeMenu = () => setOpen(false);
+
+  const navLink =
+    "text-white/90 transition duration-300 hover:text-white";
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-3 left-3 right-3 z-50 rounded-2xl border overflow-hidden transition-all duration-500 ${
           scrolled || open
-            ? "border-b border-white/10 bg-[#101536]/80 backdrop-blur-xl"
-            : "bg-transparent"
+            ? "translate-y-0 opacity-100 border-white/25 bg-white/[0.03] backdrop-blur-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
+            : "-translate-y-6 opacity-0 pointer-events-none border-transparent bg-transparent"
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-          <Link href="/" onClick={() => setOpen(false)}>
+        {/* HELDER GLASS */}
+        <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
+          {/* top highlight */}
+          <div className="absolute inset-x-0 top-0 h-px bg-white/90" />
+
+          {/* subtle shine */}
+          <div className="absolute top-0 left-[12%] h-full w-24 rotate-12 bg-white/10 blur-2xl" />
+
+          {/* center reflection */}
+          <div className="absolute top-1 right-[24%] h-10 w-32 rounded-full bg-white/12 blur-2xl" />
+
+          {/* super light wash */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] via-transparent to-transparent" />
+
+          {/* bottom edge */}
+          <div className="absolute inset-x-0 bottom-0 h-px bg-black/20" />
+        </div>
+
+        <div className="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-3 md:px-6 md:py-4">
+          {/* LOGO */}
+          <Link href="/" onClick={closeMenu}>
             <Image
               src="/images/logo.png"
               alt="More Clean"
-              width={150}
-              height={60}
+              width={220}
+              height={90}
               priority
+              className="w-28 md:w-32 h-auto object-contain"
             />
           </Link>
 
           {/* DESKTOP */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className={linkClass}>Home</Link>
-            <Link href="/diensten" className={linkClass}>Diensten</Link>
-            <Link href="/over-ons" className={linkClass}>Over Ons</Link>
-            <Link href="/contact" className={linkClass}>Contact</Link>
+            <Link href="/" className={navLink}>
+              Home
+            </Link>
+
+            <Link href="/diensten" className={navLink}>
+              Diensten
+            </Link>
+
+            <Link href="/over-ons" className={navLink}>
+              Over Ons
+            </Link>
+
+            <Link href="/contact" className={navLink}>
+              Contact
+            </Link>
 
             <Link
               href="/offerte"
-              className="rounded-full bg-[#4D7EBA] px-5 py-3 font-semibold text-white transition hover:scale-105"
+              className="rounded-full border border-white/20 bg-white/[0.08] px-5 py-3 font-semibold text-white transition duration-300 hover:bg-white/[0.14]"
             >
               Gratis Offerte
             </Link>
@@ -71,8 +97,8 @@ export default function Navbar() {
           {/* MOBILE BUTTON */}
           <button
             onClick={() => setOpen(!open)}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-xl md:hidden"
-            aria-label="Menu"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] text-white backdrop-blur-xl md:hidden"
+            aria-label="Menu openen"
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -88,38 +114,38 @@ export default function Navbar() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
+          className="absolute inset-0 bg-black/45 backdrop-blur-sm"
+          onClick={closeMenu}
         />
 
         <div
-          className={`absolute left-4 right-4 top-24 rounded-3xl border border-white/10 bg-[#101536]/95 p-6 shadow-2xl backdrop-blur-2xl transition-all duration-500 ${
+          className={`absolute left-3 right-3 top-24 rounded-3xl border border-white/20 bg-white/[0.04] p-6 backdrop-blur-[22px] shadow-2xl transition-all duration-500 ${
             open
               ? "translate-y-0 opacity-100"
               : "-translate-y-6 opacity-0"
           }`}
         >
-          <nav className="flex flex-col gap-3">
-            <Link href="/" className="rounded-2xl px-4 py-3 hover:bg-white/5" onClick={() => setOpen(false)}>
+          <nav className="flex flex-col gap-3 text-white">
+            <Link href="/" onClick={closeMenu} className="rounded-2xl px-4 py-3 hover:bg-white/5">
               Home
             </Link>
 
-            <Link href="/diensten" className="rounded-2xl px-4 py-3 hover:bg-white/5" onClick={() => setOpen(false)}>
+            <Link href="/diensten" onClick={closeMenu} className="rounded-2xl px-4 py-3 hover:bg-white/5">
               Diensten
             </Link>
 
-            <Link href="/over-ons" className="rounded-2xl px-4 py-3 hover:bg-white/5" onClick={() => setOpen(false)}>
+            <Link href="/over-ons" onClick={closeMenu} className="rounded-2xl px-4 py-3 hover:bg-white/5">
               Over Ons
             </Link>
 
-            <Link href="/contact" className="rounded-2xl px-4 py-3 hover:bg-white/5" onClick={() => setOpen(false)}>
+            <Link href="/contact" onClick={closeMenu} className="rounded-2xl px-4 py-3 hover:bg-white/5">
               Contact
             </Link>
 
             <Link
               href="/offerte"
-              onClick={() => setOpen(false)}
-              className="mt-3 rounded-full bg-[#4D7EBA] px-6 py-4 text-center font-semibold text-white"
+              onClick={closeMenu}
+              className="mt-3 rounded-full border border-white/20 bg-white/[0.08] px-6 py-4 text-center font-semibold"
             >
               Gratis Offerte
             </Link>

@@ -96,3 +96,8 @@ body {
   background-size: 200% auto;
   animation: shine 3s linear infinite;
 }
+
+@keyframes shine {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(400%); }
+}
