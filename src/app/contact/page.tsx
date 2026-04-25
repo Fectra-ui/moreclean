@@ -79,6 +79,13 @@ export default function ContactPage() {
                 type="hidden"
                 name="_next"
                 value="https://moreclean.nl/bedankt"
+            />
+              <input
+                type="text"
+                name="_gotcha"
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
               />
               <input
                 type="text"

@@ -62,6 +62,13 @@ export default function OffertePage() {
               />
               <input
                 type="text"
+                name="_gotcha"
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+              <input
+                type="text"
                 name="naam"
                 required
                 placeholder="Naam"
