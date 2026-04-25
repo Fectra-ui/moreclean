@@ -100,77 +100,70 @@ export default function Navbar() {
       </header>
 
       {/* MOBILE MENU */}
-      <div
-        className={`fixed inset-0 z-40 md:hidden transition-all duration-500 ${
-          open
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0"
-        }`}
+<div
+  className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
+    open
+      ? "pointer-events-auto opacity-100"
+      : "pointer-events-none opacity-0"
+  }`}
+>
+  {/* BACKDROP */}
+  <div
+    className="absolute inset-0 bg-black/35 backdrop-blur-md"
+    onClick={closeMenu}
+  />
+
+  {/* PANEL */}
+  <div
+    className={`absolute left-4 right-4 top-20 rounded-3xl border border-white/15 bg-white/[0.08] p-5 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] transition-all duration-300 ${
+      open
+        ? "translate-y-0 scale-100 opacity-100"
+        : "-translate-y-4 scale-95 opacity-0"
+    }`}
+  >
+    <nav className="flex flex-col gap-2 text-white">
+      <Link
+        href="/"
+        onClick={closeMenu}
+        className="rounded-2xl px-4 py-3 text-lg font-medium transition hover:bg-white/10"
       >
-        {/* BACKDROP */}
-        <div
-          className="absolute inset-0 bg-black/45 backdrop-blur-sm"
-          onClick={closeMenu}
-        />
+        Home
+      </Link>
 
-        {/* PANEL */}
-        <div
-          className={`absolute left-3 right-3 top-20 overflow-hidden rounded-3xl border border-white/15 bg-white/[0.045] p-5 backdrop-blur-[22px] shadow-[0_25px_80px_rgba(0,0,0,0.35)] transition-all duration-500 ${
-            open
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-6 opacity-0"
-          }`}
-        >
-          {/* LIGHTS */}
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-x-0 top-0 h-px bg-white/80" />
-            <div className="absolute -top-5 left-[12%] h-20 w-32 rotate-[-8deg] bg-white/10 blur-2xl" />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent" />
-          </div>
+      <Link
+        href="/diensten"
+        onClick={closeMenu}
+        className="rounded-2xl px-4 py-3 text-lg font-medium transition hover:bg-white/10"
+      >
+        Diensten
+      </Link>
 
-          <nav className="relative flex flex-col gap-2 text-white">
-            <Link
-              href="/"
-              onClick={closeMenu}
-              className="rounded-2xl px-4 py-3 transition hover:bg-white/5"
-            >
-              Home
-            </Link>
+      <Link
+        href="/over-ons"
+        onClick={closeMenu}
+        className="rounded-2xl px-4 py-3 text-lg font-medium transition hover:bg-white/10"
+      >
+        Over Ons
+      </Link>
 
-            <Link
-              href="/diensten"
-              onClick={closeMenu}
-              className="rounded-2xl px-4 py-3 transition hover:bg-white/5"
-            >
-              Diensten
-            </Link>
+      <Link
+        href="/contact"
+        onClick={closeMenu}
+        className="rounded-2xl px-4 py-3 text-lg font-medium transition hover:bg-white/10"
+      >
+        Contact
+      </Link>
 
-            <Link
-              href="/over-ons"
-              onClick={closeMenu}
-              className="rounded-2xl px-4 py-3 transition hover:bg-white/5"
-            >
-              Over Ons
-            </Link>
-
-            <Link
-              href="/contact"
-              onClick={closeMenu}
-              className="rounded-2xl px-4 py-3 transition hover:bg-white/5"
-            >
-              Contact
-            </Link>
-
-            <Link
-              href="/offerte"
-              onClick={closeMenu}
-              className="mt-3 rounded-full border border-white/20 bg-white/[0.08] px-6 py-3 text-center font-semibold transition hover:bg-white/[0.14]"
-            >
-              Gratis Offerte
-            </Link>
-          </nav>
-        </div>
-      </div>
+      <Link
+        href="/offerte"
+        onClick={closeMenu}
+        className="mt-3 rounded-full bg-[#4D7EBA] px-6 py-4 text-center font-semibold text-white shadow-lg"
+      >
+        Gratis Offerte
+      </Link>
+    </nav>
+  </div>
+</div>
     </>
   );
 }
