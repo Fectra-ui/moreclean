@@ -4,12 +4,14 @@ import Navbar from "@/components/Navbar";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import FAQItem from "@/components/FAQItem";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   Star,
   MessageCircle,
   ShieldCheck,
   Sparkles,
   MapPin,
+  ArrowRight,
 } from "lucide-react";
 import { trackEvent } from "@/lib/gtag";
 
@@ -55,6 +57,11 @@ const areas = [
   { name: "Echt", href: "/echt" },
 ];
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: { opacity: 1, y: 0 },
+};
+
 export default function HomePage() {
   return (
     <>
@@ -68,16 +75,22 @@ export default function HomePage() {
             muted
             loop
             playsInline
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover scale-105"
           >
             <source src="/video/hero-video.mp4" type="video/mp4" />
           </video>
 
-          <div className="absolute inset-0 bg-black/45" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#101536]/90 via-[#101536]/60 to-transparent" />
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#101536]/95 via-[#101536]/70 to-transparent" />
 
           <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 md:grid-cols-2">
-            <div>
+            {/* LEFT */}
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              transition={{ duration: 0.8 }}
+            >
               <span className="glass inline-flex rounded-full px-4 py-2 text-sm">
                 Binnen 24 uur reactie
               </span>
@@ -91,7 +104,7 @@ export default function HomePage() {
 
               <p className="mt-6 max-w-xl text-lg text-white/80">
                 Professionele reiniging met oog voor detail, kwaliteit en
-                resultaat.
+                resultaat. Voor woningen, bedrijven en panden in Limburg.
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -103,43 +116,42 @@ export default function HomePage() {
                       event_label: "Hero Offerte Klik",
                     })
                   }
-                  className="rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105"
+                  className="group rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105 hover:shadow-2xl"
                 >
-                  Vraag gratis offerte aan
+                  <span className="inline-flex items-center gap-2">
+                    Vraag gratis offerte aan
+                    <ArrowRight
+                      size={18}
+                      className="transition group-hover:translate-x-1"
+                    />
+                  </span>
                 </Link>
 
                 <Link
                   href="/diensten"
-                  onClick={() =>
-                    trackEvent("cta_click", {
-                      event_category: "Homepage",
-                      event_label: "Bekijk Diensten Klik",
-                    })
-                  }
-                  className="glass rounded-full px-8 py-4 font-semibold"
+                  className="glass rounded-full px-8 py-4 font-semibold transition hover:scale-105"
                 >
                   Bekijk diensten
                 </Link>
               </div>
+            </motion.div>
 
-              <div className="mt-10 flex flex-wrap gap-6 text-sm text-white/75">
-                <span className="flex items-center gap-2">
-                  <ShieldCheck size={18} /> Betrouwbaar
-                </span>
-
-                <span className="flex items-center gap-2">
-                  <Sparkles size={18} /> Premium service
-                </span>
-              </div>
-            </div>
-
-            <div className="hidden md:block">
+            {/* RIGHT */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="hidden md:block"
+            >
               <div className="glass shadow-premium rounded-3xl p-8">
                 <div className="grid gap-4">
-                  {stats.map((item) => (
-                    <div
+                  {stats.map((item, index) => (
+                    <motion.div
                       key={item.label}
-                      className="rounded-2xl bg-white/5 p-5 text-center"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + index * 0.1 }}
+                      className="rounded-2xl bg-white/5 p-5 text-center hover:bg-white/10"
                     >
                       <p className="text-3xl font-bold text-[#95AEC1]">
                         <AnimatedCounter
@@ -148,107 +160,90 @@ export default function HomePage() {
                           decimals={item.decimals || 0}
                         />
                       </p>
-
                       <p className="mt-1 text-sm text-white/70">
                         {item.label}
                       </p>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* WERKGEBIED */}
         <section className="px-6 py-24">
-          <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="mx-auto max-w-7xl"
+          >
             <div className="mb-12 text-center">
               <p className="text-sm uppercase tracking-[0.25em] text-[#95AEC1]">
                 Werkgebied
               </p>
-
               <h2 className="mt-4 text-4xl font-bold md:text-5xl">
                 Actief in Limburg & omgeving
               </h2>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              {areas.map((area) => (
-                <Link
+              {areas.map((area, index) => (
+                <motion.div
                   key={area.name}
-                  href={area.href}
-                  onClick={() =>
-                    trackEvent("location_click", {
-                      event_category: "Werkgebied",
-                      event_label: area.name,
-                    })
-                  }
-                  className="glass rounded-3xl p-6 text-center transition hover:-translate-y-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.08 }}
                 >
-                  <MapPin className="mx-auto mb-3 text-[#95AEC1]" size={22} />
-                  <p className="font-semibold">{area.name}</p>
-                </Link>
+                  <Link
+                    href={area.href}
+                    className="glass block rounded-3xl p-6 text-center transition hover:-translate-y-2"
+                  >
+                    <MapPin className="mx-auto mb-3 text-[#95AEC1]" size={22} />
+                    <p className="font-semibold">{area.name}</p>
+                  </Link>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* REVIEWS */}
         <section className="px-6 py-24">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-12 text-center">
-              <p className="text-sm uppercase tracking-[0.25em] text-[#95AEC1]">
-                Reviews
-              </p>
-
-              <h2 className="mt-4 text-4xl font-bold md:text-5xl">
-                Klanten vertrouwen More Clean
-              </h2>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              {reviews.map((review) => (
-                <div
-                  key={review.name}
-                  className="glass rounded-3xl p-6 transition hover:-translate-y-2"
-                >
-                  <div className="flex gap-1 text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={18} fill="currentColor" />
-                    ))}
-                  </div>
-
-                  <p className="mt-4 text-white/80">{review.text}</p>
-                  <p className="mt-5 font-semibold">{review.name}</p>
+          <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
+            {reviews.map((review, index) => (
+              <motion.div
+                key={review.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="glass rounded-3xl p-6 hover:-translate-y-2"
+              >
+                <div className="flex gap-1 text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={18} fill="currentColor" />
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* FAQ */}
-        <section className="px-6 pb-24">
-          <div className="mx-auto max-w-4xl">
-            <div className="mb-12 text-center">
-              <h2 className="text-4xl font-bold">Veelgestelde vragen</h2>
-            </div>
-
-            <div className="space-y-4">
-              {faqs.map((faq) => (
-                <FAQItem
-                  key={faq.question}
-                  question={faq.question}
-                  answer={faq.answer}
-                />
-              ))}
-            </div>
+                <p className="mt-4 text-white/80">{review.text}</p>
+                <p className="mt-5 font-semibold">{review.name}</p>
+              </motion.div>
+            ))}
           </div>
         </section>
 
         {/* CTA */}
         <section className="px-6 pb-28">
-          <div className="glass shadow-premium mx-auto max-w-6xl rounded-3xl p-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="glass shadow-premium mx-auto max-w-6xl rounded-3xl p-10 text-center"
+          >
             <h2 className="text-4xl font-bold">
               Klaar voor een brandschoon resultaat?
             </h2>
@@ -259,34 +254,24 @@ export default function HomePage() {
 
             <Link
               href="/offerte"
-              onClick={() =>
-                trackEvent("cta_click", {
-                  event_category: "Homepage",
-                  event_label: "Bottom CTA Klik",
-                })
-              }
               className="mt-8 inline-block rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105"
             >
               Gratis Offerte
             </Link>
-          </div>
+          </motion.div>
         </section>
 
         {/* FLOATING WHATSAPP */}
-        <a
+        <motion.a
           href="https://wa.me/31613672320"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() =>
-            trackEvent("whatsapp_click", {
-              event_category: "Homepage",
-              event_label: "Floating WhatsApp",
-            })
-          }
-          className="fixed bottom-6 right-6 z-50 rounded-full bg-green-500 p-4 shadow-2xl transition hover:scale-110"
+          animate={{ y: [0, -8, 0] }}
+          transition={{ repeat: Infinity, duration: 2.5 }}
+          className="fixed bottom-6 right-6 z-50 rounded-full bg-green-500 p-4 shadow-2xl hover:scale-110"
         >
           <MessageCircle />
-        </a>
+        </motion.a>
       </main>
     </>
   );
