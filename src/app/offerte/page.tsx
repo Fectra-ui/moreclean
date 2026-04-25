@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar";
-import { CheckCircle2, Upload } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function OffertePage() {
   return (
@@ -102,12 +102,6 @@ export default function OffertePage() {
                 placeholder="Extra informatie"
                 className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
               />
-
-              <label className="flex cursor-pointer items-center justify-center gap-3 rounded-2xl border border-dashed border-white/15 bg-white/5 px-5 py-5">
-                <Upload size={18} />
-                <span>Bestand uploaden</span>
-                <input type="file" name="bestand" className="hidden" />
-              </label>
 
               <input
                 type="hidden"
