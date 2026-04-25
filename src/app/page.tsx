@@ -268,7 +268,7 @@ export default function HomePage() {
           rel="noopener noreferrer"
           animate={{ y: [0, -8, 0] }}
           transition={{ repeat: Infinity, duration: 2.5 }}
-          className="fixed bottom-6 right-6 z-50 rounded-full bg-green-500 p-4 shadow-2xl hover:scale-110"
+          className="hidden md:flex fixed bottom-6 right-6 z-50 rounded-full bg-green-500 p-4 shadow-2xl transition duration-300 hover:scale-110"
         >
           <MessageCircle />
         </motion.a>
