@@ -1,3 +1,5 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { trackEvent } from "@/lib/gtag";

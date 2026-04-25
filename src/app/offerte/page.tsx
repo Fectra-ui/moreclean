@@ -1,3 +1,5 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import { CheckCircle2 } from "lucide-react";
 import { trackEvent } from "@/lib/gtag";

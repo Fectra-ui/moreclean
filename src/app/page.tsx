@@ -1,3 +1,5 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import FAQItem from "@/components/FAQItem";
