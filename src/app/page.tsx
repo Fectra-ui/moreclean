@@ -64,7 +64,7 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      <main className="overflow-hidden text-white">
+      <main className="page-offset min-h-screen px-6 pb-24 text-white">
         {/* HERO */}
         <section className="relative min-h-[100svh] overflow-hidden">
           {/* VIDEO */}
