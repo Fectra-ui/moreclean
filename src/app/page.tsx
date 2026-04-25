@@ -1,7 +1,14 @@
 import Navbar from "@/components/Navbar";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import FAQItem from "@/components/FAQItem";
-import { Star, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import Link from "next/link";
+import {
+  Star,
+  MessageCircle,
+  ShieldCheck,
+  Sparkles,
+  MapPin,
+} from "lucide-react";
 
 const stats = [
   { end: 500, suffix: "+", label: "Tevreden klanten" },
@@ -11,18 +18,9 @@ const stats = [
 ];
 
 const reviews = [
-  {
-    name: "Mark",
-    text: "Top service. Ramen perfect schoon en snel geholpen.",
-  },
-  {
-    name: "Sanne",
-    text: "Professioneel bedrijf. Zeer tevreden met het resultaat.",
-  },
-  {
-    name: "Patrick",
-    text: "Onze zonnepanelen zien er weer als nieuw uit.",
-  },
+  { name: "Mark", text: "Top service. Ramen perfect schoon en snel geholpen." },
+  { name: "Sanne", text: "Professioneel bedrijf. Zeer tevreden met het resultaat." },
+  { name: "Patrick", text: "Onze zonnepanelen zien er weer als nieuw uit." },
 ];
 
 const faqs = [
@@ -38,6 +36,14 @@ const faqs = [
     question: "Zijn offertes gratis?",
     answer: "Ja, volledig vrijblijvend.",
   },
+];
+
+const areas = [
+  { name: "Roermond", href: "/roermond" },
+  { name: "Limburg", href: "/limburg" },
+  { name: "Venlo", href: "/venlo" },
+  { name: "Weert", href: "/weert" },
+  { name: "Echt", href: "/echt" },
 ];
 
 export default function HomePage() {
@@ -79,19 +85,19 @@ export default function HomePage() {
               </p>
 
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <a
+                <Link
                   href="/offerte"
                   className="rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105"
                 >
                   Vraag gratis offerte aan
-                </a>
+                </Link>
 
-                <a
+                <Link
                   href="/diensten"
                   className="glass rounded-full px-8 py-4 font-semibold"
                 >
                   Bekijk diensten
-                </a>
+                </Link>
               </div>
 
               <div className="mt-10 flex flex-wrap gap-6 text-sm text-white/75">
@@ -126,6 +132,33 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* WERKGEBIEDEN */}
+        <section className="px-6 py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-12 text-center">
+              <p className="text-sm uppercase tracking-[0.25em] text-[#95AEC1]">
+                Werkgebied
+              </p>
+              <h2 className="mt-4 text-4xl font-bold md:text-5xl">
+                Actief in Limburg & omgeving
+              </h2>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {areas.map((area) => (
+                <Link
+                  key={area.name}
+                  href={area.href}
+                  className="glass rounded-3xl p-6 text-center transition hover:-translate-y-2"
+                >
+                  <MapPin className="mx-auto mb-3 text-[#95AEC1]" size={22} />
+                  <p className="font-semibold">{area.name}</p>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
@@ -191,12 +224,12 @@ export default function HomePage() {
               Vraag vandaag nog vrijblijvend uw offerte aan.
             </p>
 
-            <a
+            <Link
               href="/offerte"
               className="mt-8 inline-block rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105"
             >
               Gratis Offerte
-            </a>
+            </Link>
           </div>
         </section>
 
