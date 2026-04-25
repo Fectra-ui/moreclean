@@ -29,7 +29,7 @@ export default function DienstenPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen px-6 pt-40 md:pt-28 pb-24 text-white">
+      <main className="min-h-screen px-6 pt-36 md:pt-46 pb-24 text-white">
         {/* HERO */}
         <section className="mx-auto max-w-7xl text-center">
           <span className="glass inline-flex rounded-full px-4 py-2 text-sm">
