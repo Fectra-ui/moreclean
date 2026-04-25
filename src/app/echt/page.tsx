@@ -22,7 +22,7 @@ export default function EchtPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen px-6 pt-28 pb-24 text-white">
+      <main className="min-h-screen px-6 pt-40 md:pt-28 pb-24 text-white">
         {/* HERO */}
         <section className="mx-auto max-w-6xl text-center">
           <span className="glass inline-flex rounded-full px-4 py-2 text-sm">

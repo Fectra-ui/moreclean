@@ -115,7 +115,7 @@ export default function Navbar() {
 
   {/* PANEL */}
   <div
-    className={`absolute left-4 right-4 top-20 rounded-3xl border border-white/15 bg-white/[0.08] p-5 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] transition-all duration-300 ${
+    className={`absolute left-4 right-4 top-28 rounded-3xl border border-white/15 bg-white/[0.08] p-5 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] transition-all duration-300 ${
       open
         ? "translate-y-0 scale-100 opacity-100"
         : "-translate-y-4 scale-95 opacity-0"
