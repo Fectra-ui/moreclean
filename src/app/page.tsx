@@ -41,8 +41,8 @@ export default function HomePage() {
         -translate-x-1/2
         -translate-y-1/2
         object-cover
-        scale-[1.18]
-        md:scale-[1.45]
+        scale-[1.02]
+        md:scale-[1.18]
       "
     >
       <source src="/video/hero-video.mp4" type="video/mp4" />
