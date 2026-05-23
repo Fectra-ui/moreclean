@@ -37,35 +37,41 @@ export default function Navbar() {
       <header className="fixed left-0 top-0 z-[70] w-full px-3 pt-3 md:px-4 md:pt-0">
         <div
           className={`
+            relative
+            overflow-hidden
             mx-auto
             mt-0 md:mt-4
             flex
             max-w-7xl
             items-center
             justify-between
-            rounded-[28px]
+            rounded-[24px]
             border
             px-4 py-2.5 md:px-6 md:py-4
             transition-all
             duration-500
 
             ${
-              scrolled || open
-                ? `
-                  border-white/20
-                  bg-white/65
-                  shadow-[0_10px_40px_rgba(0,0,0,.10)]
-                  backdrop-blur-2xl
+            scrolled || open
+              ? `
+                border-white/25
+                bg-white/[0.16]
+                shadow-[0_12px_50px_rgba(0,0,0,.16)]
+                backdrop-blur-[28px]
+                before:absolute
+                before:inset-0
+                before:rounded-[inherit]
+                before:bg-[linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06))]
                 `
-                : `
-                  border-transparent
-                  bg-transparent
-                  shadow-none
-                  backdrop-blur-0
+              : `
+                border-white/20
+                bg-white/[0.08]
+                shadow-[0_8px_40px_rgba(0,0,0,.10)]
+                backdrop-blur-[20px]
                 `
-            }
-          `}
-        >
+              }
+            `}
+          >
           {/* LOGO */}
           <Link
             href="/"
@@ -164,19 +170,20 @@ export default function Navbar() {
               relative
               z-50
               flex
-              h-10
-              w-10
+              h-11
+              w-11
               items-center
               justify-center
-              rounded-xl
+              rounded-2xl
               border
-              border-white/10
-              bg-white/10
+              border-white/20
+              bg-white/15
               text-white
+              shadow-[0_8px_30px_rgba(0,0,0,.18)]
               backdrop-blur-xl
               transition
               duration-300
-              hover:bg-white/20
+              hover:bg-white/25
               md:hidden
             "
           >
