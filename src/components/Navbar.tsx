@@ -40,38 +40,51 @@ export default function Navbar() {
             relative
             overflow-hidden
             mx-auto
-            mt-0 md:mt-4
+            mt-0
+            md:mt-4
             flex
             max-w-7xl
             items-center
             justify-between
             rounded-[24px]
             border
-            px-4 py-2.5 md:px-6 md:py-4
+            px-4
+            py-2.5
+            md:px-6
+            md:py-4
             transition-all
             duration-500
 
             ${
-            scrolled || open
-              ? `
-                border-white/25
-                bg-white/[0.16]
-                shadow-[0_12px_50px_rgba(0,0,0,.16)]
-                backdrop-blur-[28px]
-                before:absolute
-                before:inset-0
-                before:rounded-[inherit]
-                before:bg-[linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06))]
+              scrolled || open
+                ? `
+                  border-white/30
+                  bg-white/[0.20]
+                  shadow-[0_12px_50px_rgba(0,0,0,.18)]
+                  backdrop-blur-[34px]
                 `
-              : `
-                border-white/20
-                bg-white/[0.08]
-                shadow-[0_8px_40px_rgba(0,0,0,.10)]
-                backdrop-blur-[20px]
+                : `
+                  border-white/20
+                  bg-white/[0.12]
+                  shadow-[0_10px_40px_rgba(0,0,0,.12)]
+                  backdrop-blur-[26px]
                 `
-              }
-            `}
-          >
+            }
+
+            before:absolute
+            before:inset-0
+            before:rounded-[inherit]
+            before:bg-[linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.08))]
+            before:pointer-events-none
+
+            after:absolute
+            after:inset-[1px]
+            after:rounded-[22px]
+            after:border
+            after:border-white/10
+            after:pointer-events-none
+          `}
+        >
           {/* LOGO */}
           <Link
             href="/"
@@ -106,6 +119,8 @@ export default function Navbar() {
                 key={label}
                 href={href}
                 className="
+                  relative
+                  z-50
                   text-sm
                   font-medium
                   text-white
@@ -124,6 +139,7 @@ export default function Navbar() {
               className="
                 group
                 relative
+                z-50
                 overflow-hidden
                 rounded-2xl
                 bg-gradient-to-r
@@ -176,14 +192,14 @@ export default function Navbar() {
               justify-center
               rounded-2xl
               border
-              border-white/20
-              bg-white/15
+              border-white/30
+              bg-white/20
               text-white
-              shadow-[0_8px_30px_rgba(0,0,0,.18)]
-              backdrop-blur-xl
+              shadow-[0_10px_30px_rgba(0,0,0,.20)]
+              backdrop-blur-2xl
               transition
               duration-300
-              hover:bg-white/25
+              hover:bg-white/30
               md:hidden
             "
           >
@@ -227,15 +243,21 @@ export default function Navbar() {
             left-4
             right-4
             top-24
-            rounded-[26px]
+            overflow-hidden
+            rounded-[28px]
             border
-            border-white/10
-            bg-white/80
+            border-white/20
+            bg-white/[0.20]
             p-4
-            shadow-[0_20px_80px_rgba(0,0,0,.15)]
-            backdrop-blur-3xl
+            shadow-[0_20px_80px_rgba(0,0,0,.18)]
+            backdrop-blur-[34px]
             transition-all
             duration-500
+
+            before:absolute
+            before:inset-0
+            before:bg-[linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.08))]
+            before:pointer-events-none
 
             ${
               open
@@ -244,7 +266,7 @@ export default function Navbar() {
             }
           `}
         >
-          <nav className="flex flex-col gap-2">
+          <nav className="relative z-10 flex flex-col gap-2">
             {[
               ["Home", "/"],
               ["Diensten", "/diensten"],
@@ -261,10 +283,10 @@ export default function Navbar() {
                   py-4
                   text-lg
                   font-semibold
-                  text-[#101536]
+                  text-white
                   transition
                   duration-300
-                  hover:bg-[#EEF3F8]
+                  hover:bg-white/10
                 "
               >
                 {label}
