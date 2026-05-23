@@ -34,15 +34,13 @@ export default function HomePage() {
       poster="/images/hero-fallback.jpg"
       className="
         absolute
-        left-1/2
-        top-1/2
+        inset-0
         h-full
         w-full
-        -translate-x-1/2
-        -translate-y-1/2
         object-cover
-        scale-[1.02]
-        md:scale-[1.18]
+        object-center
+        scale-[1.28]
+        md:scale-[1.12]
       "
     >
       <source src="/video/hero-video.mp4" type="video/mp4" />
