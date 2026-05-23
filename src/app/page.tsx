@@ -23,7 +23,7 @@ export default function HomePage() {
       <Navbar />
 
       {/* ================= HERO ================= */}
-      <section className="relative min-h-screen overflow-hidden">
+      <section className="relative min-h-screen overflow-hidden bg-[#101536]">
         {/* VIDEO BACKGROUND */}
         <div className="absolute inset-0">
           <video
@@ -35,13 +35,21 @@ export default function HomePage() {
             poster="/images/hero-fallback.jpg"
             className="
               absolute
-              inset-0
-              h-full
-              w-full
+
+              left-1/2
+              top-1/2
+
+              min-h-[140%]
+              min-w-[140%]
+
+              -translate-x-1/2
+              -translate-y-1/2
+
               object-cover
               object-center
-              scale-[1.75]
-              md:scale-[1.35]
+
+              md:min-h-[125%]
+              md:min-w-[125%]
             "
           >
             <source src="/video/hero-video.mp4" type="video/mp4" />
@@ -54,9 +62,9 @@ export default function HomePage() {
               background: `
                 linear-gradient(
                   180deg,
-                  rgba(16,21,54,.55) 0%,
-                  rgba(16,21,54,.34) 38%,
-                  rgba(16,21,54,.74) 100%
+                  rgba(16,21,54,.42)
+                  rgba(16,21,54,.22)
+                  rgba(16,21,54,.68)
                 )
               `,
             }}
@@ -71,28 +79,27 @@ export default function HomePage() {
 
         {/* HERO CONTENT */}
         <div
-          className="
-            relative
-            z-10
-            flex
-            min-h-screen
-            items-start
-            justify-center
+        className="
+          relative
+          z-10
+          flex
+          min-h-screen
+          items-start
+          justify-center
 
-            px-5
+          px-5
 
-            pt-[220px]
-            pb-[140px]
+          pt-[220px]
+          pb-[140px]
 
-            sm:pt-[230px]
+          sm:pt-[230px]
 
-            md:items-center
-            md:px-6
-            md:pt-[170px]
-            md:pb-[120px]
+          md:px-6
+          md:pt-[230px]
+          md:pb-[120px]
 
-            lg:pt-[140px]
-            lg:pb-[80px]
+          lg:pt-[240px]
+          lg:pb-[120px]
           "
         >
 
