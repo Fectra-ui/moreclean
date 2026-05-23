@@ -9,9 +9,11 @@ export default function ContactPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen px-6 pt-36 md:pt-46 pb-24 text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#F3F5F7] px-6 pb-24 pt-[220px] text-[#121212]">
+        {/* BACKGROUND GLOW */}
+<div className="absolute left-1/2 top-[-250px] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[#95AEC1]/20 blur-3xl" />
         {/* HERO */}
-        <section className="mx-auto max-w-6xl text-center">
+        <section className="relative z-10 mx-auto max-w-6xl text-center">
           <span className="glass inline-flex rounded-full px-4 py-2 text-sm">
             Contact
           </span>
@@ -20,7 +22,7 @@ export default function ContactPage() {
             Neem <span className="gradient-text">contact met ons op</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg text-white/75">
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-[#606774]">
             Heeft u vragen of wilt u direct een offerte aanvragen? Wij helpen u
             graag verder.
           </p>
@@ -31,7 +33,7 @@ export default function ContactPage() {
           {/* LEFT SIDE */}
           <div className="space-y-6">
             {/* PHONE */}
-            <div className="glass shadow-premium rounded-3xl p-6">
+            <div className="rounded-[32px] border border-white/60 bg-white/75 p-6 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl">
               <div className="flex items-center gap-4">
                 <Phone className="text-[#95AEC1]" />
 
@@ -55,7 +57,7 @@ export default function ContactPage() {
             </div>
 
             {/* EMAIL */}
-            <div className="glass shadow-premium rounded-3xl p-6">
+            <div className="rounded-[32px] border border-white/60 bg-white/75 p-6 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl">
               <div className="flex items-center gap-4">
                 <Mail className="text-[#95AEC1]" />
 
@@ -79,7 +81,7 @@ export default function ContactPage() {
             </div>
 
             {/* LOCATION */}
-            <div className="glass shadow-premium rounded-3xl p-6">
+            <div className="rounded-[32px] border border-white/60 bg-white/75 p-6 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl">
               <div className="flex items-center gap-4">
                 <MapPin className="text-[#95AEC1]" />
 
@@ -101,15 +103,40 @@ export default function ContactPage() {
                   event_label: "WhatsApp Klik",
                 })
               }
-              className="flex items-center justify-center gap-3 rounded-full bg-green-500 px-6 py-4 font-semibold transition hover:scale-105"
+              className="
+                group
+                relative
+                overflow-hidden
+                flex
+                items-center
+                justify-center
+                gap-3
+                rounded-[22px]
+                bg-gradient-to-r
+                from-[#25D366]
+                via-[#2BE070]
+                to-[#1ebe5d]
+                px-6
+                py-5
+                font-semibold
+                text-white
+                shadow-[0_20px_60px_rgba(37,211,102,.28)]
+                transition-all
+                duration-500
+                hover:-translate-y-1
+                hover:shadow-[0_30px_80px_rgba(37,211,102,.38)]
+                "
             >
-              <MessageCircle size={20} />
+              <MessageCircle
+                size={20}
+                className="transition duration-300 group-hover:scale-110"
+            />
               WhatsApp Direct
             </a>
           </div>
 
           {/* FORM */}
-          <div className="glass shadow-premium rounded-3xl p-8">
+          <div className="rounded-[32px] border border-white/60 bg-white/75 p-8 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl">
             <h2 className="text-3xl font-bold">Stuur een bericht</h2>
 
             <form
@@ -148,7 +175,7 @@ export default function ContactPage() {
                 name="naam"
                 required
                 placeholder="Naam"
-                className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
+                className="w-full rounded-2xl border border-[#E5EAF0] bg-white px-5 py-4 text-[#101536] outline-none transition focus:border-[#4D7EBA] focus:ring-4 focus:ring-[#4D7EBA]/10"
               />
 
               <input
@@ -156,21 +183,21 @@ export default function ContactPage() {
                 name="email"
                 required
                 placeholder="E-mail"
-                className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
+                className="w-full rounded-2xl border border-[#E5EAF0] bg-white px-5 py-4 text-[#101536] outline-none transition focus:border-[#4D7EBA] focus:ring-4 focus:ring-[#4D7EBA]/10"
               />
 
               <input
                 type="tel"
                 name="telefoon"
                 placeholder="Telefoon"
-                className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
+                className="w-full rounded-2xl border border-[#E5EAF0] bg-white px-5 py-4 text-[#101536] outline-none transition focus:border-[#4D7EBA] focus:ring-4 focus:ring-[#4D7EBA]/10"
               />
 
               <textarea
                 name="bericht"
                 rows={5}
                 placeholder="Bericht"
-                className="w-full rounded-2xl bg-white/5 px-5 py-4 outline-none"
+                className="w-full rounded-2xl border border-[#E5EAF0] bg-white px-5 py-4 text-[#101536] outline-none transition focus:border-[#4D7EBA] focus:ring-4 focus:ring-[#4D7EBA]/10"
               />
 
               <input
@@ -180,11 +207,46 @@ export default function ContactPage() {
               />
 
               <button
-                type="submit"
-                className="w-full rounded-full bg-[#4D7EBA] px-6 py-4 font-semibold transition hover:scale-[1.02]"
-              >
-                Bericht Verzenden
-              </button>
+            type="submit"
+            className="
+              group
+              relative
+              w-full
+              overflow-hidden
+              rounded-[22px]
+              bg-gradient-to-r
+              from-[#667FB0]
+              via-[#95AEC1]
+              to-[#4D7EBA]
+              px-6
+              py-5
+              font-semibold
+              text-white
+              shadow-[0_20px_60px_rgba(77,126,186,.28)]
+              transition-all
+              duration-500
+              hover:-translate-y-1
+              hover:shadow-[0_30px_80px_rgba(77,126,186,.38)]
+            "
+          >
+            <span className="relative z-10">
+              Bericht Verzenden
+            </span>
+
+            <div
+              className="
+                absolute
+                inset-0
+                opacity-0
+                transition
+                duration-500
+                group-hover:opacity-100
+                bg-[linear-gradient(120deg,transparent,rgba(255,255,255,.25),transparent)]
+                translate-x-[-120%]
+                group-hover:translate-x-[120%]
+              "
+            />
+            </button>
             </form>
           </div>
         </section>

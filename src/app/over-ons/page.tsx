@@ -29,9 +29,12 @@ export default function OverOnsPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen px-6 pt-36 md:pt-46 pb-24 text-white">
+      <main className="relative min-h-screen overflow-hidden bg-[#F3F5F7] px-6 pb-24 pt-[220px] text-[#121212]">
+        {/* BACKGROUND GLOW */}
+        <div className="absolute left-1/2 top-[-250px] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[#95AEC1]/20 blur-3xl" />
+
         {/* HERO */}
-        <section className="mx-auto max-w-6xl text-center">
+        <section className="relative z-10 mx-auto max-w-6xl text-center">
           <span className="glass inline-flex rounded-full px-4 py-2 text-sm">
             Over More Clean
           </span>
@@ -41,7 +44,7 @@ export default function OverOnsPage() {
             <span className="gradient-text">kwaliteit & vertrouwen</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg text-white/75">
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-[#606774]">
             More Clean staat voor hoogwaardige schoonmaakdiensten met een
             persoonlijke aanpak. Wij helpen particulieren en bedrijven aan een
             representatief, fris en verzorgd resultaat.
@@ -50,7 +53,7 @@ export default function OverOnsPage() {
 
         {/* STORY */}
         <section className="mx-auto mt-20 grid max-w-7xl gap-8 md:grid-cols-2">
-          <div className="glass shadow-premium rounded-3xl p-8">
+          <div className="rounded-[32px] border border-white/60 bg-white/75 p-8 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl">
             <h2 className="text-3xl font-bold">Ons verhaal</h2>
 
             <p className="mt-5 text-white/75 leading-8">
@@ -65,7 +68,7 @@ export default function OverOnsPage() {
             </p>
           </div>
 
-          <div className="glass shadow-premium rounded-3xl p-8 flex items-center justify-center">
+          <div className="rounded-[32px] border border-white/60 bg-white/75 p-8 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl">
             <div className="text-center">
               <p className="text-sm uppercase tracking-[0.25em] text-[#95AEC1]">
                 More Clean
@@ -88,7 +91,7 @@ export default function OverOnsPage() {
               return (
                 <div
                   key={value.title}
-                  className="glass shadow-premium rounded-3xl p-6 transition hover:-translate-y-2"
+                  className="rounded-[32px] border border-white/60 bg-white/75 p-6 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl transition hover:-translate-y-2"
                 >
                   <div className="mb-5 inline-flex rounded-2xl bg-[#4D7EBA]/20 p-4 text-[#95AEC1]">
                     <Icon size={24} />
@@ -115,11 +118,49 @@ export default function OverOnsPage() {
             </p>
 
             <a
-              href="/offerte"
-              className="mt-8 inline-block rounded-full bg-[#4D7EBA] px-8 py-4 font-semibold transition hover:scale-105"
-            >
+            href="/offerte"
+            className="
+              group
+              relative
+              mt-10
+              inline-flex
+              items-center
+              justify-center
+              overflow-hidden
+              rounded-[22px]
+              bg-gradient-to-r
+              from-[#667FB0]
+              via-[#95AEC1]
+              to-[#4D7EBA]
+              px-8
+              py-5
+              font-semibold
+              text-white
+              shadow-[0_20px_60px_rgba(77,126,186,.28)]
+              transition-all
+              duration-500
+              hover:-translate-y-1
+              hover:shadow-[0_30px_80px_rgba(77,126,186,.38)]
+            "
+          >
+            <span className="relative z-10">
               Gratis Offerte
-            </a>
+            </span>
+
+            <div
+              className="
+                absolute
+                inset-0
+                opacity-0
+                transition
+                duration-500
+                group-hover:opacity-100
+                bg-[linear-gradient(120deg,transparent,rgba(255,255,255,.25),transparent)]
+                translate-x-[-120%]
+                group-hover:translate-x-[120%]
+              "
+            />
+          </a>
           </div>
         </section>
       </main>

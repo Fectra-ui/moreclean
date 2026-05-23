@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+
 import "./globals.css";
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import MobileCTA from "@/components/MobileCTA";
 
 const geistSans = Geist({
@@ -72,29 +76,41 @@ export default function RootLayout({
     url: "https://moreclean.nl",
     telephone: "+31613672320",
     email: "info@moreclean.nl",
+
     address: {
       "@type": "PostalAddress",
       addressLocality: "Roermond",
       addressRegion: "Limburg",
       addressCountry: "NL",
     },
+
     areaServed: ["Roermond", "Limburg"],
+
     priceRange: "€€",
   };
 
   return (
     <html
-        lang="nl"
-        data-scroll-behavior="smooth"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      >
-      <body className="min-h-full flex flex-col">
-        <div className="flex-1">
-        {children}
-        </div>
+      lang="nl"
+      data-scroll-behavior="smooth"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col bg-[#F3F5F7] text-[#121212]">
+        {/* NAVBAR */}
+        <Navbar />
 
+        {/* PAGE CONTENT */}
+        <main className="flex-1">
+          {children}
+        </main>
+
+        {/* FOOTER */}
+        <Footer />
+
+        {/* MOBILE CTA */}
         <MobileCTA />
 
+        {/* GOOGLE ANALYTICS */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-K5064BTGGY"
           strategy="afterInteractive"
@@ -103,12 +119,18 @@ export default function RootLayout({
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+
+            function gtag(){
+              dataLayer.push(arguments);
+            }
+
             gtag('js', new Date());
+
             gtag('config', 'G-K5064BTGGY');
           `}
         </Script>
 
+        {/* LOCAL BUSINESS SCHEMA */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
