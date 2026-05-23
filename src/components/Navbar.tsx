@@ -34,19 +34,18 @@ export default function Navbar() {
   return (
     <>
       {/* ================= NAVBAR ================= */}
-      <header className="fixed left-0 top-0 z-[70] w-full px-4">
+      <header className="fixed left-0 top-0 z-[70] w-full px-3 pt-3 md:px-4 md:pt-0">
         <div
           className={`
             mx-auto
-            mt-4
+            mt-0 md:mt-4
             flex
             max-w-7xl
             items-center
             justify-between
             rounded-[28px]
             border
-            px-6
-            py-4
+            px-4 py-2.5 md:px-6 md:py-4
             transition-all
             duration-500
 
@@ -76,8 +75,8 @@ export default function Navbar() {
             <Image
               src="/images/logo.png"
               alt="More Clean"
-              width={100}
-              height={40}
+              width={82}
+              height={32}
               priority
               className="
                 h-auto
@@ -165,11 +164,11 @@ export default function Navbar() {
               relative
               z-50
               flex
-              h-12
-              w-12
+              h-10
+              w-10
               items-center
               justify-center
-              rounded-2xl
+              rounded-xl
               border
               border-white/10
               bg-white/10
@@ -181,7 +180,7 @@ export default function Navbar() {
               md:hidden
             "
           >
-            {open ? <X size={24} /> : <Menu size={24} />}
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </header>
@@ -221,11 +220,11 @@ export default function Navbar() {
             left-4
             right-4
             top-24
-            rounded-[32px]
+            rounded-[26px]
             border
             border-white/10
             bg-white/80
-            p-6
+            p-4
             shadow-[0_20px_80px_rgba(0,0,0,.15)]
             backdrop-blur-3xl
             transition-all
