@@ -1,6 +1,7 @@
 "use client";
 
 import ScrollReveal from "@/components/ScrollReveal";
+import Navbar from "@/components/Navbar";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +20,8 @@ import {
 export default function HomePage() {
   return (
     <main className="overflow-hidden bg-[#F3F5F7] text-[#121212]">
+      <Navbar />
+      
       {/* ================= HERO ================= */}
       <section className="relative h-screen min-h-[920px] overflow-hidden">
         {/* VIDEO BACKGROUND */}
@@ -63,90 +66,6 @@ export default function HomePage() {
           {/* GLOW */}
           <div className="absolute left-1/2 top-[-250px] h-[800px] w-[800px] -translate-x-1/2 rounded-full bg-[#95AEC1]/20 blur-3xl" />
         </div>
-
-        {/* ================= NAVBAR ================= */}
-        <header className="fixed left-0 top-0 z-50 w-full px-4">
-          <div className="
-            mx-auto
-            mt-4
-            flex
-            max-w-7xl
-            items-center
-            justify-between
-            rounded-2xl
-            border
-            border-white/10
-            ring-1
-            ring-white/25
-            bg-[#DDE3EA]/45
-            px-6
-            py-3
-            backdrop-blur-2xl
-            shadow-[0_10px_40px_rgba(0,0,0,.08)]
-            ">
-            {/* LOGO */}
-            <Link href="/" className="flex items-center">
-          <Image
-            src="/images/logo.png"
-            alt="More Clean"
-            width={80}
-            height={30}
-            priority
-            className="h-auto w-auto object-contain"
-          />
-        </Link>
-
-            {/* DESKTOP NAV */}
-            <nav className="hidden items-center gap-10 md:flex">
-              {[
-                ["Diensten", "/diensten"],
-                ["Over Ons", "/over-ons"],
-                ["Contact", "/contact"],
-              ].map(([label, href]) => (
-                <Link
-                  key={label}
-                  href={href}
-                  className="
-                  text-sm
-                  font-medium
-                  text-[#101536]/80
-                  transition
-                  duration-300
-                  hover:text-[#101536]
-                 "
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* CTA */}
-            <Link
-              href="/offerte"
-              className="
-                hidden
-                rounded-xl
-                bg-[#F8FAFC]
-                px-5
-                py-3
-                text-sm
-                font-semibold
-                text-[#101536]
-                transition
-                duration-300
-                hover:scale-[1.03]
-                md:flex
-                "
-            >
-              Gratis Offerte
-            </Link>
-
-            {/* MOBILE */}
-            <button className="flex text-[#101536] md:hidden">
-              <Menu size={28} />
-            </button>
-          </div>
-        </header>
 
         {/* ================= HERO CONTENT ================= */}
         <div className="relative z-10 flex h-full items-center justify-center px-6">
