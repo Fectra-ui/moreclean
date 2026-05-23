@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 
 import Image from "next/image";
 import Link from "next/link";
+
 import {
   ArrowRight,
   Check,
@@ -20,240 +21,268 @@ export default function HomePage() {
   return (
     <main className="overflow-hidden bg-[#F3F5F7] text-[#121212]">
       <Navbar />
-      
+
       {/* ================= HERO ================= */}
-<section className="relative min-h-screen overflow-hidden">
-  {/* VIDEO BACKGROUND */}
-  <div className="absolute inset-0">
-    <video
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-      poster="/images/hero-fallback.jpg"
-      className="
-        absolute
-        inset-0
-        h-full
-        w-full
-        object-cover
-        object-center
-        scale-[1.28]
-        md:scale-[1.12]
-      "
-    >
-      <source src="/video/hero-video.mp4" type="video/mp4" />
-    </video>
+      <section className="relative min-h-screen overflow-hidden">
+        {/* VIDEO BACKGROUND */}
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/images/hero-fallback.jpg"
+            className="
+              absolute
+              inset-0
+              h-full
+              w-full
+              object-cover
+              object-center
+              scale-[1.75]
+              md:scale-[1.35]
+            "
+          >
+            <source src="/video/hero-video.mp4" type="video/mp4" />
+          </video>
 
-    {/* DARK OVERLAY */}
-    <div
-      className="absolute inset-0"
-      style={{
-        background: `
-          linear-gradient(
-            180deg,
-            rgba(16,21,54,.55) 0%,
-            rgba(16,21,54,.38) 38%,
-            rgba(16,21,54,.78) 100%
-          )
-        `,
-      }}
-    />
-
-    {/* GLOW */}
-    <div className="absolute left-1/2 top-[-250px] h-[800px] w-[800px] -translate-x-1/2 rounded-full bg-[#95AEC1]/20 blur-3xl" />
-  </div>
-
-  {/* HERO CONTENT */}
-  <div
-    className="
-      relative
-      z-10
-      flex
-      min-h-screen
-      items-start
-      justify-center
-      px-5
-      pt-[180px]
-      pb-24
-      md:items-center
-      md:px-6
-      md:pt-0
-      md:pb-0
-    "
-  >
-    <div className="mx-auto max-w-5xl text-center">
-      {/* GOOGLE REVIEW */}
-      <div
-        className="
-          mb-8
-          inline-flex
-          items-center
-          gap-3
-          rounded-full
-          border
-          border-white/15
-          bg-white/10
-          px-4
-          py-2.5
-          backdrop-blur-2xl
-          shadow-[0_10px_40px_rgba(0,0,0,.15)]
-          md:px-5
-          md:py-3
-        "
-      >
-        <div className="flex items-center gap-1">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              size={14}
-              className="fill-yellow-400 text-yellow-400"
-            />
-          ))}
-        </div>
-
-        <span className="text-xs font-medium text-white md:text-sm">
-          5 stars on
-        </span>
-
-        <div className="text-[20px] font-black md:text-[22px]">
-          <span className="text-[#4285F4]">G</span>
-          <span className="text-[#EA4335]">o</span>
-          <span className="text-[#FBBC05]">o</span>
-          <span className="text-[#4285F4]">g</span>
-          <span className="text-[#34A853]">l</span>
-          <span className="text-[#EA4335]">e</span>
-        </div>
-      </div>
-
-      {/* TITLE */}
-      <h1
-        className="
-          mx-auto
-          max-w-5xl
-          text-[50px]
-          font-black
-          leading-[0.92]
-          tracking-[-0.06em]
-          text-white
-          md:text-7xl
-          xl:text-[92px]
-        "
-      >
-        Topkwaliteit{" "}
-        <span className="bg-gradient-to-r from-white via-[#CACED3] to-[#95AEC1] bg-clip-text text-transparent">
-          glasbewassing
-        </span>{" "}
-        in{" "}
-        <span className="bg-gradient-to-r from-white via-[#CACED3] to-[#95AEC1] bg-clip-text text-transparent">
-          Limburg
-        </span>
-      </h1>
-
-      {/* SUBTEXT */}
-      <p
-        className="
-          mx-auto
-          mt-7
-          max-w-[340px]
-          text-base
-          font-medium
-          leading-relaxed
-          tracking-[-0.01em]
-          text-white/92
-          drop-shadow-[0_4px_20px_rgba(0,0,0,.55)]
-          md:mt-8
-          md:max-w-3xl
-          md:text-xl
-        "
-      >
-        Geniet van helder uitzicht en streeploos resultaat met snelle service
-        en reactie binnen 24 uur. Vraag vandaag nog een gratis offerte aan.
-      </p>
-
-      {/* BUTTONS */}
-      <div className="mt-10 flex flex-col items-center justify-center gap-3 md:mt-12 md:flex-row">
-        <Link
-          href="/offerte"
-          className="
-            group
-            inline-flex
-            w-full
-            max-w-[320px]
-            items-center
-            justify-center
-            gap-2
-            rounded-[24px]
-            bg-gradient-to-r
-            from-[#667FB0]
-            via-[#95AEC1]
-            to-[#4D7EBA]
-            px-7
-            py-5
-            text-lg
-            font-semibold
-            text-white
-            shadow-[0_20px_60px_rgba(77,126,186,.35)]
-            transition
-            duration-300
-            hover:scale-[1.02]
-            md:w-auto
-            md:max-w-none
-          "
-        >
-          Vraag gratis offerte aan
-
-          <ArrowRight
-            size={20}
-            className="transition duration-300 group-hover:translate-x-1"
+          {/* OVERLAY */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `
+                linear-gradient(
+                  180deg,
+                  rgba(16,21,54,.55) 0%,
+                  rgba(16,21,54,.34) 38%,
+                  rgba(16,21,54,.74) 100%
+                )
+              `,
+            }}
           />
-        </Link>
 
-        <Link
-          href="/diensten"
+          {/* EXTRA GRADIENT */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(149,174,193,.25),transparent_55%)]" />
+
+          {/* GLOW */}
+          <div className="absolute left-1/2 top-[-300px] h-[900px] w-[900px] -translate-x-1/2 rounded-full bg-[#95AEC1]/20 blur-3xl" />
+        </div>
+
+        {/* HERO CONTENT */}
+        <div
           className="
-            hidden
-            md:inline-flex
-            items-center
-            gap-2
-            rounded-2xl
-            border
-            border-white/15
-            bg-white/10
-            px-8
-            py-5
-            text-lg
-            font-medium
-            text-white
-            backdrop-blur-xl
-            transition
-            duration-300
-            hover:bg-white/20
+            relative
+            z-10
+            flex
+            min-h-screen
+            items-start
+            justify-center
+
+            px-5
+
+            pt-[220px]
+            pb-[140px]
+
+            sm:pt-[230px]
+
+            md:items-center
+            md:px-6
+            md:pt-[170px]
+            md:pb-[120px]
+
+            lg:pt-[140px]
+            lg:pb-[80px]
           "
         >
-          Bekijk diensten
-        </Link>
-      </div>
 
-      {/* TRUST BADGE */}
-      <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/10 px-5 py-2 backdrop-blur-xl md:mt-10">
-        <div className="h-2 w-2 rounded-full bg-emerald-400" />
+          <div className="mx-auto max-w-5xl text-center">
+            {/* GOOGLE REVIEW */}
+          <div
+            className="
+              mb-10
+              inline-flex
+              items-center
+              gap-3
 
-        <span className="text-sm text-white/85">
-          Binnen 24 uur reactie
-        </span>
-      </div>
-    </div>
-  </div>
+              rounded-full
+              border
+              border-white/15
 
-  {/* SCROLL INDICATOR */}
-  <div className="absolute bottom-10 left-1/2 z-20 hidden -translate-x-1/2 md:block">
-    <div className="flex h-12 w-7 items-start justify-center rounded-full border border-white/30 p-2">
-      <div className="h-3 w-1 animate-pulse rounded-full bg-white" />
-    </div>
-  </div>
-</section>
+              bg-white/10
+
+              px-4
+              py-2.5
+
+              text-white
+
+              backdrop-blur-2xl
+
+              shadow-[0_10px_40px_rgba(0,0,0,.15)]
+
+              md:mb-8
+              md:px-5
+              md:py-3
+            "
+          >
+            <div className="flex items-center gap-1">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  size={14}
+                  className="fill-yellow-400 text-yellow-400"
+                />
+              ))}
+            </div>
+
+            <span className="text-xs font-medium md:text-sm">
+              5 stars on
+            </span>
+
+            <div className="text-[20px] font-black md:text-[22px]">
+              <span className="text-[#4285F4]">G</span>
+              <span className="text-[#EA4335]">o</span>
+              <span className="text-[#FBBC05]">o</span>
+              <span className="text-[#4285F4]">g</span>
+              <span className="text-[#34A853]">l</span>
+              <span className="text-[#EA4335]">e</span>
+          </div>
+            </div>
+
+            {/* TITLE */}
+            <h1
+              className="
+                mx-auto
+                max-w-5xl
+                text-[52px]
+                font-black
+                leading-[0.9]
+                tracking-[-0.06em]
+                text-white
+                md:text-7xl
+                xl:text-[92px]
+              "
+            >
+              <span className="text-[#101536]">
+                Topkwaliteit
+              </span>{" "}
+
+              <span className="bg-gradient-to-r from-white via-[#CACED3] to-[#95AEC1] bg-clip-text text-transparent">
+                glasbewassing
+              </span>{" "}
+
+              <span className="text-[#101536]">
+                in
+              </span>{" "}
+
+              <span className="bg-gradient-to-r from-white via-[#CACED3] to-[#95AEC1] bg-clip-text text-transparent">
+                Limburg
+              </span>
+            </h1>
+
+            {/* SUBTEXT */}
+            <p
+              className="
+                mx-auto
+                mt-7
+                max-w-[340px]
+                text-base
+                font-medium
+                leading-relaxed
+                tracking-[-0.01em]
+                text-white/92
+                drop-shadow-[0_4px_20px_rgba(0,0,0,.55)]
+                md:mt-8
+                md:max-w-3xl
+                md:text-xl
+              "
+            >
+              Geniet van helder uitzicht en streeploos resultaat met snelle
+              service en reactie binnen 24 uur. Vraag vandaag nog een gratis
+              offerte aan.
+            </p>
+
+            {/* BUTTONS */}
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 md:mt-12 md:flex-row">
+              <Link
+                href="/offerte"
+                className="
+                  group
+                  inline-flex
+                  w-full
+                  max-w-[320px]
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-[24px]
+                  bg-gradient-to-r
+                  from-[#667FB0]
+                  via-[#95AEC1]
+                  to-[#4D7EBA]
+                  px-7
+                  py-5
+                  text-lg
+                  font-semibold
+                  text-white
+                  shadow-[0_20px_60px_rgba(77,126,186,.35)]
+                  transition
+                  duration-300
+                  hover:scale-[1.02]
+                  md:w-auto
+                  md:max-w-none
+                "
+              >
+                Vraag gratis offerte aan
+
+                <ArrowRight
+                  size={20}
+                  className="transition duration-300 group-hover:translate-x-1"
+                />
+              </Link>
+
+              <Link
+                href="/diensten"
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-2xl
+                  border
+                  border-white/15
+                  bg-white/10
+                  px-8
+                  py-5
+                  text-lg
+                  font-medium
+                  text-white
+                  backdrop-blur-xl
+                  transition
+                  duration-300
+                  hover:bg-white/20
+                "
+              >
+                Bekijk diensten
+              </Link>
+            </div>
+
+            {/* TRUST BADGE */}
+            <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/10 px-5 py-2 backdrop-blur-xl md:mt-10">
+              <div className="h-2 w-2 rounded-full bg-emerald-400" />
+
+              <span className="text-sm text-white/85">
+                Binnen 24 uur reactie
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* SCROLL INDICATOR */}
+        <div className="absolute bottom-10 left-1/2 z-20 hidden -translate-x-1/2 md:block">
+          <div className="flex h-12 w-7 items-start justify-center rounded-full border border-white/30 p-2">
+            <div className="h-3 w-1 animate-pulse rounded-full bg-white" />
+          </div>
+        </div>
+      </section>
 
       {/* ================= STATS ================= */}
       <section className="relative z-20 -mt-24 px-6">
@@ -269,7 +298,9 @@ export default function HomePage() {
                 {number}
               </div>
 
-              <div className="mt-2 text-sm text-[#606774]">{label}</div>
+              <div className="mt-2 text-sm text-[#606774]">
+                {label}
+              </div>
             </div>
           ))}
         </div>
@@ -278,62 +309,62 @@ export default function HomePage() {
       {/* ================= INTRO ================= */}
       <ScrollReveal>
         <section className="px-6 py-36">
-        <div className="mx-auto max-w-5xl text-center">
-          <span className="rounded-full bg-[#E8EDF3] px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[#4D7EBA]">
-            More Clean
-          </span>
-
-          <h2 className="mt-8 text-4xl font-black leading-tight tracking-[-0.04em] text-[#101536] md:text-6xl">
-            Professionele reiniging{" "}
-            <span className="bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] bg-clip-text text-transparent">
-              met oog voor detail
+          <div className="mx-auto max-w-5xl text-center">
+            <span className="rounded-full bg-[#E8EDF3] px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[#4D7EBA]">
+              More Clean
             </span>
-          </h2>
 
-          <p className="mx-auto mt-8 max-w-3xl text-lg leading-relaxed text-[#606774]">
-            Bij More Clean combineren wij hoogwaardige service met moderne
-            technieken voor een perfect resultaat. Van glasbewassing tot het
-            professioneel reinigen van zonnepanelen.
-          </p>
-        </div>
+            <h2 className="mt-8 text-4xl font-black leading-tight tracking-[-0.04em] text-[#101536] md:text-6xl">
+              Professionele reiniging{" "}
+              <span className="bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] bg-clip-text text-transparent">
+                met oog voor detail
+              </span>
+            </h2>
 
-        {/* FEATURES */}
-        <div className="mx-auto mt-24 grid max-w-6xl gap-8 md:grid-cols-3">
-          {[
-            {
-              icon: Shield,
-              title: "Betrouwbaar",
-              text: "Duidelijke afspraken en altijd professionele service.",
-            },
-            {
-              icon: Sparkles,
-              title: "Streeploos resultaat",
-              text: "Perfect schone ramen en panelen zonder strepen.",
-            },
-            {
-              icon: Clock3,
-              title: "Snelle service",
-              text: "Flexibel ingepland en snel bereikbaar.",
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="rounded-[30px] border border-[#E8EDF2] bg-white p-10 shadow-[0_20px_70px_rgba(0,0,0,.05)] transition duration-300 hover:-translate-y-2"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] text-white">
-                <item.icon size={28} />
+            <p className="mx-auto mt-8 max-w-3xl text-lg leading-relaxed text-[#606774]">
+              Bij More Clean combineren wij hoogwaardige service met moderne
+              technieken voor een perfect resultaat. Van glasbewassing tot het
+              professioneel reinigen van zonnepanelen.
+            </p>
+          </div>
+
+          {/* FEATURES */}
+          <div className="mx-auto mt-24 grid max-w-6xl gap-8 md:grid-cols-3">
+            {[
+              {
+                icon: Shield,
+                title: "Betrouwbaar",
+                text: "Duidelijke afspraken en altijd professionele service.",
+              },
+              {
+                icon: Sparkles,
+                title: "Streeploos resultaat",
+                text: "Perfect schone ramen en panelen zonder strepen.",
+              },
+              {
+                icon: Clock3,
+                title: "Snelle service",
+                text: "Flexibel ingepland en snel bereikbaar.",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-[30px] border border-[#E8EDF2] bg-white p-10 shadow-[0_20px_70px_rgba(0,0,0,.05)] transition duration-300 hover:-translate-y-2"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] text-white">
+                  <item.icon size={28} />
+                </div>
+
+                <h3 className="mt-8 text-2xl font-bold text-[#101536]">
+                  {item.title}
+                </h3>
+
+                <p className="mt-4 leading-relaxed text-[#606774]">
+                  {item.text}
+                </p>
               </div>
-
-              <h3 className="mt-8 text-2xl font-bold text-[#101536]">
-                {item.title}
-              </h3>
-
-              <p className="mt-4 leading-relaxed text-[#606774]">
-                {item.text}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         </section>
       </ScrollReveal>
 
@@ -379,7 +410,6 @@ export default function HomePage() {
                 key={service.title}
                 className="group overflow-hidden rounded-[34px] bg-white shadow-[0_20px_80px_rgba(0,0,0,.06)]"
               >
-                {/* IMAGE */}
                 <div className="relative h-[420px] overflow-hidden">
                   <Image
                     src={service.image}
@@ -391,7 +421,6 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#101536]/70 via-[#101536]/10 to-transparent" />
                 </div>
 
-                {/* CONTENT */}
                 <div className="p-10">
                   <div className="flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] text-white">
