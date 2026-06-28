@@ -34,50 +34,41 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* LEFT — BRAND */}
-      <div className="relative hidden w-[45%] flex-col justify-between overflow-hidden bg-[#101536] p-12 lg:flex">
-        <div className="absolute inset-0">
-          <video
-            autoPlay muted loop playsInline
-            aria-hidden="true"
-            className="h-full w-full object-cover opacity-30"
-          >
-            <source src="/video/hero-video.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-br from-[#101536]/70 via-[#1b2b5b]/50 to-[#4D7EBA]/30" />
-        </div>
-
-        <div className="relative z-10">
+      <div className="relative hidden w-[45%] flex-col justify-between overflow-hidden p-12 lg:flex"
+        style={{ background: "linear-gradient(135deg, #101536 0%, #1b2b5b 55%, #2d5a8e 100%)" }}
+      >
+        <div>
           <Link href="/">
             <Image src="/images/logo.png" alt="More Clean" width={120} height={44} className="brightness-0 invert" />
           </Link>
         </div>
 
-        <div className="relative z-10">
+        <div>
           <p className="text-4xl font-bold leading-tight text-white">
             Uw bedrijf,<br />
             <span className="text-[#95AEC1]">altijd in orde.</span>
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-white/80">
+          <p className="mt-4 text-sm leading-relaxed text-white/90">
             Bekijk uw afspraken, offertes en facturen. Communiceer direct met More Clean.
           </p>
 
           {/* Portal links */}
           <div className="mt-10 space-y-3">
             {portals.map((p) => (
-              <div key={p.title} className="flex items-start gap-3 rounded-2xl border border-white/20 bg-white/10 px-4 py-3">
+              <div key={p.title} className="flex items-start gap-3 rounded-2xl border border-white/25 bg-white/15 px-4 py-3 backdrop-blur-sm">
                 <span className="mt-0.5 text-xl">{p.icon}</span>
                 <div>
                   <p className="text-sm font-semibold text-white">{p.title}portal</p>
-                  <p className="text-xs text-white/75">{p.description}</p>
+                  <p className="text-xs text-white/85">{p.description}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="relative z-10 flex items-center gap-3">
+        <div className="flex items-center gap-3">
           <div className="h-2 w-2 rounded-full bg-emerald-400" />
-          <p className="text-sm text-white/80">Binnen 24 uur reactie gegarandeerd</p>
+          <p className="text-sm text-white/90">Binnen 24 uur reactie gegarandeerd</p>
         </div>
       </div>
 
