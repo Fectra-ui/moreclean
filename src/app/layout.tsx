@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import Script from "next/script";
 
 import "./globals.css";
@@ -13,10 +13,6 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://moreclean.nl"),
@@ -45,6 +41,14 @@ export const metadata: Metadata = {
     siteName: "More Clean",
     locale: "nl_NL",
     type: "website",
+    images: [
+      {
+        url: "/images/hero-bg.jpg",
+        width: 1200,
+        height: 630,
+        alt: "More Clean — Professionele glasbewassing in Limburg",
+      },
+    ],
   },
 
   twitter: {
@@ -52,6 +56,7 @@ export const metadata: Metadata = {
     title: "More Clean",
     description:
       "Professionele glasbewassing en schoonmaakdiensten in Limburg.",
+    images: ["/images/hero-bg.jpg"],
   },
 
   robots: {
@@ -84,7 +89,14 @@ export default function RootLayout({
       addressCountry: "NL",
     },
 
-    areaServed: ["Roermond", "Limburg"],
+    areaServed: ["Roermond", "Venlo", "Weert", "Echt", "Limburg"],
+
+    openingHours: ["Mo-Fr 08:00-18:00", "Sa 09:00-16:00"],
+
+    image: "https://moreclean.nl/images/hero-bg.jpg",
+
+    description:
+      "Professionele glasbewassing, zonnepanelen reinigen en schoonmaakdiensten in Roermond, Limburg en omgeving.",
 
     priceRange: "€€",
   };
@@ -92,8 +104,7 @@ export default function RootLayout({
   return (
     <html
       lang="nl"
-      data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#F3F5F7] text-[#121212]">
         {/* NAVBAR */}

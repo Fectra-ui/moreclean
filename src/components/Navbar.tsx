@@ -54,34 +54,25 @@ export default function Navbar() {
             md:py-4
             transition-all
             duration-500
+            ease-out
 
             ${
               scrolled || open
-                ? `
-                  border-white/30
-                  bg-white/[0.20]
-                  shadow-[0_12px_50px_rgba(0,0,0,.18)]
-                  backdrop-blur-[34px]
-                `
-                : `
-                  border-white/20
-                  bg-white/[0.12]
-                  shadow-[0_10px_40px_rgba(0,0,0,.12)]
-                  backdrop-blur-[26px]
-                `
+                ? "border-white/40 bg-white/[0.88] shadow-[0_12px_50px_rgba(0,0,0,.12)] shadow-black/10 backdrop-blur-[34px]"
+                : "border-white/25 bg-white/[0.22] shadow-[0_10px_40px_rgba(0,0,0,.10)] backdrop-blur-[26px]"
             }
 
             before:absolute
             before:inset-0
             before:rounded-[inherit]
-            before:bg-[linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.08))]
+            before:bg-[linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.06))]
             before:pointer-events-none
 
             after:absolute
             after:inset-[1px]
             after:rounded-[22px]
             after:border
-            after:border-white/10
+            after:border-white/20
             after:pointer-events-none
           `}
         >
@@ -118,16 +109,10 @@ export default function Navbar() {
               <Link
                 key={label}
                 href={href}
-                className="
-                  relative
-                  z-50
-                  text-sm
-                  font-medium
-                  text-white
-                  transition
-                  duration-300
-                  hover:opacity-80
-                "
+                className={`
+                  relative z-50 text-sm font-medium transition-colors duration-300 hover:opacity-70
+                  ${scrolled ? "text-[#101536]" : "text-white"}
+                `}
               >
                 {label}
               </Link>
@@ -181,7 +166,8 @@ export default function Navbar() {
           {/* MOBILE BUTTON */}
           <button
             onClick={() => setOpen(!open)}
-            aria-label="Open menu"
+            aria-label={open ? "Sluit menu" : "Open menu"}
+            aria-expanded={open}
             className="
               relative
               z-50
@@ -192,14 +178,14 @@ export default function Navbar() {
               justify-center
               rounded-2xl
               border
-              border-white/30
-              bg-white/20
-              text-white
-              shadow-[0_10px_30px_rgba(0,0,0,.20)]
+              border-[#101536]/15
+              bg-white/70
+              text-[#101536]
+              shadow-[0_6px_20px_rgba(0,0,0,.08)]
               backdrop-blur-2xl
               transition
               duration-300
-              hover:bg-white/30
+              hover:bg-white/90
               md:hidden
             "
           >

@@ -1,5 +1,8 @@
+"use client";
+
 import { motion, type TargetAndTransition } from "framer-motion";
 import { ReactNode } from "react";
+import { useReducedMotion } from "framer-motion";
 
 type AnimVariant =
   | "fade-up"
@@ -96,7 +99,12 @@ const ScrollReveal = ({
   delay = 0,
   variant = "fade-up",
 }: ScrollRevealProps) => {
+  const shouldReduce = useReducedMotion();
   const v = variants[variant];
+
+  if (shouldReduce) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <motion.div

@@ -1,8 +1,6 @@
-"use client";
+import type { Metadata } from "next";
 
 import ScrollReveal from "@/components/ScrollReveal";
-import Navbar from "@/components/Navbar";
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,10 +15,18 @@ import {
   SunMedium,
 } from "lucide-react";
 
+export const metadata: Metadata = {
+  title: "More Clean | Glasbewassing & Schoonmaakbedrijf Limburg",
+  description:
+    "Professionele glasbewassing, zonnepanelen reinigen en schoonmaakdiensten in Roermond, Limburg en omgeving. Vraag direct vrijblijvend een offerte aan.",
+  alternates: {
+    canonical: "https://moreclean.nl",
+  },
+};
+
 export default function HomePage() {
   return (
-    <main className="overflow-hidden bg-[#F3F5F7] text-[#121212]">
-      <Navbar />
+    <div className="overflow-hidden bg-[#F3F5F7] text-[#121212]">
 
       {/* ================= HERO ================= */}
       <section className="relative min-h-screen overflow-hidden bg-[#101536]">
@@ -31,44 +37,17 @@ export default function HomePage() {
             muted
             loop
             playsInline
-            preload="auto"
-            poster="/images/hero-fallback.jpg"
-            className="
-              absolute
-
-              left-1/2
-              top-1/2
-
-              min-h-[140%]
-              min-w-[140%]
-
-              -translate-x-1/2
-              -translate-y-1/2
-
-              object-cover
-              object-center
-
-              md:min-h-[125%]
-              md:min-w-[125%]
-            "
+            preload="metadata"
+            poster="/images/hero-bg.jpg"
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center scale-[1.08] will-change-transform"
           >
             <source src="/video/hero-video.mp4" type="video/mp4" />
           </video>
 
           {/* OVERLAY */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `
-                linear-gradient(
-                  180deg,
-                  rgba(16,21,54,.42)
-                  rgba(16,21,54,.22)
-                  rgba(16,21,54,.68)
-                )
-              `,
-            }}
-          />
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#101536]/80 via-[#101536]/45 to-[#4D7EBA]/25" />
 
           {/* EXTRA GRADIENT */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(149,174,193,.25),transparent_55%)]" />
@@ -79,27 +58,19 @@ export default function HomePage() {
 
         {/* HERO CONTENT */}
         <div
-        className="
-          relative
-          z-10
-          flex
-          min-h-screen
-          items-start
-          justify-center
-
-          px-5
-
-          pt-[220px]
-          pb-[140px]
-
-          sm:pt-[230px]
-
-          md:px-6
-          md:pt-[230px]
-          md:pb-[120px]
-
-          lg:pt-[240px]
-          lg:pb-[120px]
+          className="
+            relative
+            z-10
+            flex
+            min-h-screen
+            items-start
+            justify-center
+            px-5
+            pt-[165px]
+            pb-[100px]
+            md:px-6
+            md:pt-[170px]
+            md:pb-[120px]
           "
         >
 
@@ -132,7 +103,7 @@ export default function HomePage() {
               md:py-3
             "
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" aria-hidden="true">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
@@ -141,12 +112,13 @@ export default function HomePage() {
                 />
               ))}
             </div>
+            <span className="sr-only">5 sterren op Google</span>
 
             <span className="text-xs font-medium md:text-sm">
-              5 stars on
+              5 sterren op
             </span>
 
-            <div className="text-[20px] font-black md:text-[22px]">
+            <div className="text-[20px] font-black md:text-[22px]" aria-label="Google">
               <span className="text-[#4285F4]">G</span>
               <span className="text-[#EA4335]">o</span>
               <span className="text-[#FBBC05]">o</span>
@@ -170,7 +142,7 @@ export default function HomePage() {
                 xl:text-[92px]
               "
             >
-              <span className="text-[#101536]">
+              <span className="text-white">
                 Topkwaliteit
               </span>{" "}
 
@@ -178,7 +150,7 @@ export default function HomePage() {
                 glasbewassing
               </span>{" "}
 
-              <span className="text-[#101536]">
+              <span className="text-white">
                 in
               </span>{" "}
 
@@ -422,6 +394,7 @@ export default function HomePage() {
                     src={service.image}
                     alt={service.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover transition duration-700 group-hover:scale-105"
                   />
 
@@ -501,7 +474,7 @@ export default function HomePage() {
                 key={review.name}
                 className="rounded-[30px] border border-[#E8EDF2] bg-[#F8FAFC] p-8"
               >
-                <div className="mb-5 flex gap-1">
+                <div className="mb-5 flex gap-1" aria-hidden="true">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
@@ -510,9 +483,10 @@ export default function HomePage() {
                     />
                   ))}
                 </div>
+                <span className="sr-only">5 sterren</span>
 
                 <p className="leading-relaxed text-[#5E6472]">
-                  “{review.text}”
+                  &ldquo;{review.text}&rdquo;
                 </p>
 
                 <div className="mt-8 font-semibold text-[#101536]">
@@ -549,6 +523,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

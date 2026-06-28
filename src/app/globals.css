@@ -546,3 +546,35 @@ section {
   box-shadow:
     0 20px 50px rgba(16,21,54,.12);
 }
+
+/* =========================
+   BLOG CONTENT
+========================= */
+
+.blog-content h2 { font-size: 1.75rem; font-weight: 700; color: #101536; margin-top: 2.5rem; margin-bottom: 1rem; letter-spacing: -0.03em; }
+.blog-content h3 { font-size: 1.25rem; font-weight: 600; color: #101536; margin-top: 2rem; margin-bottom: 0.75rem; }
+.blog-content p { color: #606774; line-height: 1.8; margin-bottom: 1.25rem; }
+.blog-content blockquote { border-left: 4px solid #4D7EBA; padding: 1rem 1.5rem; background: rgba(77,126,186,0.06); border-radius: 0 16px 16px 0; margin: 2rem 0; }
+.blog-content blockquote p { color: #101536; font-style: italic; font-size: 1.1rem; margin: 0; }
+.blog-content ul { list-style: none; padding: 0; margin-bottom: 1.25rem; }
+.blog-content ul li { padding-left: 1.5rem; position: relative; color: #606774; margin-bottom: 0.5rem; line-height: 1.7; }
+.blog-content ul li::before { content: ""; position: absolute; left: 0; top: 0.65em; width: 8px; height: 8px; border-radius: 50%; background: #4D7EBA; }
+.blog-content ol { padding-left: 1.5rem; margin-bottom: 1.25rem; counter-reset: list; list-style: none; }
+.blog-content ol li { counter-increment: list; padding-left: 1rem; position: relative; color: #606774; margin-bottom: 0.75rem; line-height: 1.7; }
+.blog-content ol li::before { content: counter(list); position: absolute; left: -1.5rem; top: 0; width: 1.5rem; height: 1.5rem; background: linear-gradient(135deg, #667FB0, #4D7EBA); color: white; border-radius: 50%; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.blog-content strong { color: #101536; font-weight: 600; }
+.blog-content a { color: #4D7EBA; text-decoration: underline; text-underline-offset: 3px; }
+
+/* =========================
+   BLOG CARD ENTRANCE
+========================= */
+
+@keyframes blogCardEnter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.blog-card-enter {
+  animation: blogCardEnter 0.5s ease forwards;
+  opacity: 0;
+}

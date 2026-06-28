@@ -66,6 +66,7 @@ export default function Footer() {
             {[
               ["Home", "/"],
               ["Diensten", "/diensten"],
+              ["Blog", "/blog"],
               ["Over Ons", "/over-ons"],
               ["Contact", "/contact"],
               ["Offerte", "/offerte"],

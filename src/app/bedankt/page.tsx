@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
+export const metadata: Metadata = {
+  title: "Bedankt voor uw aanvraag | More Clean",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default function BedanktPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F3F5F7] px-6 pb-24 pt-[220px] text-[#121212]">
+    <div className="relative min-h-screen overflow-hidden bg-[#F3F5F7] px-6 pb-24 pt-[220px] text-[#121212]">
       {/* BACKGROUND GLOW */}
       <div className="absolute left-1/2 top-[-250px] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[#95AEC1]/20 blur-3xl" />
 
@@ -93,6 +102,6 @@ export default function BedanktPage() {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
