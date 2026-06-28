@@ -52,7 +52,7 @@ export default function LoginForm() {
     }
     const supabase = createClient();
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/portal/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     setError(null);
     setInfo("Reset-link verstuurd! Controleer uw e-mail.");
