@@ -104,6 +104,7 @@ export default function Navbar() {
             {[
               ["Diensten", "/diensten"],
               ["Over Ons", "/over-ons"],
+              ["Blog", "/blog"],
               ["Contact", "/contact"],
             ].map(([label, href]) => (
               <Link
@@ -268,6 +269,7 @@ export default function Navbar() {
               ["Home", "/"],
               ["Diensten", "/diensten"],
               ["Over Ons", "/over-ons"],
+              ["Blog", "/blog"],
               ["Contact", "/contact"],
             ].map(([label, href]) => (
               <Link
