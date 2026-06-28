@@ -57,18 +57,18 @@ export default function LoginPage() {
             Uw bedrijf,<br />
             <span className="text-[#95AEC1]">altijd in orde.</span>
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-white/60">
+          <p className="mt-4 text-sm leading-relaxed text-white/80">
             Bekijk uw afspraken, offertes en facturen. Communiceer direct met More Clean.
           </p>
 
           {/* Portal links */}
           <div className="mt-10 space-y-3">
             {portals.map((p) => (
-              <div key={p.title} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/05 px-4 py-3">
+              <div key={p.title} className="flex items-start gap-3 rounded-2xl border border-white/20 bg-white/10 px-4 py-3">
                 <span className="mt-0.5 text-xl">{p.icon}</span>
                 <div>
                   <p className="text-sm font-semibold text-white">{p.title}portal</p>
-                  <p className="text-xs text-white/50">{p.description}</p>
+                  <p className="text-xs text-white/75">{p.description}</p>
                 </div>
               </div>
             ))}
@@ -77,7 +77,7 @@ export default function LoginPage() {
 
         <div className="relative z-10 flex items-center gap-3">
           <div className="h-2 w-2 rounded-full bg-emerald-400" />
-          <p className="text-sm text-white/60">Binnen 24 uur reactie gegarandeerd</p>
+          <p className="text-sm text-white/80">Binnen 24 uur reactie gegarandeerd</p>
         </div>
       </div>
 
