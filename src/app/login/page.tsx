@@ -39,13 +39,13 @@ export default function LoginPage() {
         style={{ background: "linear-gradient(135deg, #0d1230 0%, #1a2a58 50%, #2d5a8e 100%)" }}
       >
         <div>
-          <Link href="/" className="inline-block rounded-2xl bg-white p-3 shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
-            <Image src="/images/logo.png" alt="More Clean" width={100} height={100} />
+          <Link href="/" className="text-2xl font-bold tracking-tight text-white">
+            More Clean
           </Link>
         </div>
 
         <div>
-          <p className="text-4xl font-bold leading-tight text-white" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}>
+          <p className="text-4xl font-bold leading-tight text-white">
             Uw bedrijf,<br />
             <span style={{ color: "#b8d0e8" }}>altijd in orde.</span>
           </p>
