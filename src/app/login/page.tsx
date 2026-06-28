@@ -34,32 +34,37 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* LEFT — BRAND */}
-      <div className="relative hidden w-[45%] flex-col justify-between overflow-hidden p-12 lg:flex"
-        style={{ background: "linear-gradient(135deg, #101536 0%, #1b2b5b 55%, #2d5a8e 100%)" }}
+      <div
+        className="hidden w-[45%] flex-col justify-between p-12 lg:flex"
+        style={{ background: "linear-gradient(135deg, #0d1230 0%, #1a2a58 50%, #2d5a8e 100%)" }}
       >
         <div>
           <Link href="/">
-            <Image src="/images/logo.png" alt="More Clean" width={120} height={44} className="brightness-0 invert" />
+            <Image src="/images/logo.png" alt="More Clean" width={140} height={52} />
           </Link>
         </div>
 
         <div>
           <p className="text-4xl font-bold leading-tight text-white">
             Uw bedrijf,<br />
-            <span className="text-[#95AEC1]">altijd in orde.</span>
+            <span style={{ color: "#95AEC1" }}>altijd in orde.</span>
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-white/90">
+          <p className="mt-4 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.85)" }}>
             Bekijk uw afspraken, offertes en facturen. Communiceer direct met More Clean.
           </p>
 
           {/* Portal links */}
           <div className="mt-10 space-y-3">
             {portals.map((p) => (
-              <div key={p.title} className="flex items-start gap-3 rounded-2xl border border-white/25 bg-white/15 px-4 py-3 backdrop-blur-sm">
+              <div
+                key={p.title}
+                className="flex items-start gap-3 rounded-2xl px-4 py-3"
+                style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)" }}
+              >
                 <span className="mt-0.5 text-xl">{p.icon}</span>
                 <div>
                   <p className="text-sm font-semibold text-white">{p.title}portal</p>
-                  <p className="text-xs text-white/85">{p.description}</p>
+                  <p className="text-xs" style={{ color: "rgba(255,255,255,0.80)" }}>{p.description}</p>
                 </div>
               </div>
             ))}
@@ -68,7 +73,7 @@ export default function LoginPage() {
 
         <div className="flex items-center gap-3">
           <div className="h-2 w-2 rounded-full bg-emerald-400" />
-          <p className="text-sm text-white/90">Binnen 24 uur reactie gegarandeerd</p>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.85)" }}>Binnen 24 uur reactie gegarandeerd</p>
         </div>
       </div>
 
