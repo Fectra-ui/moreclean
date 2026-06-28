@@ -39,8 +39,8 @@ export default function LoginPage() {
         style={{ background: "linear-gradient(135deg, #0d1230 0%, #1a2a58 50%, #2d5a8e 100%)" }}
       >
         <div>
-          <Link href="/" className="inline-block rounded-2xl bg-white px-4 py-2">
-            <Image src="/images/logo.png" alt="More Clean" width={120} height={44} />
+          <Link href="/" className="inline-block rounded-2xl bg-white p-3">
+            <Image src="/images/logo.png" alt="More Clean" width={100} height={100} />
           </Link>
         </div>
 
