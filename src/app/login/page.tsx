@@ -39,8 +39,14 @@ export default function LoginPage() {
         style={{ background: "linear-gradient(135deg, #0d1230 0%, #1a2a58 50%, #2d5a8e 100%)" }}
       >
         <div>
-          <Link href="/" className="text-2xl font-bold tracking-tight text-white">
-            More Clean
+          <Link href="/">
+            <Image
+              src="/images/logo.png"
+              alt="More Clean"
+              width={130}
+              height={130}
+              style={{ filter: "drop-shadow(0 6px 20px rgba(0,0,0,0.6))" }}
+            />
           </Link>
         </div>
 
