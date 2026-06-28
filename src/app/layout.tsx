@@ -4,10 +4,6 @@ import Script from "next/script";
 
 import "./globals.css";
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import MobileCTA from "@/components/MobileCTA";
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -107,19 +103,7 @@ export default function RootLayout({
       className={`${geistSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#F3F5F7] text-[#121212]">
-        {/* NAVBAR */}
-        <Navbar />
-
-        {/* PAGE CONTENT */}
-        <main className="flex-1">
-          {children}
-        </main>
-
-        {/* FOOTER */}
-        <Footer />
-
-        {/* MOBILE CTA */}
-        <MobileCTA />
+        {children}
 
         {/* GOOGLE ANALYTICS */}
         <Script

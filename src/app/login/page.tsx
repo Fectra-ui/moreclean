@@ -43,7 +43,7 @@ export default function LoginPage() {
           >
             <source src="/video/hero-video.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-br from-[#101536]/90 via-[#101536]/75 to-[#4D7EBA]/40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#101536]/70 via-[#1b2b5b]/50 to-[#4D7EBA]/30" />
         </div>
 
         <div className="relative z-10">
