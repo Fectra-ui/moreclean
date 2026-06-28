@@ -79,6 +79,13 @@ h6 {
   letter-spacing: -0.03em;
 }
 
+.force-white {
+  color: #ffffff !important;
+}
+.force-white p, .force-white h1, .force-white h2, .force-white h3 {
+  color: #ffffff !important;
+}
+
 p {
   color: rgba(16,21,54,0.72);
   line-height: 1.75;

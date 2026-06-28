@@ -35,7 +35,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen">
       {/* LEFT — BRAND */}
       <div
-        className="hidden w-[45%] flex-col justify-between p-12 lg:flex"
+        className="force-white hidden w-[45%] flex-col justify-between p-12 lg:flex"
         style={{ background: "linear-gradient(135deg, #0d1230 0%, #1a2a58 50%, #2d5a8e 100%)" }}
       >
         <div>
