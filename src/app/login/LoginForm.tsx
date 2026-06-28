@@ -21,12 +21,6 @@ export default function LoginForm() {
     setLoading(true);
     setError(null);
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      setError("Configuratiefout: neem contact op met de beheerder.");
-      setLoading(false);
-      return;
-    }
-
     const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
