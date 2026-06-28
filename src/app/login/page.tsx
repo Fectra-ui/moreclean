@@ -45,9 +45,9 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <p className="text-4xl font-bold leading-tight text-white">
+          <p className="text-4xl font-bold leading-tight text-white" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}>
             Uw bedrijf,<br />
-            <span style={{ color: "#95AEC1" }}>altijd in orde.</span>
+            <span style={{ color: "#b8d0e8" }}>altijd in orde.</span>
           </p>
           <p className="mt-4 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.85)" }}>
             Bekijk uw afspraken, offertes en facturen. Communiceer direct met More Clean.
