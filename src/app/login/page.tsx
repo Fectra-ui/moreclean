@@ -51,7 +51,7 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <p className="text-4xl font-bold leading-tight text-white">
+          <p className="text-4xl font-bold leading-tight" style={{ color: "#ffffff" }}>
             Uw bedrijf,<br />
             <span style={{ color: "#b8d0e8" }}>altijd in orde.</span>
           </p>
