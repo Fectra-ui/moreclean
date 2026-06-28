@@ -9,12 +9,32 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+const portals = [
+  {
+    icon: "👤",
+    title: "Klant",
+    description: "Bekijk uw afspraken, offertes en facturen.",
+    href: "/klant",
+  },
+  {
+    icon: "👷",
+    title: "Medewerker",
+    description: "Uw dagplanning en opdrachtenoverzicht.",
+    href: "/medewerker",
+  },
+  {
+    icon: "🛠",
+    title: "Admin",
+    description: "Volledig bedrijfsbeheer en rapportages.",
+    href: "/admin",
+  },
+];
+
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* LEFT — BRAND */}
       <div className="relative hidden w-[45%] flex-col justify-between overflow-hidden bg-[#101536] p-12 lg:flex">
-        {/* VIDEO BG */}
         <div className="absolute inset-0">
           <video
             autoPlay muted loop playsInline
@@ -26,7 +46,6 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#101536]/90 via-[#101536]/75 to-[#4D7EBA]/40" />
         </div>
 
-        {/* CONTENT */}
         <div className="relative z-10">
           <Link href="/">
             <Image src="/images/logo.png" alt="More Clean" width={120} height={44} className="brightness-0 invert" />
@@ -38,9 +57,22 @@ export default function LoginPage() {
             Uw bedrijf,<br />
             <span className="text-[#95AEC1]">altijd in orde.</span>
           </p>
-          <p className="mt-4 text-white/60 text-sm leading-relaxed">
+          <p className="mt-4 text-sm leading-relaxed text-white/60">
             Bekijk uw afspraken, offertes en facturen. Communiceer direct met More Clean.
           </p>
+
+          {/* Portal links */}
+          <div className="mt-10 space-y-3">
+            {portals.map((p) => (
+              <div key={p.title} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/05 px-4 py-3">
+                <span className="mt-0.5 text-xl">{p.icon}</span>
+                <div>
+                  <p className="text-sm font-semibold text-white">{p.title}portal</p>
+                  <p className="text-xs text-white/50">{p.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="relative z-10 flex items-center gap-3">
@@ -58,9 +90,20 @@ export default function LoginPage() {
 
         <div className="w-full max-w-md">
           <h1 className="text-3xl font-bold text-[#101536]">Inloggen</h1>
-          <p className="mt-2 text-sm text-[#606774]">Vul uw e-mailadres en wachtwoord in.</p>
+          <p className="mt-2 text-sm text-[#606774]">U wordt na het inloggen automatisch doorgestuurd naar uw portaal.</p>
 
-          <div className="mt-8 rounded-[28px] border border-white/60 bg-white/85 p-8 shadow-[0_20px_60px_rgba(16,21,54,.08)] backdrop-blur-xl">
+          {/* PORTAL CARDS — mobile only, desktop shows in left panel */}
+          <div className="mt-6 grid grid-cols-3 gap-2 lg:hidden">
+            {portals.map((p) => (
+              <div key={p.title} className="rounded-2xl border border-[#101536]/08 bg-white p-3 text-center shadow-sm">
+                <span className="text-2xl">{p.icon}</span>
+                <p className="mt-1 text-xs font-semibold text-[#101536]">{p.title}</p>
+                <p className="mt-0.5 text-[10px] leading-tight text-[#606774]">{p.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 rounded-[28px] border border-white/60 bg-white/85 p-8 shadow-[0_20px_60px_rgba(16,21,54,.08)] backdrop-blur-xl">
             <Suspense>
               <LoginForm />
             </Suspense>
@@ -71,6 +114,12 @@ export default function LoginPage() {
             <a href="mailto:info@moreclean.nl" className="font-medium text-[#4D7EBA] hover:underline">
               Neem contact op
             </a>
+          </p>
+
+          <p className="mt-3 text-center text-sm">
+            <Link href="/" className="text-[#606774] hover:text-[#101536]">
+              ← Terug naar de website
+            </Link>
           </p>
         </div>
       </div>

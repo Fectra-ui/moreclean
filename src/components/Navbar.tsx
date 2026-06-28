@@ -118,6 +118,17 @@ export default function Navbar() {
               </Link>
             ))}
 
+            {/* INLOGGEN */}
+            <Link
+              href="/login"
+              className={`
+                relative z-50 text-sm font-medium transition-colors duration-300 hover:opacity-70
+                ${scrolled ? "text-[#101536]" : "text-white/80"}
+              `}
+            >
+              Inloggen
+            </Link>
+
             {/* CTA */}
             <Link
               href="/offerte"
@@ -278,6 +289,26 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
+
+            {/* INLOGGEN */}
+            <Link
+              href="/login"
+              onClick={closeMenu}
+              className="
+                rounded-2xl
+                px-5
+                py-4
+                text-lg
+                font-medium
+                text-white/70
+                transition
+                duration-300
+                hover:bg-white/10
+                hover:text-white
+              "
+            >
+              Inloggen
+            </Link>
 
             {/* CTA */}
             <Link
