@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Users } from "lucide-react";
+import InviteModal from "./InviteModal";
 
 export const metadata: Metadata = { title: "Medewerkers" };
 
@@ -41,6 +42,7 @@ export default async function MedewerkersPage() {
           <h1 className="text-2xl font-bold text-[#101536]">Medewerkers</h1>
           <p className="mt-1 text-sm text-[#606774]">{employees?.length ?? 0} actieve medewerkers</p>
         </div>
+        <InviteModal />
       </div>
 
       {!employees?.length ? (
