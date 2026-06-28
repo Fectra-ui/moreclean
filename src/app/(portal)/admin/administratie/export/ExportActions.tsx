@@ -15,12 +15,13 @@ export default function ExportActions({ year, quarter, status }: Props) {
   const [downloading, setDownloading] = useState(false);
   const [closing, setClosing] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleExport = async () => {
     setDownloading(true);
     try {
       const res = await fetch(`/api/accounting/quarter?year=${year}&quarter=${quarter}&action=export`);
-      if (!res.ok) { alert("Export mislukt. Probeer opnieuw."); return; }
+      if (!res.ok) { setError("Export mislukt. Probeer opnieuw."); return; }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -44,10 +45,14 @@ export default function ExportActions({ year, quarter, status }: Props) {
     });
     setClosing(false);
     if (res.ok) router.refresh();
-    else alert("Afsluiten mislukt");
+    else setError("Afsluiten mislukt. Probeer opnieuw.");
   };
 
   return (
+    <div className="space-y-3">
+      {error && (
+        <p className="rounded-xl bg-red-50 border border-red-100 px-4 py-2.5 text-sm font-medium text-red-700">{error}</p>
+      )}
     <div className="flex flex-wrap gap-3">
       <button
         onClick={handleExport}
@@ -75,6 +80,7 @@ export default function ExportActions({ year, quarter, status }: Props) {
           Kwartaal is afgesloten. Download voor definitieve export.
         </p>
       )}
+    </div>
     </div>
   );
 }

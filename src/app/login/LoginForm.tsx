@@ -11,6 +11,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
@@ -54,7 +55,7 @@ export default function LoginForm() {
       redirectTo: `${window.location.origin}/portal/reset-password`,
     });
     setError(null);
-    alert("Reset-link verstuurd! Controleer uw e-mail.");
+    setInfo("Reset-link verstuurd! Controleer uw e-mail.");
   }
 
   return (
@@ -120,11 +121,12 @@ export default function LoginForm() {
         </div>
       </div>
 
-      {/* ERROR */}
+      {/* FEEDBACK */}
       {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 border border-red-100">
-          {error}
-        </p>
+        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 border border-red-100">{error}</p>
+      )}
+      {info && (
+        <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 border border-emerald-100">{info}</p>
       )}
 
       {/* SUBMIT */}

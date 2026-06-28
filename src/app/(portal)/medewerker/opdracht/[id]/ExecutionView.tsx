@@ -58,6 +58,8 @@ export default function ExecutionView({ appointment: initial, userId, vehicles }
   const [materialQty, setMaterialQty] = useState("1");
   const [materialUnit, setMaterialUnit] = useState("");
   const [signedBy, setSignedBy] = useState("");
+  const [fieldError, setFieldError] = useState<string | null>(null);
+  const [photoCount, setPhotoCount] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawing = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -81,7 +83,8 @@ export default function ExecutionView({ appointment: initial, userId, vehicles }
 
   // ---- Rit starten ----
   const startTrip = () => {
-    if (!startOdometer) { alert("Vul de kilometerstand bij vertrek in."); return; }
+    if (!startOdometer) { setFieldError("Vul de kilometerstand bij vertrek in."); return; }
+    setFieldError(null);
     const now = new Date().toISOString();
     setDepartedAt(now);
     setPhase("driving");
@@ -188,7 +191,8 @@ export default function ExecutionView({ appointment: initial, userId, vehicles }
 
   // ---- Afronden ----
   const handleComplete = async () => {
-    if (!signedBy.trim()) { alert("Vul de naam van de ondertekenaar in."); return; }
+    if (!signedBy.trim()) { setFieldError("Vul de naam van de ondertekenaar in."); return; }
+    setFieldError(null);
     if (!canvasRef.current) return;
     const sigData = canvasRef.current.toDataURL("image/png");
     setLoading("complete");
@@ -217,6 +221,20 @@ export default function ExecutionView({ appointment: initial, userId, vehicles }
 
   return (
     <div className="mx-auto max-w-lg space-y-4 pb-10">
+
+      {/* Field error */}
+      {fieldError && (
+        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
+          {fieldError}
+        </div>
+      )}
+
+      {/* Photo feedback */}
+      {photoCount > 0 && (
+        <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
+          {photoCount} foto{photoCount !== 1 ? "&apos;s" : ""} geselecteerd
+        </div>
+      )}
 
       {/* Status banner */}
       {phase === "done" && (
@@ -480,7 +498,7 @@ export default function ExecutionView({ appointment: initial, userId, vehicles }
             <input type="file" accept="image/*" capture="environment" multiple className="sr-only"
               onChange={(e) => {
                 const files = Array.from(e.target.files ?? []);
-                if (files.length) alert(`${files.length} foto(s) geselecteerd. Upload-integratie volgt.`);
+                if (files.length) setPhotoCount((n) => n + files.length);
               }}
             />
           </label>
