@@ -2,15 +2,45 @@ import { createServiceClient } from "@/lib/supabase/server";
 
 const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
-export async function isSetupComplete(): Promise<boolean> {
+// ── Progress types ─────────────────────────────────────────────
+// All valid step keys. Extend this union when adding wizard steps.
+export type SetupStepKey =
+  | "company"
+  | "logo"
+  | "units"
+  | "services"
+  | "employees"
+  | "vehicles"
+  | "payments"
+  | "accounting";
+
+export type SetupProgress = Partial<Record<SetupStepKey, boolean>>;
+
+// ── Wizard state ───────────────────────────────────────────────
+
+export async function getSetupProgress(): Promise<{
+  progress: SetupProgress;
+  completedAt: string | null;
+}> {
   const svc = createServiceClient();
   const { data } = await svc
     .from("companies")
-    .select("setup_completed_at")
+    .select("setup_progress, setup_completed_at")
     .eq("id", COMPANY_ID)
     .single();
-  return !!data?.setup_completed_at;
+
+  return {
+    progress: (data?.setup_progress as SetupProgress) ?? {},
+    completedAt: data?.setup_completed_at ?? null,
+  };
 }
+
+export async function isSetupComplete(): Promise<boolean> {
+  const { completedAt } = await getSetupProgress();
+  return !!completedAt;
+}
+
+// ── Dashboard status (for the control center) ─────────────────
 
 export interface SetupStatus {
   bedrijf: boolean;
@@ -47,5 +77,8 @@ export async function getSetupStatus(): Promise<SetupStatus> {
   const flags = [bedrijf, units, diensten, medewerkers, voertuigen, boekhouding, betalingen];
   const completionPct = Math.round((flags.filter(Boolean).length / flags.length) * 100);
 
-  return { bedrijf, units, diensten, medewerkers, voertuigen, boekhouding, betalingen, completionPct, companyName: company?.name ?? null };
+  return {
+    bedrijf, units, diensten, medewerkers, voertuigen, boekhouding, betalingen,
+    completionPct, companyName: company?.name ?? null,
+  };
 }

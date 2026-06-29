@@ -4,8 +4,47 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { redirect } from "next/navigation";
 import type { ServiceTemplate } from "@/lib/data/service-templates";
+import type { SetupStepKey, SetupProgress } from "@/lib/services/setup";
 
 const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+
+// ── Progress ───────────────────────────────────────────────────
+
+export async function markStepComplete(step: SetupStepKey): Promise<void> {
+  await requireAdmin();
+  const svc = createServiceClient();
+
+  // Merge into existing jsonb column
+  await svc.rpc("jsonb_set_key", {
+    target_id: COMPANY_ID,
+    key: step,
+    value: true,
+  }).catch(async () => {
+    // Fallback: read-modify-write (rpc may not exist yet)
+    const { data } = await svc
+      .from("companies")
+      .select("setup_progress")
+      .eq("id", COMPANY_ID)
+      .single();
+    const current: SetupProgress = (data?.setup_progress as SetupProgress) ?? {};
+    await svc
+      .from("companies")
+      .update({ setup_progress: { ...current, [step]: true } })
+      .eq("id", COMPANY_ID);
+  });
+}
+
+export async function completeSetup(): Promise<void> {
+  await requireAdmin();
+  const svc = createServiceClient();
+  await svc
+    .from("companies")
+    .update({ setup_completed_at: new Date().toISOString() })
+    .eq("id", COMPANY_ID);
+  redirect("/admin");
+}
+
+// ── Step actions ───────────────────────────────────────────────
 
 export async function saveCompanyInfo(formData: FormData): Promise<{ error: string | null }> {
   await requireAdmin();
@@ -30,7 +69,10 @@ export async function saveCompanyInfo(formData: FormData): Promise<{ error: stri
     .update({ ...patch, updated_at: new Date().toISOString() })
     .eq("id", COMPANY_ID);
 
-  return { error: error?.message ?? null };
+  if (error) return { error: error.message };
+
+  await markStepComplete("company");
+  return { error: null };
 }
 
 export async function importServices(services: ServiceTemplate[]): Promise<{ error: string | null }> {
@@ -50,15 +92,13 @@ export async function importServices(services: ServiceTemplate[]): Promise<{ err
   }));
 
   const { error } = await svc.from("services").insert(rows);
-  return { error: error?.message ?? null };
+  if (error) return { error: error.message };
+
+  await markStepComplete("services");
+  return { error: null };
 }
 
-export async function completeSetup(): Promise<void> {
-  await requireAdmin();
-  const svc = createServiceClient();
-  await svc
-    .from("companies")
-    .update({ setup_completed_at: new Date().toISOString() })
-    .eq("id", COMPANY_ID);
-  redirect("/admin");
+export async function skipStep(step: SetupStepKey): Promise<{ error: null }> {
+  await markStepComplete(step);
+  return { error: null };
 }
