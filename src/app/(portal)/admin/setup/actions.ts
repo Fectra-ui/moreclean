@@ -25,9 +25,16 @@ export async function completeSetup(): Promise<void> {
   await requireAdmin();
   const companyId = await getCompanyId();
   const svc = createServiceClient();
-  await svc
+
+  // Use update (not upsert) — company row must already exist after saveCompanyInfo().
+  // upsert would fail because companies.name is NOT NULL and we don't send it here.
+  const { error } = await svc
     .from("companies")
-    .upsert({ id: companyId, setup_completed_at: new Date().toISOString() });
+    .update({ setup_completed_at: new Date().toISOString() })
+    .eq("id", companyId);
+
+  if (error) throw new Error(`Setup voltooien mislukt: ${error.message}`);
+
   redirect("/admin");
 }
 
@@ -52,18 +59,20 @@ export async function saveCompanyInfo(formData: FormData): Promise<{ error: stri
     boekhouder_email: (formData.get("boekhouder_email") as string) || null,
   };
 
+  // name is required (NOT NULL in DB)
+  if (!patch.name) return { error: "Bedrijfsnaam is verplicht." };
+
   const { error } = await svc
     .from("companies")
-    .upsert({ id: companyId, ...patch, updated_at: new Date().toISOString() })
-    .eq("id", companyId);
+    .upsert({ id: companyId, ...patch, updated_at: new Date().toISOString() });
 
   if (error) return { error: error.message };
 
-  // Link admin profile to company if not already linked
+  // Always link admin profile to this company (remove IS NULL guard so a re-run also works)
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (user) {
-    await svc.from("profiles").update({ company_id: companyId }).eq("id", user.id).is("company_id", null);
+    await svc.from("profiles").update({ company_id: companyId }).eq("id", user.id);
   }
 
   await markStepComplete("company");

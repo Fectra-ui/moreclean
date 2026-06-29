@@ -37,7 +37,7 @@ export async function getQuoteFull(id: string): Promise<(Quote & {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("quotes")
-    .select(`*, quote_items (*, services (*)), clients (*)`)
+    .select(`*, workflow_state, planned_at, work_started_at, work_completed_at, payment_received_at, quote_items (*, services (*)), clients (*)`)
     .eq("id", id)
     .single();
   if (error) return null;

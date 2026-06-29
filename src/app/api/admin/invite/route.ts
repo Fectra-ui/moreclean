@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   const service = createServiceClient();
   const { error } = await service.auth.admin.inviteUserByEmail(email, {
     data: { role },
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.vercel.app"}/portal/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.nl"}/portal/reset-password`,
   });
 
   if (error) {

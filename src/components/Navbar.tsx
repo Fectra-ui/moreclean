@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   useEffect(() => {
     const onScroll = () => {
@@ -57,8 +60,8 @@ export default function Navbar() {
             ease-out
 
             ${
-              scrolled || open
-                ? "border-white/50 bg-white/80 shadow-[0_8px_32px_rgba(0,0,0,.10),0_1px_0_rgba(255,255,255,.9)_inset] backdrop-blur-2xl"
+              scrolled || open || !isHome
+                ? "border-white/60 bg-white/55 shadow-[0_8px_32px_rgba(16,21,54,.08),0_1px_0_rgba(255,255,255,.95)_inset] backdrop-blur-2xl backdrop-saturate-150"
                 : "border-white/35 bg-white/[0.07] shadow-[0_8px_32px_rgba(0,0,0,.12),0_1px_0_rgba(255,255,255,.55)_inset] backdrop-blur-md"
             }
 
@@ -115,7 +118,7 @@ export default function Navbar() {
                 href={href}
                 className={`
                   relative z-50 text-sm font-medium transition-colors duration-300 hover:opacity-70
-                  ${scrolled ? "text-[#101536]" : "text-white"}
+                  ${scrolled || !isHome ? "text-[#101536]" : "text-white"}
                 `}
               >
                 {label}
@@ -127,7 +130,7 @@ export default function Navbar() {
               href="/login"
               className={`
                 relative z-50 text-sm font-medium transition-colors duration-300 hover:opacity-70
-                ${scrolled ? "text-[#101536]" : "text-white/80"}
+                ${scrolled || !isHome ? "text-[#101536]" : "text-white/80"}
               `}
             >
               Inloggen

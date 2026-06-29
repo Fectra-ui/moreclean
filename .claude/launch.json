@@ -4,7 +4,7 @@
     {
       "name": "moreclean",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vercel", "dev", "--yes"],
+      "runtimeArgs": ["next", "dev"],
       "port": 3000,
       "autoPort": true
     }
