@@ -1,6 +1,7 @@
 import Link from "next/link";
 import GlobalSearch from "@/components/portal/GlobalSearch";
 import NotificationBell from "@/components/portal/NotificationBell";
+import LogoutButton from "@/components/portal/LogoutButton";
 import type { Profile } from "@/types/database";
 
 interface PortalHeaderProps {
@@ -34,6 +35,8 @@ export default function PortalHeader({ profile, title, unreadCount = 0 }: Portal
         {profile.role === "admin" && <GlobalSearch />}
         {/* NOTIFICATIONS — Realtime via Supabase, geen polling */}
         <NotificationBell userId={profile.id} />
+
+        <LogoutButton />
 
         {/* AVATAR */}
         <div className="flex items-center gap-3">
