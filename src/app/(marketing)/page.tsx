@@ -66,10 +66,10 @@ export default function HomePage() {
             items-start
             justify-center
             px-5
-            pt-[165px]
+            pt-[195px]
             pb-[100px]
             md:px-6
-            md:pt-[170px]
+            md:pt-[200px]
             md:pb-[120px]
           "
         >
