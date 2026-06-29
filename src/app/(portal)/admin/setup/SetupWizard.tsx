@@ -592,10 +592,12 @@ function ChoiceCard({
   children?: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
-      className={`w-full text-left rounded-2xl border-2 p-5 transition ${selected ? "border-[#4D7EBA] bg-[#4D7EBA]/05" : "border-[#101536]/10 hover:border-[#4D7EBA]/40"}`}
+      onKeyDown={(e) => e.key === "Enter" || e.key === " " ? onClick() : undefined}
+      className={`w-full text-left rounded-2xl border-2 p-5 transition cursor-pointer ${selected ? "border-[#4D7EBA] bg-[#4D7EBA]/05" : "border-[#101536]/10 hover:border-[#4D7EBA]/40"}`}
     >
       <div className="flex items-start gap-4">
         <div className="text-2xl mt-0.5">{icon}</div>
@@ -611,6 +613,6 @@ function ChoiceCard({
           {selected && <CheckCircle2 size={16} className="text-white -mt-px -ml-px" />}
         </div>
       </div>
-    </button>
+    </div>
   );
 }
