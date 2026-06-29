@@ -45,7 +45,7 @@ export default async function InstellingenPage() {
       title: "Diensten",
       subtitle: "Catalogus van alle diensten met prijzen en eenheden",
       href: "/admin/diensten",
-      ready: false,
+      ready: true,
       status: status.diensten ? "ok" : "warning",
       statusLabel: status.diensten ? "Ingesteld" : "Nog leeg",
       color: "text-amber-600 bg-amber-100",
