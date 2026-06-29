@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { redirect } from "next/navigation";
 import { getAppointmentFull } from "@/lib/services/planning/execution";
 import Link from "next/link";
@@ -7,8 +8,6 @@ import { ChevronLeft } from "lucide-react";
 import InvoiceEditor from "./InvoiceEditor";
 
 export const metadata: Metadata = { title: "Nieuwe factuur" };
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 export default async function NieuweFactuurPage({
   searchParams,
@@ -19,20 +18,22 @@ export default async function NieuweFactuurPage({
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const companyId = await getCompanyId();
+
   const { appointment: appointmentId, quote: quoteId } = await searchParams;
 
   const [clientsResult, servicesResult] = await Promise.all([
     supabase
       .from("clients")
       .select("id, contact_name, company_name, address, city, payment_terms")
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .eq("active", true)
       .order("contact_name")
       .limit(500),
     supabase
       .from("services")
       .select("id, name, default_price, vat_rate")
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .eq("active", true)
       .order("sort_order"),
   ]);

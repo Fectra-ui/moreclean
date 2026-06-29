@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { createClient } from "@/lib/supabase/server";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { redirect } from "next/navigation";
 import { getBusinessHealth, getClientProfitability } from "@/lib/services/accounting/expenses";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Rapportages" };
 
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
-
 export default async function RapportagesPage() {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const supabase = await createClient();
 
   const currentYear = new Date().getFullYear();
@@ -21,7 +21,7 @@ export default async function RapportagesPage() {
     supabase
       .from("appointments")
       .select("status, scheduled_date")
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .gte("scheduled_date", currentYear + "-01-01"),
   ]);
 

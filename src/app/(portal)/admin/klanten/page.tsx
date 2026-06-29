@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { getClientList } from "@/lib/services/crm/clients";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import ClientTable from "./ClientTable";
 import Link from "next/link";
 import { UserPlus } from "lucide-react";
 
 export const metadata: Metadata = { title: "Klanten" };
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 interface SearchParams {
   q?: string;
@@ -19,11 +19,12 @@ interface SearchParams {
 
 export default async function KlantenPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const sp = await searchParams;
   const page = parseInt(sp.page ?? "1") - 1;
   const limit = 25;
 
-  const { clients, total } = await getClientList(COMPANY_ID, {
+  const { clients, total } = await getClientList(companyId, {
     query: sp.q,
     active: sp.active === "false" ? false : sp.active === "true" ? true : undefined,
     hasMaintenanceContract: sp.maintenance === "true" ? true : undefined,

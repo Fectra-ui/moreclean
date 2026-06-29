@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 export const SCHOONMAAK_BU_ID = "c1000000-0000-0000-0000-000000000001";
 export const MEDIA_BU_ID      = "c2000000-0000-0000-0000-000000000002";
@@ -37,11 +36,12 @@ export interface BuRevenue {
 }
 
 export async function getBusinessUnits(includeInactive = false): Promise<BusinessUnit[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   let q = supabase
     .from("business_units")
     .select("*")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .order("sort_order");
   if (!includeInactive) q = q.eq("active", true);
   const { data } = await q;
@@ -49,22 +49,24 @@ export async function getBusinessUnits(includeInactive = false): Promise<Busines
 }
 
 export async function getBusinessUnitById(id: string): Promise<BusinessUnit | null> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data } = await supabase
     .from("business_units")
     .select("*")
     .eq("id", id)
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .single();
   return data as BusinessUnit | null;
 }
 
 export async function getBuRevenue(year: number, quarter?: number): Promise<BuRevenue[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   let q = supabase
     .from("v_bu_revenue")
     .select("*")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("year", year);
   if (quarter) q = q.eq("quarter", quarter);
   const { data } = await q;
@@ -75,12 +77,13 @@ export async function updateBusinessUnit(
   id: string,
   patch: Partial<Pick<BusinessUnit, "name" | "description" | "email" | "phone" | "primary_color" | "vat_text" | "payment_terms" | "active">>
 ): Promise<{ error: string | null }> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { error } = await supabase
     .from("business_units")
     .update(patch)
     .eq("id", id)
-    .eq("company_id", COMPANY_ID);
+    .eq("company_id", companyId);
   return { error: error?.message ?? null };
 }
 

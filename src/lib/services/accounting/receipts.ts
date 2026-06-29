@@ -1,6 +1,5 @@
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 const BUCKET = "boekhouding";
 
 export interface ReceiptInput {
@@ -38,6 +37,7 @@ export interface Receipt {
 }
 
 export async function uploadReceipt(input: ReceiptInput, uploaderId: string): Promise<{ id: string | null; error: string | null }> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
 
   // 1. Upload bestand naar Storage
@@ -46,7 +46,7 @@ export async function uploadReceipt(input: ReceiptInput, uploaderId: string): Pr
   const year = date.getFullYear();
   const quarter = Math.ceil((date.getMonth() + 1) / 3);
   const fileName = `${Date.now()}-${input.file.name.replace(/[^a-z0-9.\-_]/gi, "_")}`;
-  const filePath = `${COMPANY_ID}/${year}/Q${quarter}/bonnetjes/${fileName}`;
+  const filePath = `${companyId}/${year}/Q${quarter}/bonnetjes/${fileName}`;
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
@@ -56,7 +56,7 @@ export async function uploadReceipt(input: ReceiptInput, uploaderId: string): Pr
 
   // 2. Sla metadata op
   const { data, error } = await supabase.from("receipts").insert({
-    company_id: COMPANY_ID,
+    company_id: companyId,
     uploaded_by: uploaderId,
     appointment_id: input.appointmentId ?? null,
     vehicle_id: input.vehicleId ?? null,
@@ -75,11 +75,12 @@ export async function uploadReceipt(input: ReceiptInput, uploaderId: string): Pr
 }
 
 export async function listReceipts(year?: number, quarter?: number): Promise<Receipt[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   let q = supabase
     .from("receipts")
     .select("*, uploader:profiles!uploaded_by(first_name, last_name)")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .order("receipt_date", { ascending: false });
 
   if (year) q = q.eq("year", year);
@@ -102,12 +103,13 @@ export async function archiveInvoicePdf(
   pdfBuffer: Buffer,
   issueDate: string
 ): Promise<void> {
+  const companyId = await getCompanyId();
   const supabase = createServiceClient();
   const date = new Date(issueDate);
   const year = date.getFullYear();
   const quarter = Math.ceil((date.getMonth() + 1) / 3);
   const fileName = `${invoiceNumber.replace(/[^a-z0-9\-]/gi, "-")}.pdf`;
-  const filePath = `${COMPANY_ID}/${year}/Q${quarter}/facturen/${fileName}`;
+  const filePath = `${companyId}/${year}/Q${quarter}/facturen/${fileName}`;
 
   await supabase.storage.from(BUCKET).upload(filePath, pdfBuffer, {
     contentType: "application/pdf",
@@ -117,7 +119,7 @@ export async function archiveInvoicePdf(
   // Registreer in invoice_archive
   await supabase.from("invoice_archive").upsert({
     invoice_id: invoiceId,
-    company_id: COMPANY_ID,
+    company_id: companyId,
     year,
     quarter,
     file_path: filePath,

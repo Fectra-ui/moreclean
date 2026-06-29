@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { redirect } from "next/navigation";
 import { getCalendarAppointments, getEmployees } from "@/lib/services/planning/appointments";
 import PlanningCalendar from "./PlanningCalendar";
 
 export const metadata: Metadata = { title: "Planning" };
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 export default async function PlanningPage({
   searchParams,
@@ -16,6 +15,8 @@ export default async function PlanningPage({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const companyId = await getCompanyId();
 
   const { from, view = "week" } = await searchParams;
 
@@ -40,15 +41,15 @@ export default async function PlanningPage({
   }
 
   const [appointments, employees] = await Promise.all([
-    getCalendarAppointments(COMPANY_ID, startDate, end.toISOString().slice(0, 10)),
-    getEmployees(COMPANY_ID),
+    getCalendarAppointments(companyId, startDate, end.toISOString().slice(0, 10)),
+    getEmployees(companyId),
   ]);
 
   // Clients list for new appointment modal
   const { data: clients } = await supabase
     .from("clients")
     .select("id, contact_name, company_name, address, city")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("active", true)
     .order("contact_name")
     .limit(200);

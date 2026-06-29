@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 export type VehicleStatus = "active" | "maintenance" | "inactive";
 
@@ -40,11 +39,12 @@ export interface VehicleAssignment {
 }
 
 export async function getVehicles(includeInactive = false): Promise<Vehicle[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   let q = supabase
     .from("vehicles")
     .select("*")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .order("name");
   if (!includeInactive) q = q.neq("status", "inactive");
   const { data } = await q;
@@ -52,27 +52,30 @@ export async function getVehicles(includeInactive = false): Promise<Vehicle[]> {
 }
 
 export async function getVehicleById(id: string): Promise<Vehicle | null> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data } = await supabase
     .from("vehicles")
     .select("*")
     .eq("id", id)
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .single();
   return data as Vehicle | null;
 }
 
 export async function getVehicleStats(): Promise<VehicleStats[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data } = await supabase
     .from("v_vehicle_stats")
     .select("*")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .order("name");
   return (data ?? []) as VehicleStats[];
 }
 
 export async function getVehicleDetail(vehicleId: string) {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const [vehicleRes, logsRes, receiptsRes] = await Promise.all([
     supabase.from("vehicles").select("*").eq("id", vehicleId).single(),
@@ -80,14 +83,14 @@ export async function getVehicleDetail(vehicleId: string) {
       .from("mileage_logs")
       .select("*, employee:profiles!employee_id(first_name, last_name), appointment:appointments(scheduled_date, clients(contact_name, company_name))")
       .eq("vehicle_id", vehicleId)
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .order("date", { ascending: false })
       .limit(50),
     supabase
       .from("receipts")
       .select("*, uploader:profiles!uploaded_by(first_name, last_name)")
       .eq("vehicle_id", vehicleId)
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .order("receipt_date", { ascending: false })
       .limit(50),
   ]);
@@ -101,34 +104,37 @@ export async function getVehicleDetail(vehicleId: string) {
 // ---- Toewijzingen ----
 
 export async function getAssignmentsForDate(date: string): Promise<VehicleAssignment[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data } = await supabase
     .from("employee_vehicle_assignments")
     .select("*, employee:profiles!employee_id(first_name, last_name), vehicle:vehicles(name, license_plate)")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("date", date);
   return (data ?? []) as unknown as VehicleAssignment[];
 }
 
 export async function getEmployeeVehicleForDate(employeeId: string, date: string): Promise<Vehicle | null> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data } = await supabase
     .from("employee_vehicle_assignments")
     .select("vehicle:vehicles(*)")
     .eq("employee_id", employeeId)
     .eq("date", date)
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .single();
   if (!data) return null;
   return (data as unknown as { vehicle: Vehicle }).vehicle;
 }
 
 export async function upsertAssignment(employeeId: string, vehicleId: string, date: string): Promise<{ error: string | null }> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { error } = await supabase
     .from("employee_vehicle_assignments")
     .upsert({
-      company_id: COMPANY_ID,
+      company_id: companyId,
       employee_id: employeeId,
       vehicle_id: vehicleId,
       date,
@@ -137,13 +143,14 @@ export async function upsertAssignment(employeeId: string, vehicleId: string, da
 }
 
 export async function deleteAssignment(employeeId: string, date: string): Promise<{ error: string | null }> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { error } = await supabase
     .from("employee_vehicle_assignments")
     .delete()
     .eq("employee_id", employeeId)
     .eq("date", date)
-    .eq("company_id", COMPANY_ID);
+    .eq("company_id", companyId);
   return { error: error?.message ?? null };
 }
 

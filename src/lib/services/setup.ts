@@ -1,6 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 // ── Progress types ─────────────────────────────────────────────
 // All valid step keys. Extend this union when adding wizard steps.
@@ -22,16 +21,20 @@ export async function getSetupProgress(): Promise<{
   progress: SetupProgress;
   completedAt: string | null;
 }> {
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
-  const { data } = await svc
-    .from("companies")
-    .select("setup_progress, setup_completed_at")
-    .eq("id", COMPANY_ID)
-    .single();
-
+  const [stepsRes, companyRes] = await Promise.all([
+    svc.from("setup_state").select("step").eq("company_id", companyId),
+    svc.from("companies").select("setup_completed_at").eq("id", companyId).single(),
+  ]);
+  const progress: SetupProgress = {};
+  for (const row of (stepsRes.data ?? [])) {
+    const step = (row as { step: string }).step as SetupStepKey;
+    progress[step] = true;
+  }
   return {
-    progress: (data?.setup_progress as SetupProgress) ?? {},
-    completedAt: data?.setup_completed_at ?? null,
+    progress,
+    completedAt: (companyRes.data as { setup_completed_at: string | null } | null)?.setup_completed_at ?? null,
   };
 }
 
@@ -55,16 +58,15 @@ export interface SetupStatus {
 }
 
 export async function getSetupStatus(): Promise<SetupStatus> {
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
 
-  const count = (res: { count: number | null }) => res.count ?? 0;
-
   const [companyRes, unitsCount, servicesCount, employeesCount, vehiclesCount] = await Promise.all([
-    Promise.resolve(svc.from("companies").select("name, kvk, iban, boekhouder_email").eq("id", COMPANY_ID).single()).catch(() => ({ data: null })),
-    Promise.resolve(svc.from("business_units").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID)).catch(() => ({ count: 0 })),
-    Promise.resolve(svc.from("services").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID)).catch(() => ({ count: 0 })),
-    Promise.resolve(svc.from("profiles").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID).in("role", ["employee", "admin"])).catch(() => ({ count: 0 })),
-    Promise.resolve(svc.from("vehicles").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID)).catch(() => ({ count: 0 })),
+    Promise.resolve(svc.from("companies").select("name, kvk, iban, boekhouder_email").eq("id", companyId).single()).catch(() => ({ data: null })),
+    Promise.resolve(svc.from("business_units").select("id", { count: "exact", head: true }).eq("company_id", companyId)).catch(() => ({ count: 0 })),
+    Promise.resolve(svc.from("services").select("id", { count: "exact", head: true }).eq("company_id", companyId)).catch(() => ({ count: 0 })),
+    Promise.resolve(svc.from("profiles").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("role", ["employee", "admin"])).catch(() => ({ count: 0 })),
+    Promise.resolve(svc.from("vehicles").select("id", { count: "exact", head: true }).eq("company_id", companyId)).catch(() => ({ count: 0 })),
   ]);
 
   const company = companyRes.data as { name: string | null; kvk: string | null; iban: string | null; boekhouder_email: string | null } | null;

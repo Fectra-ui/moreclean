@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { createServiceClient } from "@/lib/supabase/server";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import Link from "next/link";
 import { ChevronLeft, Download, CheckCircle2, Clock } from "lucide-react";
 
 export const metadata: Metadata = { title: "Boekhouding | More Clean" };
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 const euro = (n: number) => n.toLocaleString("nl-NL", { style: "currency", currency: "EUR" });
 
 interface QuoteRow {
@@ -24,12 +23,13 @@ interface QuoteRow {
 
 export default async function BoekhoudingPage() {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
 
   const { data: rows } = await svc
     .from("quotes")
     .select("id, quote_number, created_at, accepted_at, payment_received_at, subtotal, vat_amount, total, discount_pct, clients(contact_name, company_name)")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("status", "accepted")
     .order("accepted_at", { ascending: false });
 

@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 export async function GET() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
   const { data: rows } = await svc
     .from("quotes")
     .select("quote_number, created_at, accepted_at, payment_received_at, subtotal, vat_amount, total, discount_pct, clients(contact_name, company_name)")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("status", "accepted")
     .order("accepted_at", { ascending: false });
 

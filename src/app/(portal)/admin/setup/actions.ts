@@ -1,50 +1,33 @@
 "use server";
 
-import { createServiceClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { redirect } from "next/navigation";
 import type { ServiceTemplate } from "@/lib/data/service-templates";
-import type { SetupStepKey, SetupProgress } from "@/lib/services/setup";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import type { SetupStepKey } from "@/lib/services/setup";
 
 // ── Progress ───────────────────────────────────────────────────
 
 export async function markStepComplete(step: SetupStepKey): Promise<void> {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
 
   try {
-    // Try RPC first (faster atomic update); ignore if it doesn't exist yet
-    const { error: rpcErr } = await svc.rpc("jsonb_set_key", {
-      target_id: COMPANY_ID,
-      key: step,
-      value: true,
-    });
-    if (!rpcErr) return;
-
-    // Fallback: read-modify-write
-    const { data } = await svc
-      .from("companies")
-      .select("setup_progress")
-      .eq("id", COMPANY_ID)
-      .single();
-    const current: SetupProgress = (data?.setup_progress as SetupProgress) ?? {};
-    await svc
-      .from("companies")
-      .update({ setup_progress: { ...current, [step]: true } })
-      .eq("id", COMPANY_ID);
+    await svc.from("setup_state").upsert({ company_id: companyId, step, completed_at: new Date().toISOString() });
   } catch {
-    // Never crash the wizard over a progress-tracking failure
+    // Never crash the wizard over progress tracking
   }
 }
 
 export async function completeSetup(): Promise<void> {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
   await svc
     .from("companies")
-    .upsert({ id: COMPANY_ID, setup_completed_at: new Date().toISOString() });
+    .upsert({ id: companyId, setup_completed_at: new Date().toISOString() });
   redirect("/admin");
 }
 
@@ -52,6 +35,7 @@ export async function completeSetup(): Promise<void> {
 
 export async function saveCompanyInfo(formData: FormData): Promise<{ error: string | null }> {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
 
   const patch: Record<string, string | null> = {
@@ -70,10 +54,17 @@ export async function saveCompanyInfo(formData: FormData): Promise<{ error: stri
 
   const { error } = await svc
     .from("companies")
-    .upsert({ id: COMPANY_ID, ...patch, updated_at: new Date().toISOString() })
-    .eq("id", COMPANY_ID);
+    .upsert({ id: companyId, ...patch, updated_at: new Date().toISOString() })
+    .eq("id", companyId);
 
   if (error) return { error: error.message };
+
+  // Link admin profile to company if not already linked
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    await svc.from("profiles").update({ company_id: companyId }).eq("id", user.id).is("company_id", null);
+  }
 
   await markStepComplete("company");
   return { error: null };
@@ -81,10 +72,11 @@ export async function saveCompanyInfo(formData: FormData): Promise<{ error: stri
 
 export async function importServices(services: ServiceTemplate[]): Promise<{ error: string | null }> {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const svc = createServiceClient();
 
   const rows = services.map((s) => ({
-    company_id: COMPANY_ID,
+    company_id: companyId,
     name: s.name,
     description: s.description,
     category: s.category,

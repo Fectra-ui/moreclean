@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { getQuotesList } from "@/lib/services/crm/quotes";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import Link from "next/link";
 import { PlusCircle, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = { title: "Offertes" };
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-gray-100 text-gray-600",
@@ -25,10 +25,11 @@ export default async function OffertesPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   await requireAdmin();
+  const companyId = await getCompanyId();
   const sp = await searchParams;
   const status = sp.status as "draft" | "sent" | "accepted" | "rejected" | "expired" | undefined;
 
-  const quotes = await getQuotesList(COMPANY_ID, status);
+  const quotes = await getQuotesList(companyId, status);
 
   const byStatus = {
     draft: quotes.filter((q) => q.status === "draft").length,

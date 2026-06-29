@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { globalSearch } from "@/lib/services/search/globalSearch";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -12,6 +11,7 @@ export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q") ?? "";
   if (q.length < 2) return NextResponse.json({ results: [] });
 
-  const results = await globalSearch(q, COMPANY_ID);
+  const companyId = await getCompanyId();
+  const results = await globalSearch(q, companyId);
   return NextResponse.json({ results });
 }

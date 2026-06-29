@@ -1,8 +1,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { zipSync, strToU8 } from "fflate";
 import type { BusinessUnit } from "@/lib/services/crm/businessUnits";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 const BUCKET = "boekhouding";
 
 export interface QuarterStats {
@@ -26,20 +25,21 @@ const euro = (n: number) =>
 
 // Berekent statistieken rechtstreeks uit DB (geen aparte view nodig als de view niet beschikbaar is)
 export async function getQuarterStats(year: number, quarter: number): Promise<QuarterStats> {
+  const companyId = await getCompanyId();
   const supabase = createServiceClient();
 
   const [invoicesResult, receiptsResult] = await Promise.all([
     supabase
       .from("invoices")
       .select("id, status, subtotal, vat_amount, total")
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .eq("type", "invoice")
       .gte("issue_date", `${year}-${String((quarter - 1) * 3 + 1).padStart(2, "0")}-01`)
       .lt("issue_date", quarterEndDate(year, quarter)),
     supabase
       .from("receipts")
       .select("amount_excl_vat, vat_amount")
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .eq("year", year)
       .eq("quarter", quarter),
   ]);
@@ -59,7 +59,7 @@ export async function getQuarterStats(year: number, quarter: number): Promise<Qu
   const { data: qRow } = await supabase
     .from("accounting_quarters")
     .select("status")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("year", year)
     .eq("quarter", quarter)
     .maybeSingle();
@@ -88,21 +88,22 @@ export async function getAllQuarterStats(year: number): Promise<QuarterStats[]> 
 // Genereert een ZIP-buffer met alle factuur-PDFs, bonnetjes en een CSV
 // Mapstructuur: {BU-naam}/Facturen/ en {BU-naam}/Bonnetjes/
 export async function generateQuarterZip(year: number, quarter: number): Promise<Buffer> {
+  const companyId = await getCompanyId();
   const supabase = createServiceClient();
 
   // 1. Haal business units + gearchiveerde facturen op
   const [{ data: buData }, { data: archives }, { data: receipts }] = await Promise.all([
-    supabase.from("business_units").select("id, name, short_code").eq("company_id", COMPANY_ID).eq("active", true),
+    supabase.from("business_units").select("id, name, short_code").eq("company_id", companyId).eq("active", true),
     supabase
       .from("invoice_archive")
       .select("file_path, invoices(invoice_number, issue_date, total, status, business_unit_id, clients(contact_name, company_name), quotes(quote_number, accepted_at, payment_received_at, payment_reference))")
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .eq("year", year)
       .eq("quarter", quarter),
     supabase
       .from("receipts")
       .select("file_path, file_name, supplier, receipt_date, amount, vat_amount, category, business_unit_id")
-      .eq("company_id", COMPANY_ID)
+      .eq("company_id", companyId)
       .eq("year", year)
       .eq("quarter", quarter),
   ]);
@@ -211,7 +212,7 @@ export async function generateQuarterZip(year: number, quarter: number): Promise
   const audit = {
     exported_at: new Date().toISOString(),
     period: `Q${quarter} ${year}`,
-    company_id: COMPANY_ID,
+    company_id: companyId,
     business_units: units.map((u) => u.name),
     summary: stats,
     invoice_count: invoiceArchives.length,
@@ -225,11 +226,12 @@ export async function generateQuarterZip(year: number, quarter: number): Promise
 
 // Registreer kwartaal als gesloten en sla export op
 export async function closeQuarter(year: number, quarter: number, closedBy: string): Promise<{ error: string | null }> {
+  const companyId = await getCompanyId();
   const supabase = createServiceClient();
   const { error } = await supabase
     .from("accounting_quarters")
     .upsert({
-      company_id: COMPANY_ID,
+      company_id: companyId,
       year,
       quarter,
       status: "closed",

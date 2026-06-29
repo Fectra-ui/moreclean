@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
 
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+const FALLBACK_COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
-export default function ClientForm({ defaultValues }: { defaultValues?: Record<string, string> }) {
+export default function ClientForm({ defaultValues, companyId }: { defaultValues?: Record<string, string>; companyId?: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export default function ClientForm({ defaultValues }: { defaultValues?: Record<s
     if (!user) { setError("Niet ingelogd."); setLoading(false); return; }
 
     const payload = {
-      company_id: COMPANY_ID,
+      company_id: companyId ?? FALLBACK_COMPANY_ID,
       is_company: isCompany,
       company_name: fd.get("company_name") as string || null,
       contact_name: fd.get("contact_name") as string,

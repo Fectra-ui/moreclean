@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -13,6 +12,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const companyId = await getCompanyId();
   const body = await req.json();
   const { name, license_plate, brand, model, year, fuel_type, current_odometer, apk_expiry, next_service_km } = body;
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
   const svc = createServiceClient();
   const { data, error } = await svc.from("vehicles").insert({
-    company_id:       COMPANY_ID,
+    company_id:       companyId,
     name,
     license_plate:    license_plate.toUpperCase().replace(/\s/g, "-"),
     brand:            brand || null,

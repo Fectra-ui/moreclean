@@ -1,8 +1,7 @@
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { Quote, QuoteWithItems, QuoteItem, Client } from "@/types/database";
 import { sendNotification } from "@/lib/services/notifications";
-
-export const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 // ── READ ───────────────────────────────────────────────────
 
@@ -69,11 +68,12 @@ export interface CreateQuotePayload {
 }
 
 export async function createQuote(payload: CreateQuotePayload): Promise<Quote> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const svc = createServiceClient();
 
   // Generate quote number
-  const { data: numData } = await svc.rpc("generate_quote_number", { company: COMPANY_ID });
+  const { data: numData } = await svc.rpc("generate_quote_number", { company: companyId });
   const quoteNumber = numData as string;
 
   // Calculate totals
@@ -82,7 +82,7 @@ export async function createQuote(payload: CreateQuotePayload): Promise<Quote> {
   const { data: quote, error } = await supabase
     .from("quotes")
     .insert({
-      company_id: COMPANY_ID,
+      company_id: companyId,
       client_id: payload.client_id,
       quote_number: quoteNumber,
       status: "draft",
@@ -231,11 +231,12 @@ async function runQuoteAcceptedWorkflow(quoteId: string) {
   }
 
   // 2. Send internal notification to admins
+  const companyId = await getCompanyId();
   const { data: admins } = await supabase
     .from("profiles")
     .select("id")
     .eq("role", "admin")
-    .eq("company_id", COMPANY_ID);
+    .eq("company_id", companyId);
 
   for (const admin of admins ?? []) {
     await sendNotification(

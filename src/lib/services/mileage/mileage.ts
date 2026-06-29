@@ -2,8 +2,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 export type { Vehicle } from "./vehicles";
 import type { Vehicle } from "./vehicles";
 import { getVehicles as _getVehicles } from "./vehicles";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 const RATE_PER_KM = 0.23; // fiscaal 2026
 
 export interface MileageLog {
@@ -56,11 +55,12 @@ export interface EmployeeDaySummary {
 export async function getVehicles() { return _getVehicles(); }
 
 export async function logMileage(input: MileageInput, employeeId: string): Promise<{ id: string | null; error: string | null }> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("mileage_logs")
     .insert({
-      company_id: COMPANY_ID,
+      company_id: companyId,
       employee_id: employeeId,
       appointment_id: input.appointmentId ?? null,
       vehicle_id: input.vehicleId ?? null,
@@ -89,6 +89,7 @@ export async function getMileageLogs(opts: {
   employeeId?: string;
   appointmentId?: string;
 }): Promise<MileageLog[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   let q = supabase
     .from("mileage_logs")
@@ -98,7 +99,7 @@ export async function getMileageLogs(opts: {
       employee:profiles!employee_id(first_name, last_name),
       appointment:appointments(scheduled_date, clients(contact_name, company_name))
     `)
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .order("date", { ascending: false })
     .order("created_at", { ascending: false });
 

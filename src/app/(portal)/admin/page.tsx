@@ -10,13 +10,13 @@ import { getBuRevenue } from "@/lib/services/crm/businessUnits";
 import { getExpenseStats } from "@/lib/services/accounting/expenses";
 import { Calendar, Euro, FileText, Users, AlertTriangle, TrendingUp, MessageSquare, ClipboardList, XCircle } from "lucide-react";
 import Link from "next/link";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
-
 export default async function AdminDashboardPage() {
   await requireAdmin();
+  const COMPANY_ID = await getCompanyId();
 
   const setupDone = await isSetupComplete().catch(() => true);
   if (!setupDone) redirect("/admin/setup");

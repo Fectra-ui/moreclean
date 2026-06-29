@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 const ALLOWED_EXT = ["png", "jpg", "jpeg", "webp", "svg"];
 
 export async function POST(req: NextRequest) {
@@ -25,8 +24,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Maximum bestandsgrootte is 2MB" }, { status: 400 });
   }
 
+  const companyId = await getCompanyId();
   const service = createServiceClient();
-  const path = `${COMPANY_ID}/logo.${ext}`;
+  const path = `${companyId}/logo.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
   const { error: uploadError } = await service.storage
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   await service
     .from("companies")
     .update({ logo_path: urlData.publicUrl, updated_at: new Date().toISOString() })
-    .eq("id", COMPANY_ID);
+    .eq("id", companyId);
 
   return NextResponse.json({ url: logoUrl });
 }

@@ -1,6 +1,5 @@
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 export type ExpenseType =
   | "fuel" | "maintenance" | "tools" | "supplies"
@@ -89,6 +88,7 @@ export async function getExpenses(opts: {
   type?: ExpenseType;
   status?: ExpenseStatus;
 }): Promise<Expense[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   let q = supabase
     .from("expenses")
@@ -98,7 +98,7 @@ export async function getExpenses(opts: {
       employee:profiles!employee_id(first_name, last_name),
       business_unit:business_units(name, icon, primary_color)
     `)
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .order("date", { ascending: false });
 
   if (opts.year) q = q.eq("year", opts.year);
@@ -125,11 +125,12 @@ export async function createExpense(input: {
   amountInclVat: number;
   employeeId: string;
 }): Promise<{ id: string | null; error: string | null }> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("expenses")
     .insert({
-      company_id: COMPANY_ID,
+      company_id: companyId,
       type: input.type,
       vehicle_id: input.vehicleId ?? null,
       appointment_id: input.appointmentId ?? null,
@@ -170,11 +171,12 @@ export async function getVehicleCosts(vehicleId: string, year: number): Promise<
 }
 
 export async function getClientProfitability(year: number): Promise<ClientProfitability[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const { data } = await supabase
     .from("v_client_profitability")
     .select("*")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("year", year)
     .order("revenue", { ascending: false })
     .limit(50);
@@ -182,13 +184,14 @@ export async function getClientProfitability(year: number): Promise<ClientProfit
 }
 
 export async function getBusinessHealth(months = 6): Promise<BusinessHealth[]> {
+  const companyId = await getCompanyId();
   const supabase = await createClient();
   const since = new Date();
   since.setMonth(since.getMonth() - months);
   const { data } = await supabase
     .from("v_business_health")
     .select("*")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .gte("month", since.toISOString().split("T")[0])
     .order("month", { ascending: true });
   return (data ?? []) as BusinessHealth[];

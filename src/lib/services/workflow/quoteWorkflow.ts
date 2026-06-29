@@ -1,4 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
+import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 // Re-export shared pure types so existing server-side imports keep working
 export type { WorkflowState, WorkflowStep } from "./quoteWorkflowTypes";
@@ -6,8 +7,6 @@ export { WORKFLOW_STEPS, TRANSITIONS, canTransition, getActiveStepIndex } from "
 
 import type { WorkflowState } from "./quoteWorkflowTypes";
 import { canTransition } from "./quoteWorkflowTypes";
-
-const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 // ── Transition function ─────────────────────────────────────────────────────
 
@@ -61,11 +60,12 @@ export async function transitionQuote(
   if (updateErr) return { error: updateErr.message };
 
   // Log domain event
+  const companyId = await getCompanyId();
   await svc.from("domain_events").insert({
     type:           `quote.${to.replace("_", ".")}`,
     aggregate_type: "quote",
     aggregate_id:   quoteId,
-    company_id:     COMPANY_ID,
+    company_id:     companyId,
     actor_id:       actorId ?? null,
     payload:        { from, to, ...payload },
   });
@@ -85,10 +85,11 @@ async function onBetaaldReceived(
   svc: ReturnType<typeof createServiceClient>
 ) {
   // Notify all admins: klaar voor planning
+  const companyId = await getCompanyId();
   const { data: admins } = await svc
     .from("profiles")
     .select("id")
-    .eq("company_id", COMPANY_ID)
+    .eq("company_id", companyId)
     .eq("role", "admin");
 
   for (const admin of admins ?? []) {
