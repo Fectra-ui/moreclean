@@ -65,7 +65,7 @@ export async function getClientList(
   q = q.range(offset, offset + limit - 1);
 
   const { data, error, count } = await q;
-  if (error) throw error;
+  if (error) return { clients: [], total: 0 };
 
   const clients: ClientListItem[] = (data ?? []).map((c) => {
     const schedules = (c.maintenance_schedules as { id: string; active: boolean }[] | null) ?? [];

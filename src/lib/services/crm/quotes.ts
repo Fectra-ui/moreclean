@@ -23,7 +23,7 @@ export async function getQuotesList(
 
   if (status) q = q.eq("status", status);
   const { data, error } = await q;
-  if (error) throw error;
+  if (error) return [];
 
   return (data ?? []).map((q) => ({
     ...(q as unknown as QuoteWithItems),

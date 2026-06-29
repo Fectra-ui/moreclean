@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { getClientList } from "@/lib/services/crm/clients";
 import ClientTable from "./ClientTable";
 import Link from "next/link";
@@ -19,10 +18,7 @@ interface SearchParams {
 }
 
 export default async function KlantenPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
+  await requireAdmin();
   const sp = await searchParams;
   const page = parseInt(sp.page ?? "1") - 1;
   const limit = 25;

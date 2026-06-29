@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { getQuotesList } from "@/lib/services/crm/quotes";
 import Link from "next/link";
 import { PlusCircle, ExternalLink } from "lucide-react";
@@ -25,10 +24,7 @@ export default async function OffertesPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
+  await requireAdmin();
   const sp = await searchParams;
   const status = sp.status as "draft" | "sent" | "accepted" | "rejected" | "expired" | undefined;
 
