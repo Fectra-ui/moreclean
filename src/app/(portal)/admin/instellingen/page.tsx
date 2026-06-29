@@ -22,7 +22,11 @@ interface SectionCard {
 
 export default async function InstellingenPage() {
   const { profile } = await requireAdmin();
-  const status = await getSetupStatus();
+  const status = await getSetupStatus().catch(() => ({
+    bedrijf: false, units: false, diensten: false, medewerkers: false,
+    voertuigen: false, boekhouding: false, betalingen: false,
+    completionPct: 0, companyName: null,
+  }));
 
   const sections: SectionCard[] = [
     {

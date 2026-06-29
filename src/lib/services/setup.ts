@@ -57,20 +57,22 @@ export interface SetupStatus {
 export async function getSetupStatus(): Promise<SetupStatus> {
   const svc = createServiceClient();
 
-  const [companyRes, unitsRes, servicesRes, employeesRes, vehiclesRes] = await Promise.all([
-    svc.from("companies").select("name, kvk, iban, boekhouder_email").eq("id", COMPANY_ID).single(),
-    svc.from("business_units").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID).catch(() => ({ count: 0 })),
-    svc.from("services").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID).catch(() => ({ count: 0 })),
-    svc.from("profiles").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID).in("role", ["employee", "admin"]).catch(() => ({ count: 0 })),
-    svc.from("vehicles").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID).catch(() => ({ count: 0 })),
+  const count = (res: { count: number | null }) => res.count ?? 0;
+
+  const [companyRes, unitsCount, servicesCount, employeesCount, vehiclesCount] = await Promise.all([
+    Promise.resolve(svc.from("companies").select("name, kvk, iban, boekhouder_email").eq("id", COMPANY_ID).single()).catch(() => ({ data: null })),
+    Promise.resolve(svc.from("business_units").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID)).catch(() => ({ count: 0 })),
+    Promise.resolve(svc.from("services").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID)).catch(() => ({ count: 0 })),
+    Promise.resolve(svc.from("profiles").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID).in("role", ["employee", "admin"])).catch(() => ({ count: 0 })),
+    Promise.resolve(svc.from("vehicles").select("id", { count: "exact", head: true }).eq("company_id", COMPANY_ID)).catch(() => ({ count: 0 })),
   ]);
 
-  const company = companyRes.data;
+  const company = companyRes.data as { name: string | null; kvk: string | null; iban: string | null; boekhouder_email: string | null } | null;
   const bedrijf = !!(company?.name && company?.kvk);
-  const units = (unitsRes.count ?? 0) > 0;
-  const diensten = (servicesRes.count ?? 0) > 0;
-  const medewerkers = (employeesRes.count ?? 0) > 0;
-  const voertuigen = (vehiclesRes.count ?? 0) > 0;
+  const units = (unitsCount.count ?? 0) > 0;
+  const diensten = (servicesCount.count ?? 0) > 0;
+  const medewerkers = (employeesCount.count ?? 0) > 0;
+  const voertuigen = (vehiclesCount.count ?? 0) > 0;
   const boekhouding = !!company?.boekhouder_email;
   const betalingen = !!company?.iban;
 
