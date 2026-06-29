@@ -173,3 +173,15 @@ create policy "Signatures: employee upload for assigned"
       where appointment_id = (storage.foldername(name))[1]::uuid
     )
   );
+
+-- Company assets (logo, huisstijl) — public bucket, write via service role
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'company-assets', 'company-assets', true,
+  2097152, -- 2MB
+  array['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
+) on conflict (id) do nothing;
+
+create policy "Company assets: public read"
+  on storage.objects for select
+  using (bucket_id = 'company-assets');

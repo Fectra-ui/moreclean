@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getCompany, updateCompany } from "@/lib/services/crm/company";
 
 async function requireAdmin() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const svc = createServiceClient();
+  const { data: profile } = await svc.from("profiles").select("role").eq("id", user.id).single();
   return (profile as { role: string } | null)?.role === "admin" ? user : null;
 }
 
