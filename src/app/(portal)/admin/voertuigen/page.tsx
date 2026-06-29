@@ -35,13 +35,32 @@ export default async function VoertuigenPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#101536]">Voertuigen</h1>
-        <Link
-          href="/admin/planning"
-          className="rounded-2xl border border-[#101536]/10 bg-white px-4 py-2 text-sm font-semibold text-[#606774] shadow-sm transition hover:border-[#4D7EBA]/30 hover:text-[#4D7EBA]"
-        >
-          Toewijzingen vandaag
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/planning"
+            className="rounded-2xl border border-[#101536]/10 bg-white px-4 py-2 text-sm font-semibold text-[#606774] shadow-sm transition hover:border-[#4D7EBA]/30 hover:text-[#4D7EBA]"
+          >
+            Toewijzingen vandaag
+          </Link>
+          <Link
+            href="/admin/voertuigen/nieuw"
+            className="rounded-2xl bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] px-4 py-2 text-sm font-semibold text-white shadow-[0_6px_20px_rgba(77,126,186,.22)] transition hover:-translate-y-0.5"
+          >
+            + Nieuw voertuig
+          </Link>
+        </div>
       </div>
+
+      {stats.length === 0 && (
+        <div className="rounded-[24px] border border-white/60 bg-white/75 p-12 text-center backdrop-blur-xl shadow-sm">
+          <p className="text-sm font-semibold text-[#101536]">Nog geen voertuigen geregistreerd</p>
+          <p className="mt-1 text-sm text-[#606774]">Voeg je eerste voertuig toe om te beginnen met kilometerregistratie.</p>
+          <Link href="/admin/voertuigen/nieuw"
+            className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#4D7EBA] px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5">
+            + Nieuw voertuig
+          </Link>
+        </div>
+      )}
 
       {/* Meldingen */}
       {alerts.length > 0 && (
