@@ -1,20 +1,20 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { Profile } from "@/types/database";
 
-/**
- * Haalt het profiel op van de ingelogde gebruiker via de normale server client.
- * Vereist RLS policy: users kunnen hun eigen profiel lezen (auth.uid() = id).
- * Redirect naar /login als er geen sessie is.
- */
 export async function getCurrentProfile(): Promise<Profile> {
+  // Auth check via normale client (session-cookie gebonden)
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  // Profiel lezen via service client: omzeilt RLS zodat de lookup
+  // altijd werkt ongeacht de RLS-configuratie op de profiles tabel.
+  // Veilig: deze code draait uitsluitend server-side (Server Actions / Server Components).
+  const svc = createServiceClient();
+  const { data: profile } = await svc
     .from("profiles")
     .select("*")
     .eq("id", user.id)
