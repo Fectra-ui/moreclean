@@ -22,6 +22,9 @@ export default async function AdminDashboardPage() {
   const currentYear = new Date().getFullYear();
   const currentQuarter = Math.ceil((new Date().getMonth() + 1) / 3);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safe = (p: Promise<any>, fallback: any) => p.catch(() => fallback);
+
   const [
     invoiceStats,
     todayAppointments,
@@ -31,18 +34,19 @@ export default async function AdminDashboardPage() {
     buRevenue,
     expenseStats,
   ] = await Promise.all([
-    getInvoiceStats(COMPANY_ID),
-    getAppointmentsByDate(COMPANY_ID, today),
-    supabase.from("quotes").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).eq("status", "sent"),
-    supabase.from("messages").select("id", { count: "exact" }).is("read_at", null),
-    supabase.from("clients").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).gte("created_at", new Date().toISOString().slice(0, 7) + "-01"),
-    getBuRevenue(currentYear, currentQuarter),
-    getExpenseStats(currentYear, currentQuarter),
+    safe(getInvoiceStats(COMPANY_ID), { totalOpen: 0, totalOverdue: 0, revenueThisMonth: 0, countOpen: 0, countOverdue: 0 }),
+    safe(getAppointmentsByDate(COMPANY_ID, today), []),
+    Promise.resolve(supabase.from("quotes").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).eq("status", "sent")).catch(() => ({ count: 0 })),
+    Promise.resolve(supabase.from("messages").select("id", { count: "exact" }).is("read_at", null)).catch(() => ({ count: 0 })),
+    Promise.resolve(supabase.from("clients").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).gte("created_at", new Date().toISOString().slice(0, 7) + "-01")).catch(() => ({ count: 0 })),
+    safe(getBuRevenue(currentYear, currentQuarter), []),
+    safe(getExpenseStats(currentYear, currentQuarter), { total: 0, pendingApproval: 0, byType: { fuel: 0, maintenance: 0 } }),
   ]);
 
-  const scheduledToday = todayAppointments.filter((a) => a.status === "scheduled").length;
-  const inProgressToday = todayAppointments.filter((a) => a.status === "in_progress").length;
-  const completedToday = todayAppointments.filter((a) => a.status === "completed").length;
+  const apts = todayAppointments as Array<{ status: string }>;
+  const scheduledToday = apts.filter((a) => a.status === "scheduled").length;
+  const inProgressToday = apts.filter((a) => a.status === "in_progress").length;
+  const completedToday = apts.filter((a) => a.status === "completed").length;
 
   return (
     <div className="space-y-8">
@@ -107,7 +111,7 @@ export default async function AdminDashboardPage() {
             Omzet Q{currentQuarter} {currentYear} — per bedrijfsunit
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {buRevenue.map((bu) => {
+            {(buRevenue as import("@/lib/services/crm/businessUnits").BuRevenue[]).map((bu) => {
               const margin = bu.revenue > 0 ? ((bu.revenue - bu.costs) / bu.revenue) * 100 : 0;
               return (
                 <div key={bu.business_unit_id} className="rounded-2xl border border-[#101536]/08 bg-white p-5 shadow-sm">
@@ -190,7 +194,7 @@ export default async function AdminDashboardPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {todayAppointments.map((apt) => {
+            {(todayAppointments as import("@/types/database").AppointmentWithDetails[]).map((apt) => {
               const client = apt.clients as { contact_name: string; company_name: string | null; phone: string | null };
               const statusColor = {
                 scheduled: "bg-blue-100 text-blue-700",
