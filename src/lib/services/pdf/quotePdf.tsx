@@ -72,7 +72,7 @@ const euro = (n: number) => `€ ${n.toLocaleString("nl-NL", { minimumFractionDi
 
 interface Props {
   quote: Quote & { quote_items: QuoteItem[]; clients: Client; companies?: Company };
-  company: { name: string; address: string; email: string; phone: string; vat_number?: string; kvk?: string };
+  company: { name: string; address: string; email: string; phone: string; vat_number?: string; kvk?: string; logo_path?: string | null };
 }
 
 export function QuotePdf({ quote, company }: Props) {
@@ -93,7 +93,16 @@ export function QuotePdf({ quote, company }: Props) {
         {/* HEADER */}
         <View style={styles.header}>
           <View>
-            <Text style={[styles.label, { marginBottom: 2 }]}>{company.name}</Text>
+            {company.logo_path ? (
+              <>
+                <PdfImage src={company.logo_path} style={styles.logo} />
+                <Text style={[styles.label, { marginBottom: 2, marginTop: 4 }]}>{company.name}</Text>
+              </>
+            ) : (
+              <Text style={{ fontSize: 18, fontFamily: "Helvetica-Bold", color: "#101536", marginBottom: 6, letterSpacing: -0.5 }}>
+                {company.name.toUpperCase()}
+              </Text>
+            )}
             <Text style={styles.label}>{company.address}</Text>
             <Text style={styles.label}>{company.phone}</Text>
             <Text style={styles.label}>{company.email}</Text>

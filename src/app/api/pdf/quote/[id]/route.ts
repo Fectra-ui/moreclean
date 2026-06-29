@@ -52,6 +52,7 @@ export async function GET(
         phone: company.phone ?? "",
         kvk: company.kvk ?? undefined,
         vat_number: company.vat_number ?? undefined,
+        logo_path: company.logo_path ?? null,
       }
     : FALLBACK_COMPANY;
 

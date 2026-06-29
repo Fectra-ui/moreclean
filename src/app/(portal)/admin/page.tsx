@@ -8,7 +8,8 @@ import { getInvoiceStats } from "@/lib/services/invoices";
 import { getAppointmentsByDate } from "@/lib/services/appointments";
 import { getBuRevenue } from "@/lib/services/crm/businessUnits";
 import { getExpenseStats } from "@/lib/services/accounting/expenses";
-import { Calendar, Euro, FileText, Users, AlertTriangle, TrendingUp, MessageSquare, ClipboardList } from "lucide-react";
+import { Calendar, Euro, FileText, Users, AlertTriangle, TrendingUp, MessageSquare, ClipboardList, XCircle } from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 
@@ -57,6 +58,9 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* HEALTH CHECK */}
+      <PlatformHealthCheck companyId={COMPANY_ID} />
+
       {/* STATS GRID */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
@@ -258,6 +262,78 @@ export default async function AdminDashboardPage() {
           </div>
         )}
       </section>
+    </div>
+  );
+}
+
+async function PlatformHealthCheck({ companyId }: { companyId: string }) {
+  const { createClient } = await import("@/lib/supabase/server");
+  const { getCompany } = await import("@/lib/services/crm/company");
+
+  const supabase = await createClient();
+  const [company, vehiclesResult, employeesResult, clientsResult] = await Promise.all([
+    getCompany().catch(() => null),
+    supabase.from("vehicles").select("id", { count: "exact" }).eq("company_id", companyId).eq("status", "active"),
+    supabase.from("profiles").select("id", { count: "exact" }).eq("role", "employee"),
+    supabase.from("clients").select("id", { count: "exact" }).eq("company_id", companyId),
+  ]);
+
+  const checks = [
+    { label: "Bedrijfsnaam", ok: !!company?.name, href: "/admin/instellingen/bedrijf" },
+    { label: "Logo", ok: !!company?.logo_path, href: "/admin/instellingen/bedrijf" },
+    { label: "KVK-nummer", ok: !!company?.kvk, href: "/admin/instellingen/bedrijf" },
+    { label: "BTW-nummer", ok: !!company?.vat_number, href: "/admin/instellingen/bedrijf" },
+    { label: "IBAN", ok: !!company?.iban, href: "/admin/instellingen/bedrijf" },
+    { label: "E-mailadres", ok: !!company?.email, href: "/admin/instellingen/bedrijf" },
+    { label: "Boekhouder e-mail", ok: !!company?.boekhouder_email, href: "/admin/instellingen/bedrijf" },
+    { label: "Voertuig geregistreerd", ok: (vehiclesResult.count ?? 0) > 0, href: "/admin/voertuigen" },
+    { label: "Medewerker aangemaakt", ok: (employeesResult.count ?? 0) > 0, href: "/admin/medewerkers" },
+    { label: "Klant aangemaakt", ok: (clientsResult.count ?? 0) > 0, href: "/admin/klanten" },
+  ];
+
+  const score = checks.filter((c) => c.ok).length;
+  const pct = Math.round((score / checks.length) * 100);
+  const warnings = checks.filter((c) => !c.ok);
+
+  if (pct === 100) return null;
+
+  return (
+    <div className="rounded-[24px] border border-amber-200 bg-amber-50/70 p-5 backdrop-blur-xl">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100">
+            <AlertTriangle size={18} className="text-amber-600" />
+          </div>
+          <div>
+            <p className="font-semibold text-[#101536]">Platform volledigheid — {pct}%</p>
+            <p className="text-xs text-[#606774]">{score} van {checks.length} controles geslaagd</p>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="hidden sm:flex flex-1 max-w-xs flex-col gap-1">
+          <div className="h-2 rounded-full bg-amber-100 overflow-hidden">
+            <div className="h-full rounded-full bg-amber-400 transition-all" style={{ width: `${pct}%` }} />
+          </div>
+        </div>
+
+        <Link href="/admin/instellingen" className="shrink-0 rounded-2xl border border-amber-300 bg-white px-4 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-50">
+          Instellingen →
+        </Link>
+      </div>
+
+      {/* Warning list */}
+      {warnings.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {warnings.map((w) => (
+            <Link key={w.label} href={w.href}
+              className="flex items-center gap-1.5 rounded-full border border-amber-200 bg-white/80 px-3 py-1 text-xs font-medium text-amber-700 transition hover:bg-amber-50">
+              <XCircle size={12} className="text-amber-500" />
+              {w.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
