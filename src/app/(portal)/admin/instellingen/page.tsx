@@ -15,6 +15,7 @@ interface SectionCard {
   title: string;
   subtitle: string;
   href: string;
+  ready: boolean; // false = pagina bestaat nog niet
   status?: "ok" | "warning" | "pending";
   statusLabel?: string;
   color: string;
@@ -34,24 +35,17 @@ export default async function InstellingenPage() {
       title: "Bedrijf",
       subtitle: "Naam, adres, KVK, BTW, logo en branding",
       href: "/admin/instellingen/bedrijf",
+      ready: true,
       status: status.bedrijf ? "ok" : "warning",
       statusLabel: status.bedrijf ? "Ingevuld" : "Aanvullen",
       color: "text-[#4D7EBA] bg-[#4D7EBA]/10",
-    },
-    {
-      icon: FileText,
-      title: "Facturatie",
-      subtitle: "Nummering, BTW, betaaltermijnen en PDF-layout",
-      href: "/admin/instellingen/facturatie",
-      status: status.betalingen ? "ok" : "pending",
-      statusLabel: status.betalingen ? "Geconfigureerd" : "Instellen",
-      color: "text-violet-600 bg-violet-100",
     },
     {
       icon: Package,
       title: "Diensten",
       subtitle: "Catalogus van alle diensten met prijzen en eenheden",
       href: "/admin/diensten",
+      ready: false,
       status: status.diensten ? "ok" : "warning",
       statusLabel: status.diensten ? "Ingesteld" : "Nog leeg",
       color: "text-amber-600 bg-amber-100",
@@ -61,6 +55,7 @@ export default async function InstellingenPage() {
       title: "Bedrijfsunits",
       subtitle: "More Clean, More Media — eigen branding per unit",
       href: "/admin/instellingen/units",
+      ready: false,
       status: status.units ? "ok" : "pending",
       statusLabel: status.units ? "Actief" : "Aanmaken",
       color: "text-emerald-600 bg-emerald-100",
@@ -70,6 +65,7 @@ export default async function InstellingenPage() {
       title: "Medewerkers",
       subtitle: "Rollen, rechten, werkdagen en planning",
       href: "/admin/medewerkers",
+      ready: true,
       status: status.medewerkers ? "ok" : "pending",
       statusLabel: status.medewerkers ? "Actief" : "Toevoegen",
       color: "text-sky-600 bg-sky-100",
@@ -79,17 +75,29 @@ export default async function InstellingenPage() {
       title: "Voertuigen",
       subtitle: "Voertuigenpark, APK, onderhoud en kosten",
       href: "/admin/voertuigen",
+      ready: true,
       status: status.voertuigen ? "ok" : "pending",
       statusLabel: status.voertuigen ? "Geregistreerd" : "Toevoegen",
       color: "text-orange-600 bg-orange-100",
+    },
+    {
+      icon: FileText,
+      title: "Facturatie",
+      subtitle: "Nummering, BTW, betaaltermijnen en PDF-layout",
+      href: "/admin/instellingen/facturatie",
+      ready: false,
+      status: "pending",
+      statusLabel: "Binnenkort",
+      color: "text-violet-600 bg-violet-100",
     },
     {
       icon: Mail,
       title: "Communicatie",
       subtitle: "E-mail, SMS en WhatsApp — templates en SMTP",
       href: "/admin/instellingen/communicatie",
+      ready: false,
       status: "pending",
-      statusLabel: "Instellen",
+      statusLabel: "Binnenkort",
       color: "text-pink-600 bg-pink-100",
     },
     {
@@ -97,8 +105,9 @@ export default async function InstellingenPage() {
       title: "Betalingen",
       subtitle: "Mollie, Stripe, bankgegevens en automatische herinneringen",
       href: "/admin/instellingen/betalingen",
+      ready: false,
       status: status.betalingen ? "ok" : "warning",
-      statusLabel: status.betalingen ? "Geconfigureerd" : "Instellen",
+      statusLabel: status.betalingen ? "Geconfigureerd" : "Binnenkort",
       color: "text-teal-600 bg-teal-100",
     },
     {
@@ -106,8 +115,9 @@ export default async function InstellingenPage() {
       title: "Boekhouding",
       subtitle: "Boekhouder, kwartaalexport, Moneybird en Exact",
       href: "/admin/instellingen/boekhouding",
+      ready: false,
       status: status.boekhouding ? "ok" : "pending",
-      statusLabel: status.boekhouding ? "Gekoppeld" : "Instellen",
+      statusLabel: status.boekhouding ? "Gekoppeld" : "Binnenkort",
       color: "text-indigo-600 bg-indigo-100",
     },
     {
@@ -115,6 +125,7 @@ export default async function InstellingenPage() {
       title: "Automatiseringen",
       subtitle: "Workflows na offerte, afspraak en betaling",
       href: "/admin/instellingen/automatiseringen",
+      ready: false,
       status: "pending",
       statusLabel: "Binnenkort",
       color: "text-gray-600 bg-gray-100",
@@ -169,40 +180,51 @@ export default async function InstellingenPage() {
       <div className="grid gap-3 sm:grid-cols-2">
         {sections.map((section) => {
           const Icon = section.icon;
+          const inner = (
+            <>
+              <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl ${section.color} ${!section.ready ? "opacity-50" : ""}`}>
+                <Icon size={20} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`font-semibold ${section.ready ? "text-[#101536]" : "text-[#606774]"}`}>{section.title}</p>
+                <p className="text-xs text-[#606774] mt-0.5 truncate">{section.subtitle}</p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {section.status === "ok" && (
+                  <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
+                    <CheckCircle2 size={10} /> {section.statusLabel}
+                  </span>
+                )}
+                {section.status === "warning" && (
+                  <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-700">
+                    <AlertTriangle size={10} /> {section.statusLabel}
+                  </span>
+                )}
+                {section.status === "pending" && (
+                  <span className="flex items-center gap-1 rounded-full bg-[#F3F5F7] px-2.5 py-1 text-[10px] font-bold text-[#606774]">
+                    <Clock size={10} /> {section.statusLabel}
+                  </span>
+                )}
+                {section.ready && <ChevronRight size={16} className="text-[#606774] transition group-hover:translate-x-0.5" />}
+              </div>
+            </>
+          );
+
+          if (!section.ready) {
+            return (
+              <div key={section.title} className="flex items-center gap-4 rounded-[20px] border border-white/60 bg-white/60 p-5 opacity-60 cursor-not-allowed">
+                {inner}
+              </div>
+            );
+          }
+
           return (
             <Link
               key={section.title}
               href={section.href}
               className="group flex items-center gap-4 rounded-[20px] border border-white/60 bg-white/85 p-5 shadow-[0_2px_8px_rgba(16,21,54,.04)] backdrop-blur-xl transition hover:shadow-[0_8px_24px_rgba(16,21,54,.08)] hover:-translate-y-0.5"
             >
-              <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl ${section.color}`}>
-                <Icon size={20} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-[#101536]">{section.title}</p>
-                <p className="text-xs text-[#606774] mt-0.5 truncate">{section.subtitle}</p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {section.status === "ok" && (
-                  <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
-                    <CheckCircle2 size={10} />
-                    {section.statusLabel}
-                  </span>
-                )}
-                {section.status === "warning" && (
-                  <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-700">
-                    <AlertTriangle size={10} />
-                    {section.statusLabel}
-                  </span>
-                )}
-                {section.status === "pending" && (
-                  <span className="flex items-center gap-1 rounded-full bg-[#F3F5F7] px-2.5 py-1 text-[10px] font-bold text-[#606774]">
-                    <Clock size={10} />
-                    {section.statusLabel}
-                  </span>
-                )}
-                <ChevronRight size={16} className="text-[#606774] transition group-hover:translate-x-0.5" />
-              </div>
+              {inner}
             </Link>
           );
         })}
