@@ -3,8 +3,7 @@
 import { useState, useTransition } from "react";
 import {
   CheckCircle2, ChevronRight, ChevronLeft, Building2, Package,
-  Layers, Users, Truck, CreditCard, BarChart2, Sparkles,
-  ArrowRight, Loader2, SkipForward,
+  Sparkles, ArrowRight, Loader2, SkipForward,
 } from "lucide-react";
 import { saveCompanyInfo, importServices, skipStep, completeSetup } from "./actions";
 import { STARTER_SERVICES, BRANCH_TEMPLATES } from "@/lib/data/service-templates";
@@ -15,13 +14,8 @@ import type { SetupProgress, SetupStepKey } from "@/lib/services/setup";
 // To add a new step: append an entry here. The wizard picks up the
 // order automatically, handles resume, and shows it in the progress bar.
 const STEP_REGISTRY: { id: SetupStepKey; label: string; icon: React.ElementType; skippable: boolean }[] = [
-  { id: "company",    label: "Bedrijfsgegevens", icon: Building2,  skippable: false },
-  { id: "services",   label: "Diensten",          icon: Package,    skippable: true  },
-  { id: "units",      label: "Bedrijfsunits",     icon: Layers,     skippable: true  },
-  { id: "employees",  label: "Medewerkers",       icon: Users,      skippable: true  },
-  { id: "vehicles",   label: "Voertuigen",        icon: Truck,      skippable: true  },
-  { id: "payments",   label: "Betalingen",        icon: CreditCard, skippable: true  },
-  { id: "accounting", label: "Boekhouding",       icon: BarChart2,  skippable: true  },
+  { id: "company",  label: "Bedrijfsgegevens", icon: Building2, skippable: false },
+  { id: "services", label: "Diensten",          icon: Package,   skippable: true  },
 ];
 
 // ── Props ──────────────────────────────────────────────────────
@@ -86,11 +80,10 @@ export default function SetupWizard({ initialCompany, initialProgress }: Props) 
           <p className="mt-3 text-[#606774] max-w-md mx-auto">
             Richt je platform in een paar stappen in. Elke stap slaat direct op — je kunt de wizard altijd pauzeren en later hervatten.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+          <div className="mt-8 grid grid-cols-2 gap-4 text-center max-w-xs mx-auto">
             {[
               { icon: "📋", label: "Bedrijfsgegevens", sub: "Naam, KVK, IBAN" },
               { icon: "🧽", label: "Diensten", sub: "In 30 seconden klaar" },
-              { icon: "🚀", label: "Start", sub: "Dashboard openen" },
             ].map((item) => (
               <div key={item.label} className="rounded-2xl bg-[#F3F5F7] p-4">
                 <div className="text-2xl mb-1">{item.icon}</div>
@@ -230,22 +223,6 @@ export default function SetupWizard({ initialCompany, initialProgress }: Props) 
           />
         )}
 
-        {/* Placeholder steps: units, employees, vehicles, payments, accounting */}
-        {["units", "employees", "vehicles", "payments", "accounting"].includes(currentDef.id) && (
-          <PlaceholderStep
-            stepDef={currentDef}
-            isPending={isPending}
-            alreadyDone={!!progress[currentDef.id]}
-            onSkip={() => {
-              startTransition(async () => {
-                await skipStep(currentDef.id);
-                markDone(currentDef.id);
-                advance();
-              });
-            }}
-            onBack={goBack}
-          />
-        )}
 
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
@@ -498,41 +475,6 @@ function ServicesStep({
         </button>
         <PrimaryButton onClick={handleNext} isPending={isPending}>
           Verder <ChevronRight size={16} />
-        </PrimaryButton>
-      </div>
-    </div>
-  );
-}
-
-function PlaceholderStep({
-  stepDef, isPending, alreadyDone, onSkip, onBack,
-}: {
-  stepDef: { id: SetupStepKey; label: string; icon: React.ElementType };
-  isPending: boolean;
-  alreadyDone: boolean;
-  onSkip: () => void;
-  onBack: () => void;
-}) {
-  const Icon = stepDef.icon;
-  return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-dashed border-[#101536]/15 bg-[#F3F5F7]/60 p-8 text-center">
-        <Icon size={28} className="mx-auto mb-3 text-[#95AEC1]" />
-        <p className="text-sm font-semibold text-[#101536]">
-          {alreadyDone ? `${stepDef.label} al ingesteld` : `${stepDef.label} — binnenkort`}
-        </p>
-        <p className="mt-1 text-sm text-[#606774]">
-          {alreadyDone
-            ? "Je kunt dit later aanpassen via Instellingen."
-            : "Deze stap wordt binnenkort uitgebouwd. Sla over en stel later in via Instellingen."}
-        </p>
-      </div>
-      <div className="flex justify-between pt-2">
-        <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-[#606774] hover:text-[#101536] transition">
-          <ChevronLeft size={16} /> Terug
-        </button>
-        <PrimaryButton onClick={onSkip} isPending={isPending} variant="secondary">
-          {alreadyDone ? <>Verder <ChevronRight size={16} /></> : <><SkipForward size={15} /> Overslaan</>}
         </PrimaryButton>
       </div>
     </div>
