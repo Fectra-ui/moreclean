@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { redirect } from "next/navigation";
 import { getAppointmentFull } from "@/lib/services/planning/execution";
@@ -22,15 +22,16 @@ export default async function NieuweFactuurPage({
 
   const { appointment: appointmentId, quote: quoteId } = await searchParams;
 
+  const svc = createServiceClient();
   const [clientsResult, servicesResult] = await Promise.all([
-    supabase
+    svc
       .from("clients")
       .select("id, contact_name, company_name, address, city, payment_terms")
       .eq("company_id", companyId)
       .eq("active", true)
       .order("contact_name")
       .limit(500),
-    supabase
+    svc
       .from("services")
       .select("id, name, default_price, vat_rate")
       .eq("company_id", companyId)
@@ -58,7 +59,7 @@ export default async function NieuweFactuurPage({
 
   // Pre-fill from accepted quote
   if (quoteId && !defaultClientId) {
-    const { data: q } = await supabase
+    const { data: q } = await svc
       .from("quotes")
       .select("client_id, quote_items(description, quantity, unit_price)")
       .eq("id", quoteId)
