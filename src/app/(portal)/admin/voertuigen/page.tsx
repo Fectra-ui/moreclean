@@ -41,7 +41,7 @@ export default async function VoertuigenPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#101536]">Voertuigen</h1>
         <Link
-          href="/admin/voertuigen/toewijzingen"
+          href="/admin/planning"
           className="rounded-2xl border border-[#101536]/10 bg-white px-4 py-2 text-sm font-semibold text-[#606774] shadow-sm transition hover:border-[#4D7EBA]/30 hover:text-[#4D7EBA]"
         >
           Toewijzingen vandaag
