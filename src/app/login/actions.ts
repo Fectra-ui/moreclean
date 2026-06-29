@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth/requireAdmin";
+import { redirect } from "next/navigation";
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
@@ -14,9 +14,7 @@ export async function loginAction(formData: FormData) {
 
   if (error) return { error: "E-mailadres of wachtwoord onjuist." };
 
-  // getCurrentProfile maakt profiel aan als het ontbreekt, en geeft de rol terug
   const profile = await getCurrentProfile();
-
   const role = profile.role;
   const destination = redirectTo
     || (role === "admin" ? "/admin" : role === "employee" ? "/medewerker" : "/klant");
