@@ -14,13 +14,16 @@ export async function markStepComplete(step: SetupStepKey): Promise<void> {
   await requireAdmin();
   const svc = createServiceClient();
 
-  // Merge into existing jsonb column
-  await svc.rpc("jsonb_set_key", {
-    target_id: COMPANY_ID,
-    key: step,
-    value: true,
-  }).catch(async () => {
-    // Fallback: read-modify-write (rpc may not exist yet)
+  try {
+    // Try RPC first (faster atomic update); ignore if it doesn't exist yet
+    const { error: rpcErr } = await svc.rpc("jsonb_set_key", {
+      target_id: COMPANY_ID,
+      key: step,
+      value: true,
+    });
+    if (!rpcErr) return;
+
+    // Fallback: read-modify-write
     const { data } = await svc
       .from("companies")
       .select("setup_progress")
@@ -31,7 +34,9 @@ export async function markStepComplete(step: SetupStepKey): Promise<void> {
       .from("companies")
       .update({ setup_progress: { ...current, [step]: true } })
       .eq("id", COMPANY_ID);
-  });
+  } catch {
+    // Never crash the wizard over a progress-tracking failure
+  }
 }
 
 export async function completeSetup(): Promise<void> {
@@ -39,8 +44,7 @@ export async function completeSetup(): Promise<void> {
   const svc = createServiceClient();
   await svc
     .from("companies")
-    .update({ setup_completed_at: new Date().toISOString() })
-    .eq("id", COMPANY_ID);
+    .upsert({ id: COMPANY_ID, setup_completed_at: new Date().toISOString() });
   redirect("/admin");
 }
 
@@ -66,7 +70,7 @@ export async function saveCompanyInfo(formData: FormData): Promise<{ error: stri
 
   const { error } = await svc
     .from("companies")
-    .update({ ...patch, updated_at: new Date().toISOString() })
+    .upsert({ id: COMPANY_ID, ...patch, updated_at: new Date().toISOString() })
     .eq("id", COMPANY_ID);
 
   if (error) return { error: error.message };
