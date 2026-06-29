@@ -51,28 +51,31 @@ export default function Navbar() {
             px-4
             py-2.5
             md:px-6
-            md:py-4
+            md:py-3.5
             transition-all
             duration-500
             ease-out
 
             ${
               scrolled || open
-                ? "border-white/40 bg-white/[0.88] shadow-[0_12px_50px_rgba(0,0,0,.12)] shadow-black/10 backdrop-blur-[34px]"
-                : "border-white/25 bg-white/[0.22] shadow-[0_10px_40px_rgba(0,0,0,.10)] backdrop-blur-[26px]"
+                ? "border-white/50 bg-white/80 shadow-[0_8px_32px_rgba(0,0,0,.10),0_1px_0_rgba(255,255,255,.9)_inset] backdrop-blur-2xl"
+                : "border-white/35 bg-white/[0.07] shadow-[0_8px_32px_rgba(0,0,0,.12),0_1px_0_rgba(255,255,255,.55)_inset] backdrop-blur-md"
             }
 
             before:absolute
-            before:inset-0
-            before:rounded-[inherit]
-            before:bg-[linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.06))]
+            before:inset-x-0
+            before:top-0
+            before:h-px
+            before:rounded-t-[24px]
+            before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent)]
             before:pointer-events-none
 
             after:absolute
-            after:inset-[1px]
-            after:rounded-[22px]
-            after:border
-            after:border-white/20
+            after:inset-x-0
+            after:bottom-0
+            after:h-px
+            after:rounded-b-[24px]
+            after:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)]
             after:pointer-events-none
           `}
         >
