@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Circle } from "lucide-react";
-import { WORKFLOW_STEPS, type WorkflowState } from "@/lib/services/workflow/quoteWorkflow";
+import { WORKFLOW_STEPS, type WorkflowState } from "@/lib/services/workflow/quoteWorkflowTypes";
 
 interface Props {
   currentState: WorkflowState;

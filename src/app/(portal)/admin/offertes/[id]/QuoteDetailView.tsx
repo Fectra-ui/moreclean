@@ -8,7 +8,7 @@ import {
   Calendar, Play, PackageCheck, ReceiptText,
 } from "lucide-react";
 import WorkflowStepper from "@/components/portal/WorkflowStepper";
-import type { WorkflowState } from "@/lib/services/workflow/quoteWorkflow";
+import type { WorkflowState } from "@/lib/services/workflow/quoteWorkflowTypes";
 
 interface QuoteItem {
   id: string;

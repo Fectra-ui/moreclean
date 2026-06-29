@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, CheckCircle2, XCircle, FileDown, Loader2, Banknote, AlertCircle, Smartphone } from "lucide-react";
 import WorkflowStepper from "@/components/portal/WorkflowStepper";
-import type { WorkflowState } from "@/lib/services/workflow/quoteWorkflow";
+import type { WorkflowState } from "@/lib/services/workflow/quoteWorkflowTypes";
 
 interface QuoteItem {
   id: string;
