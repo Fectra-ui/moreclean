@@ -62,7 +62,7 @@ export default function PortalNav({ role }: { role: UserRole }) {
       {/* LOGO */}
       <div className="flex h-16 items-center border-b border-[#101536]/06 px-6">
         <Link href="/" className="flex items-center">
-          <Image src="/images/logo.png" alt="More Clean" width={100} height={36} className="h-auto w-auto" />
+          <Image src="/images/logo.png" alt="More Clean" width={44} height={44} className="h-auto w-auto" />
         </Link>
       </div>
 

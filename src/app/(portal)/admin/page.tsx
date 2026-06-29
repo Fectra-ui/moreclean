@@ -214,7 +214,7 @@ export default async function AdminDashboardPage() {
               return (
                 <a
                   key={apt.id}
-                  href={`/portal/admin/afspraken/${apt.id}`}
+                  href={`/admin/afspraken/${apt.id}`}
                   className="flex items-center justify-between rounded-[20px] border border-white/60 bg-white/75 p-5 shadow-[0_4px_16px_rgba(16,21,54,.05)] backdrop-blur-xl transition hover:shadow-[0_8px_24px_rgba(16,21,54,.08)] hover:-translate-y-0.5"
                 >
                   <div className="flex items-center gap-5">
