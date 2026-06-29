@@ -17,7 +17,7 @@ export default async function BtwPage({
 }: {
   searchParams: Promise<{ year?: string }>;
 }) {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
 
   const params = await searchParams;
   const year = params.year ? Number(params.year) : new Date().getFullYear();

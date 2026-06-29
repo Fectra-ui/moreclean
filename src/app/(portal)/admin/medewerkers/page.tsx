@@ -8,7 +8,7 @@ import InviteModal from "./InviteModal";
 export const metadata: Metadata = { title: "Medewerkers" };
 
 export default async function MedewerkersPage() {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
   const supabase = createServiceClient();
 
   const { data: employees } = await supabase

@@ -14,7 +14,7 @@ export default async function KilometersPage({
 }: {
   searchParams: Promise<{ year?: string; month?: string; quarter?: string; employee?: string }>;
 }) {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
 
   const params = await searchParams;
   const year = params.year ? Number(params.year) : new Date().getFullYear();

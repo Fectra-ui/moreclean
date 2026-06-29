@@ -14,7 +14,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 
 export default async function VoertuigDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
 
   const { vehicle, logs, receipts } = await getVehicleDetail(id);
   if (!vehicle) notFound();

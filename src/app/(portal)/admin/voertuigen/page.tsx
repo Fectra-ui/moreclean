@@ -19,7 +19,7 @@ const URGENCY_COLOR: Record<string, string> = {
 };
 
 export default async function VoertuigenPage() {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
 
   const today = new Date().toISOString().split("T")[0];
   const [stats, assignments] = await Promise.all([

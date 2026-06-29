@@ -33,7 +33,7 @@ export default async function BonnetjesPage({
 }: {
   searchParams: Promise<{ year?: string; quarter?: string }>;
 }) {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
 
   const params = await searchParams;
   const year = params.year ? Number(params.year) : new Date().getFullYear();

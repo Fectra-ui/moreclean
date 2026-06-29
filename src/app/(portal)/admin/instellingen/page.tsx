@@ -9,7 +9,7 @@ import CompanySettingsForm from "./CompanySettingsForm";
 export const metadata: Metadata = { title: "Instellingen" };
 
 export default async function InstellingenPage() {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
 
   const [company, units] = await Promise.all([
     getCompany(),

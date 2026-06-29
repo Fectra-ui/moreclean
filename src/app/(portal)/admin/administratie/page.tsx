@@ -22,7 +22,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export default async function AdministratiePage() {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
 
   const year = new Date().getFullYear();
   const quarters = await getAllQuarterStats(year);

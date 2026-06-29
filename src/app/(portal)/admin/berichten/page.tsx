@@ -8,7 +8,7 @@ import { MessageSquare } from "lucide-react";
 export const metadata: Metadata = { title: "Berichten" };
 
 export default async function AdminBerichtenPage() {
-  const { user } = await requireAdmin();
+  const { profile } = await requireAdmin();
   const supabase = await createClient();
 
   const { data: conversations } = await supabase
@@ -31,7 +31,7 @@ export default async function AdminBerichtenPage() {
   const unreadByConv: Record<string, number> = {};
   (allMessages ?? []).forEach((m) => {
     if (!latestByConv[m.conversation_id]) latestByConv[m.conversation_id] = m;
-    if (!m.read_at && m.sender_id !== user.id) {
+    if (!m.read_at && m.sender_id !== profile.id) {
       unreadByConv[m.conversation_id] = (unreadByConv[m.conversation_id] ?? 0) + 1;
     }
   });
@@ -60,7 +60,7 @@ export default async function AdminBerichtenPage() {
             latest: latestByConv[c.id] ?? null,
             unread: unreadByConv[c.id] ?? 0,
           }))}
-          currentUserId={user.id}
+          currentUserId={profile.id}
         />
       )}
     </div>
