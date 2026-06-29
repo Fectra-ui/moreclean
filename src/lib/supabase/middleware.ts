@@ -70,22 +70,5 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Redirect logged-in users away from login
-  if (user && pathname === "/login") {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    const role = profile?.role;
-    const destination =
-      role === "admin" ? "/admin" :
-      role === "employee" ? "/medewerker" :
-      "/klant";
-
-    return NextResponse.redirect(new URL(destination, request.url));
-  }
-
   return supabaseResponse;
 }

@@ -10,6 +10,5 @@ export const config = {
     "/admin/:path*",
     "/klant/:path*",
     "/medewerker/:path*",
-    "/login",
   ],
 };
