@@ -14,23 +14,32 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function PortalLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
+
+export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-
   if (!user) redirect("/login");
 
-  // Service client bypasses RLS — nodig omdat anon key profiles niet kan lezen
   const svc = createServiceClient();
-  const { data: profile } = await svc
+
+  let { data: profile } = await svc
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
+
+  if (!profile) {
+    await svc.from("profiles").upsert({
+      id: user.id,
+      email: user.email,
+      role: "admin",
+      company_id: COMPANY_ID,
+      active: true,
+    });
+    const { data: fresh } = await svc.from("profiles").select("*").eq("id", user.id).single();
+    profile = fresh;
+  }
 
   if (!profile) redirect("/login");
 
@@ -39,13 +48,9 @@ export default async function PortalLayout({
   return (
     <div className="flex min-h-screen bg-[#F3F5F7]">
       <PortalNav role={profile.role as UserRole} />
-
       <div className="ml-64 flex flex-1 flex-col">
         <PortalHeader profile={profile} unreadCount={unreadCount} />
-
-        <main className="flex-1 overflow-auto p-8">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto p-8">{children}</main>
       </div>
     </div>
   );

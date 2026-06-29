@@ -32,16 +32,14 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh session — do not remove this
+  // Refresh session — verplicht voor Supabase SSR
   const { data: { user } } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-
-  // Routes that require authentication
-  // Note: (portal) route group removes URL segment, so routes are /admin, /klant, /medewerker
   const portalPrefixes = ["/admin", "/klant", "/medewerker"];
   const isPortalRoute = portalPrefixes.some((r) => pathname === r || pathname.startsWith(r + "/"));
 
+  // Niet ingelogd → naar login
   if (isPortalRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -49,32 +47,6 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Role-based access control — service client bypasses RLS
-  if (user && isPortalRoute) {
-    const { createClient: createSvc } = require("@supabase/supabase-js");
-    const svc = createSvc(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    );
-    const { data: profile } = await svc
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    const role = profile?.role;
-
-    // Admin routes — only admins allowed
-    if ((pathname === "/admin" || pathname.startsWith("/admin/")) && role !== "admin") {
-      return NextResponse.redirect(new URL("/klant", request.url));
-    }
-
-    // Employee routes — employees and admins allowed
-    if ((pathname === "/medewerker" || pathname.startsWith("/medewerker/")) && role !== "employee" && role !== "admin") {
-      return NextResponse.redirect(new URL("/klant", request.url));
-    }
-  }
-
+  // Role-check gebeurt in de portal layout (heeft toegang tot service client)
   return supabaseResponse;
 }
