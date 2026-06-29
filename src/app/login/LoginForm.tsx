@@ -41,8 +41,7 @@ export default function LoginForm() {
     const destination = redirect
       || (role === "admin" ? "/admin" : role === "employee" ? "/medewerker" : "/klant");
 
-    router.push(destination);
-    router.refresh();
+    window.location.href = destination;
   }
 
   async function handleForgotPassword() {
