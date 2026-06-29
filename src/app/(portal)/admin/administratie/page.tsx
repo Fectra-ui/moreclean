@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { redirect } from "next/navigation";
 import { getAllQuarterStats } from "@/lib/services/accounting/quarterExport";
 import Link from "next/link";
@@ -22,12 +22,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 export default async function AdministratiePage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if ((profile as { role: string } | null)?.role !== "admin") redirect("/klant");
+  const { user } = await requireAdmin();
 
   const year = new Date().getFullYear();
   const quarters = await getAllQuarterStats(year);

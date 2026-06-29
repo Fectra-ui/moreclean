@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { redirect } from "next/navigation";
 import { getBusinessUnits } from "@/lib/services/crm/businessUnits";
 import { getCompany } from "@/lib/services/crm/company";
@@ -9,12 +9,7 @@ import CompanySettingsForm from "./CompanySettingsForm";
 export const metadata: Metadata = { title: "Instellingen" };
 
 export default async function InstellingenPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if ((profile as { role: string } | null)?.role !== "admin") redirect("/klant");
+  const { user } = await requireAdmin();
 
   const [company, units] = await Promise.all([
     getCompany(),

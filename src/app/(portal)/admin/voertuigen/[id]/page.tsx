@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { redirect, notFound } from "next/navigation";
 import { getVehicleDetail, computeAlerts } from "@/lib/services/mileage/vehicles";
 import Link from "next/link";
@@ -14,12 +14,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 
 export default async function VoertuigDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if ((profile as { role: string } | null)?.role !== "admin") redirect("/klant");
+  const { user } = await requireAdmin();
 
   const { vehicle, logs, receipts } = await getVehicleDetail(id);
   if (!vehicle) notFound();

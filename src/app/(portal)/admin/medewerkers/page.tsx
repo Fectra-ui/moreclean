@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
+import { createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Users } from "lucide-react";
 import InviteModal from "./InviteModal";
@@ -7,12 +8,8 @@ import InviteModal from "./InviteModal";
 export const metadata: Metadata = { title: "Medewerkers" };
 
 export default async function MedewerkersPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if ((profile as { role: string } | null)?.role !== "admin") redirect("/klant");
+  const { user } = await requireAdmin();
+  const supabase = createServiceClient();
 
   const { data: employees } = await supabase
     .from("profiles")
@@ -29,7 +26,7 @@ export default async function MedewerkersPage() {
     .gte("scheduled_date", monthStart);
 
   const countByEmployee: Record<string, number> = {};
-  (completions ?? []).forEach((a) => {
+  (completions ?? []).forEach((a: Record<string, unknown>) => {
     ((a.employee_ids as string[]) ?? []).forEach((eid) => {
       countByEmployee[eid] = (countByEmployee[eid] ?? 0) + 1;
     });
@@ -52,7 +49,7 @@ export default async function MedewerkersPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {employees.map((emp) => {
+          {(employees as Array<{ id: string; first_name: string | null; last_name: string | null; phone: string | null; created_at: string; role: string }>).map((emp) => {
             const name = [emp.first_name, emp.last_name].filter(Boolean).join(" ") || "Onbekend";
             const initials = [emp.first_name?.[0], emp.last_name?.[0]].filter(Boolean).join("").toUpperCase() || "?";
             const completed = countByEmployee[emp.id] ?? 0;

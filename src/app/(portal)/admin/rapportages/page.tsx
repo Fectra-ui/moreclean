@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getBusinessHealth, getClientProfitability } from "@/lib/services/accounting/expenses";
@@ -9,12 +10,8 @@ export const metadata: Metadata = { title: "Rapportages" };
 const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 export default async function RapportagesPage() {
+  await requireAdmin();
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if ((profile as { role: string } | null)?.role !== "admin") redirect("/klant");
 
   const currentYear = new Date().getFullYear();
 

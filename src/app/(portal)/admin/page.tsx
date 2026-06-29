@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import StatCard from "@/components/portal/StatCard";
@@ -13,12 +14,8 @@ export const metadata: Metadata = { title: "Admin Dashboard" };
 const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
 
 export default async function AdminDashboardPage() {
+  await requireAdmin();
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") redirect("/klant");
 
   const today = new Date().toISOString().split("T")[0];
 

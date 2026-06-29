@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { redirect } from "next/navigation";
 import { getVehicleStats, getAssignmentsForDate, computeAlerts } from "@/lib/services/mileage/vehicles";
 import Link from "next/link";
@@ -19,12 +19,7 @@ const URGENCY_COLOR: Record<string, string> = {
 };
 
 export default async function VoertuigenPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if ((profile as { role: string } | null)?.role !== "admin") redirect("/klant");
+  const { user } = await requireAdmin();
 
   const today = new Date().toISOString().split("T")[0];
   const [stats, assignments] = await Promise.all([

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { redirect } from "next/navigation";
 import { getMileageLogs, getMileageStats } from "@/lib/services/mileage/mileage";
 import Link from "next/link";
@@ -14,12 +14,7 @@ export default async function KilometersPage({
 }: {
   searchParams: Promise<{ year?: string; month?: string; quarter?: string; employee?: string }>;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if ((profile as { role: string } | null)?.role !== "admin") redirect("/klant");
+  const { user } = await requireAdmin();
 
   const params = await searchParams;
   const year = params.year ? Number(params.year) : new Date().getFullYear();
