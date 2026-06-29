@@ -162,10 +162,17 @@ export interface Quote {
   client_id: string;
   quote_number: string;
   status: QuoteStatus;
+  workflow_state: string;
   valid_until: string | null;
   sent_at: string | null;
   accepted_at: string | null;
   rejected_at: string | null;
+  payment_received_at: string | null;
+  payment_reference: string | null;
+  planned_at: string | null;
+  work_started_at: string | null;
+  work_completed_at: string | null;
+  invoice_id: string | null;
   subject: string | null;
   intro_text: string | null;
   notes: string | null;

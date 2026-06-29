@@ -16,23 +16,37 @@ export default async function KlantOffertes() {
 
   const { data: quotes } = await supabase
     .from("quotes")
-    .select("id, quote_number, status, total, created_at, valid_until, quote_items(description)")
+    .select("id, quote_number, status, workflow_state, total, created_at, valid_until")
     .eq("client_id", client.id)
     .order("created_at", { ascending: false });
 
-  const statusLabel: Record<string, string> = {
-    draft: "Concept",
-    sent: "Wacht op goedkeuring",
-    accepted: "Geaccepteerd",
-    rejected: "Afgewezen",
-    expired: "Verlopen",
+  const wfLabel: Record<string, string> = {
+    concept:        "Concept",
+    verzonden:      "Wacht op goedkeuring",
+    akkoord:        "Akkoord gegeven",
+    wacht_betaling: "Wacht op betaling",
+    betaald:        "Betaald",
+    planning:       "Ingepland",
+    uitvoering:     "In uitvoering",
+    uitgevoerd:     "Uitgevoerd",
+    gefactureerd:   "Factuur ontvangen",
+    factuur_betaald:"Afgerond",
+    afgewezen:      "Afgewezen",
+    verlopen:       "Verlopen",
   };
-  const statusColor: Record<string, string> = {
-    draft: "bg-gray-100 text-gray-700",
-    sent: "bg-amber-100 text-amber-700",
-    accepted: "bg-emerald-100 text-emerald-700",
-    rejected: "bg-red-100 text-red-700",
-    expired: "bg-gray-100 text-gray-500",
+  const wfColor: Record<string, string> = {
+    concept:        "bg-gray-100 text-gray-600",
+    verzonden:      "bg-amber-100 text-amber-700",
+    akkoord:        "bg-blue-100 text-blue-700",
+    wacht_betaling: "bg-orange-100 text-orange-700",
+    betaald:        "bg-emerald-100 text-emerald-700",
+    planning:       "bg-blue-100 text-blue-700",
+    uitvoering:     "bg-blue-100 text-blue-700",
+    uitgevoerd:     "bg-emerald-100 text-emerald-700",
+    gefactureerd:   "bg-purple-100 text-purple-700",
+    factuur_betaald:"bg-emerald-100 text-emerald-800",
+    afgewezen:      "bg-red-100 text-red-700",
+    verlopen:       "bg-gray-100 text-gray-500",
   };
 
   return (
@@ -73,17 +87,16 @@ export default async function KlantOffertes() {
                     €{Number(q.total).toLocaleString("nl-NL", { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-5 py-4">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusColor[q.status] ?? "bg-gray-100 text-gray-700"}`}>
-                      {statusLabel[q.status] ?? q.status}
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${wfColor[q.workflow_state] ?? "bg-gray-100 text-gray-700"}`}>
+                      {wfLabel[q.workflow_state] ?? q.workflow_state}
                     </span>
                   </td>
                   <td className="px-5 py-4">
                     <Link
-                      href={`/api/pdf/quote/${q.id}`}
-                      target="_blank"
+                      href={`/klant/offertes/${q.id}`}
                       className="text-xs font-medium text-[#4D7EBA] hover:underline"
                     >
-                      Downloaden
+                      Bekijken
                     </Link>
                   </td>
                 </tr>
