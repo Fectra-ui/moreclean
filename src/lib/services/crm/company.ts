@@ -27,8 +27,8 @@ const ALLOWED_FIELDS: (keyof CompanyPatch)[] = [
 
 export async function getCompany(): Promise<CompanySettings | null> {
   const companyId = await getCompanyId();
-  const supabase = await createClient();
-  const { data } = await supabase
+  const svc = createServiceClient();
+  const { data } = await svc
     .from("companies")
     .select("id,name,kvk,vat_number,logo_path,address,postal_code,city,phone,email,iban,boekhouder_email,primary_color,site_url")
     .eq("id", companyId)
