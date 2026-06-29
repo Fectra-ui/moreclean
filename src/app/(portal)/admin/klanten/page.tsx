@@ -12,6 +12,7 @@ interface SearchParams {
   q?: string;
   active?: string;
   maintenance?: string;
+  type?: string;
   sort?: string;
   dir?: string;
   page?: string;
@@ -28,6 +29,7 @@ export default async function KlantenPage({ searchParams }: { searchParams: Prom
     query: sp.q,
     active: sp.active === "false" ? false : sp.active === "true" ? true : undefined,
     hasMaintenanceContract: sp.maintenance === "true" ? true : undefined,
+    clientType: (sp.type as "company" | "private") ?? undefined,
     sortBy: (sp.sort as "name" | "created_at") ?? "name",
     sortDir: (sp.dir as "asc" | "desc") ?? "asc",
     limit,
@@ -60,6 +62,7 @@ export default async function KlantenPage({ searchParams }: { searchParams: Prom
         initialQuery={sp.q ?? ""}
         initialActive={sp.active}
         initialMaintenance={sp.maintenance}
+        initialType={sp.type}
       />
     </div>
   );

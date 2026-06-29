@@ -3,6 +3,7 @@ import type { Client, ClientWithSchedules } from "@/types/database";
 
 export interface ClientListItem {
   id: string;
+  client_type: "company" | "private";
   contact_name: string;
   company_name: string | null;
   is_company: boolean;
@@ -21,6 +22,7 @@ export interface ClientFilters {
   query?: string;
   active?: boolean;
   hasMaintenanceContract?: boolean;
+  clientType?: "company" | "private";
   city?: string;
   sortBy?: "name" | "created_at" | "last_appointment" | "open_invoices";
   sortDir?: "asc" | "desc";
@@ -36,6 +38,7 @@ export async function getClientList(
   const {
     query,
     active,
+    clientType,
     sortBy = "name",
     sortDir = "asc",
     limit = 50,
@@ -45,7 +48,7 @@ export async function getClientList(
   let q = supabase
     .from("clients")
     .select(`
-      id, contact_name, company_name, is_company, email, phone, city, active, created_at,
+      id, client_type, contact_name, company_name, is_company, email, phone, city, active, created_at,
       maintenance_schedules!left (id, active),
       invoices!left (id, status, total),
       appointments!left (id, scheduled_date, status)
@@ -53,6 +56,7 @@ export async function getClientList(
     .eq("company_id", companyId);
 
   if (active !== undefined) q = q.eq("active", active);
+  if (clientType) q = q.eq("client_type", clientType);
   if (query) {
     q = q.or(
       `contact_name.ilike.%${query}%,company_name.ilike.%${query}%,email.ilike.%${query}%,phone.ilike.%${query}%,city.ilike.%${query}%`
@@ -79,6 +83,7 @@ export async function getClientList(
 
     return {
       id: c.id,
+      client_type: ((c as unknown as Record<string, string>).client_type ?? (c.is_company ? "company" : "private")) as "company" | "private",
       contact_name: c.contact_name,
       company_name: c.company_name,
       is_company: c.is_company,

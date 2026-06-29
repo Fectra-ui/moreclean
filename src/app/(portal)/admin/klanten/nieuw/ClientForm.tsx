@@ -11,7 +11,10 @@ export default function ClientForm({ defaultValues, companyId }: { defaultValues
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isCompany, setIsCompany] = useState(defaultValues?.is_company === "true");
+  const [clientType, setClientType] = useState<"company" | "private">(
+    defaultValues?.client_type === "private" ? "private" : "company"
+  );
+  const isCompany = clientType === "company";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,6 +28,7 @@ export default function ClientForm({ defaultValues, companyId }: { defaultValues
 
     const payload = {
       company_id: companyId ?? FALLBACK_COMPANY_ID,
+      client_type: clientType,
       is_company: isCompany,
       company_name: fd.get("company_name") as string || null,
       contact_name: fd.get("contact_name") as string,
@@ -55,15 +59,15 @@ export default function ClientForm({ defaultValues, companyId }: { defaultValues
         <label className="mb-2 block text-sm font-semibold text-[#101536]">Type klant</label>
         <div className="flex gap-2 rounded-2xl border border-[#101536]/10 bg-[#F3F5F7] p-1">
           {[
-            { label: "Particulier", value: false },
-            { label: "Bedrijf", value: true },
+            { label: "Particulier", value: "private" as const },
+            { label: "Bedrijf", value: "company" as const },
           ].map(({ label, value }) => (
             <button
               key={label}
               type="button"
-              onClick={() => setIsCompany(value)}
+              onClick={() => setClientType(value)}
               className={`flex-1 rounded-xl py-2 text-sm font-semibold transition ${
-                isCompany === value ? "bg-white shadow-sm text-[#101536]" : "text-[#606774]"
+                clientType === value ? "bg-white shadow-sm text-[#101536]" : "text-[#606774]"
               }`}
             >
               {label}

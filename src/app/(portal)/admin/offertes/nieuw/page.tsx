@@ -21,7 +21,7 @@ export default async function NieuweOffertePage({
   // Fetch clients for selector
   const { data: clients } = await supabase
     .from("clients")
-    .select("id, contact_name, company_name, email, phone, address, postal_code, city, vat_number")
+    .select("id, client_type, contact_name, company_name, email, phone, address, postal_code, city, vat_number")
     .eq("active", true)
     .order("contact_name");
 

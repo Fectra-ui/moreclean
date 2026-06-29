@@ -105,6 +105,7 @@ export interface Client {
   profile_id: string | null;
   company_id: string | null;
   branch_id: string | null;
+  client_type: "company" | "private";
   is_company: boolean;
   company_name: string | null;
   contact_name: string;

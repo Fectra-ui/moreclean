@@ -4,6 +4,7 @@ import { useState, useTransition, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import type { ClientListItem } from "@/lib/services/crm/clients";
+import { clientDisplayName, clientSubName } from "@/lib/utils/client";
 import {
   Search, Filter, Building2, User, RefreshCw,
   Euro, Calendar, CheckCircle, XCircle, ChevronLeft, ChevronRight,
@@ -18,6 +19,7 @@ interface Props {
   initialQuery: string;
   initialActive?: string;
   initialMaintenance?: string;
+  initialType?: string;
 }
 
 export default function ClientTable({
@@ -28,6 +30,7 @@ export default function ClientTable({
   initialQuery,
   initialActive,
   initialMaintenance,
+  initialType,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,6 +40,7 @@ export default function ClientTable({
   const [query, setQuery] = useState(initialQuery);
   const [activeFilter, setActiveFilter] = useState(initialActive ?? "");
   const [maintenanceFilter, setMaintenanceFilter] = useState(initialMaintenance ?? "");
+  const [typeFilter, setTypeFilter] = useState(initialType ?? "");
 
   const totalPages = Math.ceil(total / limit);
 
@@ -47,6 +51,7 @@ export default function ClientTable({
         q: query,
         active: activeFilter,
         maintenance: maintenanceFilter,
+        type: typeFilter,
         page: "1",
         ...overrides,
       };
@@ -87,6 +92,27 @@ export default function ClientTable({
               onClick={() => { setActiveFilter(value); applyFilters({ active: value }); }}
               className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
                 activeFilter === value
+                  ? "bg-[#4D7EBA] text-white shadow-sm"
+                  : "text-[#606774] hover:bg-[#F3F5F7]"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* FILTER: type */}
+        <div className="flex items-center gap-1 rounded-2xl border border-[#101536]/10 bg-white p-1">
+          {[
+            { label: "Alle", value: "" },
+            { label: "🏢 Bedrijven", value: "company" },
+            { label: "👤 Particulieren", value: "private" },
+          ].map(({ label, value }) => (
+            <button
+              key={value}
+              onClick={() => { setTypeFilter(value); applyFilters({ type: value }); }}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+                typeFilter === value
                   ? "bg-[#4D7EBA] text-white shadow-sm"
                   : "text-[#606774] hover:bg-[#F3F5F7]"
               }`}
@@ -152,17 +178,17 @@ export default function ClientTable({
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4D7EBA]/15 to-[#95AEC1]/15">
-                        {client.is_company
+                        {client.client_type === "company"
                           ? <Building2 size={16} className="text-[#4D7EBA]" />
                           : <User size={16} className="text-[#95AEC1]" />
                         }
                       </div>
                       <div>
                         <p className="font-semibold text-[#101536]">
-                          {client.company_name || client.contact_name}
+                          {clientDisplayName(client)}
                         </p>
-                        {client.company_name && (
-                          <p className="text-xs text-[#606774]">{client.contact_name}</p>
+                        {clientSubName(client) && (
+                          <p className="text-xs text-[#606774]">{clientSubName(client)}</p>
                         )}
                       </div>
                       {client.has_maintenance && (

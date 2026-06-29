@@ -2,11 +2,13 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, ChevronDown, Loader2, ExternalLink } from "lucide-react";
+import { Plus, Trash2, ChevronDown, Loader2, ExternalLink, Building2, User } from "lucide-react";
+import { clientDisplayName, clientSubName } from "@/lib/utils/client";
 import type { Service } from "@/types/database";
 
 interface ClientOption {
   id: string;
+  client_type?: "company" | "private";
   contact_name: string;
   company_name: string | null;
   email: string | null;
@@ -149,30 +151,11 @@ export default function QuoteEditor({
       <div className="space-y-6">
         {/* CLIENT SELECTOR */}
         <Card title="Klant">
-          <select
+          <ClientPicker
+            clients={clients}
             value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            className="w-full rounded-2xl border border-[#101536]/10 bg-[#F3F5F7] px-4 py-3 text-sm text-[#101536] outline-none focus:border-[#4D7EBA]/40 focus:bg-white focus:ring-2 focus:ring-[#4D7EBA]/10"
-          >
-            <option value="">— Selecteer klant —</option>
-            {clients.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.company_name || c.contact_name}
-                {c.email ? ` · ${c.email}` : ""}
-              </option>
-            ))}
-          </select>
-
-          {selectedClient && (
-            <div className="mt-3 rounded-2xl bg-[#F3F5F7]/60 p-4 text-sm">
-              <p className="font-semibold text-[#101536]">{selectedClient.company_name || selectedClient.contact_name}</p>
-              {selectedClient.address && (
-                <p className="text-[#606774]">{selectedClient.address}, {selectedClient.postal_code} {selectedClient.city}</p>
-              )}
-              {selectedClient.email && <p className="text-[#606774]">{selectedClient.email}</p>}
-              {selectedClient.vat_number && <p className="text-xs text-[#606774]">BTW: {selectedClient.vat_number}</p>}
-            </div>
-          )}
+            onChange={setClientId}
+          />
         </Card>
 
         {/* META */}
@@ -404,3 +387,88 @@ function TotalsRow({ label, value, color = "text-[#606774]" }: { label: string; 
 }
 
 const INPUT = "w-full rounded-2xl border border-[#101536]/10 bg-[#F3F5F7] px-4 py-3 text-sm text-[#101536] outline-none transition placeholder-[#606774]/50 focus:border-[#4D7EBA]/40 focus:bg-white focus:ring-2 focus:ring-[#4D7EBA]/10";
+
+function ClientPicker({ clients, value, onChange }: {
+  clients: ClientOption[];
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  const [search, setSearch] = useState("");
+  const selected = clients.find((c) => c.id === value) ?? null;
+  const filtered = search
+    ? clients.filter((c) =>
+        clientDisplayName(c).toLowerCase().includes(search.toLowerCase()) ||
+        (c.email ?? "").toLowerCase().includes(search.toLowerCase())
+      )
+    : clients;
+
+  return (
+    <div className="space-y-3">
+      <div className="relative">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Zoek klant op naam of e-mail..."
+          className={INPUT}
+        />
+      </div>
+
+      {search && (
+        <div className="max-h-52 overflow-y-auto rounded-2xl border border-[#101536]/10 bg-white shadow-lg">
+          {filtered.length === 0 && (
+            <p className="px-4 py-3 text-sm text-[#606774]">Geen klanten gevonden</p>
+          )}
+          {filtered.map((c) => {
+            const isComp = c.client_type === "company" || (!c.client_type && !!c.company_name);
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { onChange(c.id); setSearch(""); }}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-[#F3F5F7] border-b border-[#101536]/04 last:border-0"
+              >
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#F3F5F7]">
+                  {isComp ? <Building2 size={14} className="text-[#4D7EBA]" /> : <User size={14} className="text-[#95AEC1]" />}
+                </div>
+                <div>
+                  <p className="font-semibold text-[#101536]">{clientDisplayName(c)}</p>
+                  {clientSubName(c) && <p className="text-xs text-[#606774]">{clientSubName(c)}</p>}
+                  {c.email && <p className="text-xs text-[#606774]">{c.email}</p>}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {selected && !search && (
+        <div className="flex items-start gap-3 rounded-2xl bg-[#F3F5F7]/60 p-4">
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+            {selected.client_type === "company" || (!selected.client_type && !!selected.company_name)
+              ? <Building2 size={15} className="text-[#4D7EBA]" />
+              : <User size={15} className="text-[#95AEC1]" />
+            }
+          </div>
+          <div className="flex-1 min-w-0 text-sm">
+            <p className="font-semibold text-[#101536]">{clientDisplayName(selected)}</p>
+            {clientSubName(selected) && <p className="text-xs text-[#606774]">{clientSubName(selected)}</p>}
+            {selected.address && <p className="text-xs text-[#606774]">{selected.address}, {selected.postal_code} {selected.city}</p>}
+            {selected.email && <p className="text-xs text-[#606774]">{selected.email}</p>}
+            {selected.vat_number && <p className="text-xs text-[#606774]">BTW: {selected.vat_number}</p>}
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-xs text-[#606774] hover:text-[#101536] flex-shrink-0"
+          >
+            Wijzigen
+          </button>
+        </div>
+      )}
+
+      {!selected && !search && (
+        <p className="text-xs text-[#606774]">Typ om een klant te zoeken</p>
+      )}
+    </div>
+  );
+}

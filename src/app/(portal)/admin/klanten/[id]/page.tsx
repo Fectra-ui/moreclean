@@ -5,6 +5,7 @@ import { getClientDetail, getClientStats } from "@/lib/services/crm/clients";
 import ClientDetailTabs from "./ClientDetailTabs";
 import Link from "next/link";
 import { ChevronLeft, Edit, UserX, UserCheck, PlusCircle } from "lucide-react";
+import { clientDisplayName, clientSubName, clientTypeLabel } from "@/lib/utils/client";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -24,7 +25,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   ]);
   if (!client) notFound();
 
-  const displayName = client.company_name || client.contact_name;
+  const displayName = clientDisplayName(client as Parameters<typeof clientDisplayName>[0]);
+  const subName = clientSubName(client as Parameters<typeof clientSubName>[0]);
 
   return (
     <div className="space-y-6">
@@ -45,9 +47,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             </div>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-[#101536]">{displayName}</h1>
+                <div>
+                  <h1 className="text-2xl font-bold text-[#101536]">{displayName}</h1>
+                  {subName && <p className="text-sm text-[#606774]">{subName}</p>}
+                </div>
                 <span className="rounded-full border border-[#101536]/10 px-2.5 py-0.5 text-xs text-[#606774]">
-                  {client.is_company ? "Bedrijf" : "Particulier"}
+                  {clientTypeLabel(client as Parameters<typeof clientTypeLabel>[0])}
                 </span>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                   client.active ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
