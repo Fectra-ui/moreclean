@@ -39,12 +39,10 @@ const employeeNav: NavItem[] = [
 ];
 
 const customerNav: NavItem[] = [
-  { label: "Dashboard", href: "/klant", icon: <GridIcon /> },
+  { label: "Overzicht", href: "/klant", icon: <GridIcon /> },
   { label: "Afspraken", href: "/klant/afspraken", icon: <CalendarIcon /> },
-  { label: "Offertes", href: "/klant/offertes", icon: <DocumentIcon /> },
-  { label: "Facturen", href: "/klant/facturen", icon: <ReceiptIcon /> },
   { label: "Berichten", href: "/klant/berichten", icon: <ChatIcon /> },
-  { label: "Mijn gegevens", href: "/klant/gegevens", icon: <UserIcon /> },
+  { label: "Mijn account", href: "/klant/gegevens", icon: <UserIcon /> },
 ];
 
 export default function PortalNav({ role }: { role: UserRole }) {

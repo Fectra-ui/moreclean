@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import KlantGegevensForm from "./KlantGegevensForm";
 
-export const metadata: Metadata = { title: "Mijn gegevens" };
+export const metadata: Metadata = { title: "Mijn account" };
 
 export default async function KlantGegevensPage() {
   const supabase = await createClient();
@@ -24,11 +24,11 @@ export default async function KlantGegevensPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#101536]">Mijn gegevens</h1>
+        <h1 className="text-2xl font-bold text-[#101536]">Mijn account</h1>
         <p className="mt-1 text-sm text-[#606774]">
           {clientResult.data.client_type === "private"
-            ? "Uw contactgegevens"
-            : "Uw contactgegevens en bedrijfsinformatie"}
+            ? "Uw persoonlijke gegevens en wachtwoord"
+            : "Uw contactgegevens, bedrijfsinformatie en wachtwoord"}
         </p>
       </div>
       <KlantGegevensForm
