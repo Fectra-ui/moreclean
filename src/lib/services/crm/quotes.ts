@@ -171,6 +171,23 @@ export async function acceptQuote(quoteId: string): Promise<void> {
   await runQuoteAcceptedWorkflow(quoteId);
 }
 
+export async function markPaymentReceived(quoteId: string): Promise<void> {
+  const svc = createServiceClient();
+  const { error } = await svc
+    .from("quotes")
+    .update({ payment_received_at: new Date().toISOString() })
+    .eq("id", quoteId);
+  if (error) throw error;
+
+  // Log in activity_log
+  await svc.from("activity_log").insert({
+    entity_type: "quote",
+    entity_id: quoteId,
+    action: "payment_received",
+    metadata: {},
+  });
+}
+
 export async function rejectQuote(quoteId: string): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase
