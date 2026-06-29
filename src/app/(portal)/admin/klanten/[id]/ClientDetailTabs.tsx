@@ -61,14 +61,15 @@ export default function ClientDetailTabs({ client }: { client: Record<string, un
 // ── OVERZICHT ─────────────────────────────────────────────
 
 function TabOverzicht({ client }: { client: Record<string, unknown> }) {
+  const isCompany = !!client.is_company;
   const fields = [
-    { label: "Contactpersoon", value: client.contact_name as string },
-    { label: "Bedrijfsnaam", value: client.company_name as string | null },
+    { label: isCompany ? "Contactpersoon" : "Naam", value: client.contact_name as string },
+    ...(isCompany ? [{ label: "Bedrijfsnaam", value: client.company_name as string | null }] : []),
     { label: "E-mailadres", value: client.email as string | null },
     { label: "Telefoon", value: client.phone as string | null },
     { label: "Adres", value: [client.address, client.postal_code, client.city].filter(Boolean).join(", ") || null },
     { label: "Land", value: client.country as string },
-    { label: "BTW-nummer", value: client.vat_number as string | null },
+    ...(isCompany ? [{ label: "BTW-nummer", value: client.vat_number as string | null }] : []),
     { label: "Betalingstermijn", value: client.payment_terms ? `${client.payment_terms} dagen` : null },
     { label: "Bron", value: client.source as string | null },
   ];

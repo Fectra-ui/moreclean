@@ -77,7 +77,7 @@ export default function ClientForm({ defaultValues, companyId }: { defaultValues
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Contactpersoon" name="contact_name" required />
+        <Field label={isCompany ? "Contactpersoon" : "Volledige naam"} name="contact_name" required />
         <Field label="E-mailadres" name="email" type="email" />
       </div>
 

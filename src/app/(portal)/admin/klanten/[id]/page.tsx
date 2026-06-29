@@ -46,9 +46,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-[#101536]">{displayName}</h1>
-                {client.is_company && (
-                  <span className="rounded-full border border-[#101536]/10 px-2.5 py-0.5 text-xs text-[#606774]">Bedrijf</span>
-                )}
+                <span className="rounded-full border border-[#101536]/10 px-2.5 py-0.5 text-xs text-[#606774]">
+                  {client.is_company ? "Bedrijf" : "Particulier"}
+                </span>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                   client.active ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"
                 }`}>
