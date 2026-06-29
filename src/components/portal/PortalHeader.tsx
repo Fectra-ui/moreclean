@@ -11,10 +11,11 @@ interface PortalHeaderProps {
 }
 
 export default function PortalHeader({ profile, title, unreadCount = 0 }: PortalHeaderProps) {
-  const name = [profile.first_name, profile.last_name].filter(Boolean).join(" ") || "Gebruiker";
-  const initials = [profile.first_name?.[0], profile.last_name?.[0]].filter(Boolean).join("").toUpperCase() || "?";
+  const name = [profile.first_name, profile.last_name].filter(Boolean).join(" ") || profile.email?.split("@")[0] || "Gebruiker";
+  const initials = [profile.first_name?.[0], profile.last_name?.[0]].filter(Boolean).join("").toUpperCase() || (profile.email?.[0] ?? "?").toUpperCase();
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Goedemorgen" : hour < 18 ? "Goedemiddag" : "Goedenavond";
+  const roleLabel: Record<string, string> = { admin: "Admin", employee: "Medewerker", client: "Klant" };
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-[#101536]/06 bg-white/80 px-8 backdrop-blur-xl">
@@ -45,7 +46,7 @@ export default function PortalHeader({ profile, title, unreadCount = 0 }: Portal
           </div>
           <div className="hidden md:block">
             <p className="text-sm font-semibold text-[#101536]">{name}</p>
-            <p className="text-xs text-[#606774] capitalize">{profile.role}</p>
+            <p className="text-xs text-[#606774]">{roleLabel[profile.role] ?? profile.role}</p>
           </div>
         </div>
       </div>
