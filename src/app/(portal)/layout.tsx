@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import PortalNav from "@/components/portal/PortalNav";
 import PortalHeader from "@/components/portal/PortalHeader";
@@ -24,7 +24,9 @@ export default async function PortalLayout({
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  // Service client bypasses RLS — nodig omdat anon key profiles niet kan lezen
+  const svc = createServiceClient();
+  const { data: profile } = await svc
     .from("profiles")
     .select("*")
     .eq("id", user.id)

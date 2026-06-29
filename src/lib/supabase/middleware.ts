@@ -49,9 +49,15 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Role-based access control
+  // Role-based access control — service client bypasses RLS
   if (user && isPortalRoute) {
-    const { data: profile } = await supabase
+    const { createClient: createSvc } = require("@supabase/supabase-js");
+    const svc = createSvc(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+    const { data: profile } = await svc
       .from("profiles")
       .select("role")
       .eq("id", user.id)

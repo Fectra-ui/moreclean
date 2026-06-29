@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 const COMPANY_ID = "a1000000-0000-0000-0000-000000000001";
@@ -20,22 +20,23 @@ export async function loginAction(formData: FormData) {
 
   const user = data.user;
 
-  // Fetch profile — create one if missing (e.g. manually created auth user)
-  let { data: profile } = await supabase
+  // Service client bypasses RLS voor profile lookup en aanmaken
+  const svc = createServiceClient();
+
+  let { data: profile } = await svc
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
 
   if (!profile) {
-    // First user ever → admin, others → klant
-    const { count } = await supabase
+    const { count } = await svc
       .from("profiles")
       .select("id", { count: "exact", head: true });
 
     const role = (count ?? 0) === 0 ? "admin" : "klant";
 
-    await supabase.from("profiles").upsert({
+    await svc.from("profiles").upsert({
       id: user.id,
       email: user.email,
       role,
