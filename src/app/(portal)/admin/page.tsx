@@ -8,7 +8,7 @@ import { getInvoiceStats } from "@/lib/services/invoices";
 import { getAppointmentsByDate } from "@/lib/services/appointments";
 import { getBuRevenue } from "@/lib/services/crm/businessUnits";
 import { getExpenseStats } from "@/lib/services/accounting/expenses";
-import { Calendar, Euro, FileText, Users, AlertTriangle, TrendingUp, MessageSquare } from "lucide-react";
+import { Calendar, Euro, FileText, Users, AlertTriangle, TrendingUp, MessageSquare, ClipboardList } from "lucide-react";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 
@@ -34,6 +34,7 @@ export default async function AdminDashboardPage() {
     invoiceStats,
     todayAppointments,
     openQuotesResult,
+    waitingPlanningResult,
     unreadMessages,
     newClientsResult,
     buRevenue,
@@ -41,7 +42,8 @@ export default async function AdminDashboardPage() {
   ] = await Promise.all([
     safe(getInvoiceStats(COMPANY_ID), { totalOpen: 0, totalOverdue: 0, revenueThisMonth: 0, countOpen: 0, countOverdue: 0 }),
     safe(getAppointmentsByDate(COMPANY_ID, today), []),
-    Promise.resolve(supabase.from("quotes").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).eq("status", "sent")).catch(() => ({ count: 0 })),
+    Promise.resolve(supabase.from("quotes").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).eq("workflow_state", "verzonden")).catch(() => ({ count: 0 })),
+    Promise.resolve(supabase.from("quotes").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).eq("workflow_state", "betaald")).catch(() => ({ count: 0 })),
     Promise.resolve(supabase.from("messages").select("id", { count: "exact" }).is("read_at", null)).catch(() => ({ count: 0 })),
     Promise.resolve(supabase.from("clients").select("id", { count: "exact" }).eq("company_id", COMPANY_ID).gte("created_at", new Date().toISOString().slice(0, 7) + "-01")).catch(() => ({ count: 0 })),
     safe(getBuRevenue(currentYear, currentQuarter), []),
@@ -64,11 +66,19 @@ export default async function AdminDashboardPage() {
           icon={<Calendar size={20} />}
         />
         <StatCard
-          label="Openstaande offertes"
+          label="Offertes verzonden"
           value={openQuotesResult.count ?? 0}
-          sub="Wachten op goedkeuring"
+          sub="Wachten op klantakkoord"
           icon={<FileText size={20} />}
           accent="text-amber-500"
+        />
+        <StatCard
+          label="Wacht op planning"
+          value={waitingPlanningResult.count ?? 0}
+          sub="Betaald — klaar om in te plannen"
+          icon={<ClipboardList size={20} />}
+          accent={(waitingPlanningResult.count ?? 0) > 0 ? "text-orange-500" : "text-[#95AEC1]"}
+          highlight={(waitingPlanningResult.count ?? 0) > 0}
         />
         <StatCard
           label="Omzet deze maand"
@@ -108,6 +118,9 @@ export default async function AdminDashboardPage() {
           accent="text-[#4D7EBA]"
         />
       </div>
+
+      {/* WACHT OP PLANNING */}
+      {(waitingPlanningResult.count ?? 0) > 0 && <WachtOpPlanningSection companyId={COMPANY_ID} />}
 
       {/* BUSINESS UNIT OMZET */}
       {buRevenue.length > 0 && (
@@ -246,5 +259,66 @@ export default async function AdminDashboardPage() {
         )}
       </section>
     </div>
+  );
+}
+
+async function WachtOpPlanningSection({ companyId }: { companyId: string }) {
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("quotes")
+    .select("id, quote_number, total, payment_received_at, clients(contact_name, company_name)")
+    .eq("company_id", companyId)
+    .eq("workflow_state", "betaald")
+    .order("payment_received_at", { ascending: true })
+    .limit(5);
+
+  if (!data?.length) return null;
+
+  return (
+    <section>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-[#101536]">
+          Wacht op planning
+          <span className="ml-2 rounded-full bg-orange-100 px-2.5 py-0.5 text-sm font-bold text-orange-600">{data.length}</span>
+        </h2>
+        <a href="/admin/offertes" className="text-sm font-medium text-[#4D7EBA] hover:underline">
+          Alle offertes →
+        </a>
+      </div>
+      <div className="space-y-2">
+        {data.map((q) => {
+          const client = q.clients as unknown as { contact_name: string; company_name: string | null } | null;
+          const daysSince = q.payment_received_at
+            ? Math.floor((Date.now() - new Date(q.payment_received_at).getTime()) / 86_400_000)
+            : null;
+          return (
+            <a
+              key={q.id}
+              href={`/admin/offertes/${q.id}`}
+              className="flex items-center justify-between rounded-[20px] border border-orange-100 bg-orange-50/60 px-5 py-4 transition hover:bg-orange-50 hover:-translate-y-0.5"
+            >
+              <div className="flex items-center gap-4">
+                <ClipboardList size={18} className="flex-shrink-0 text-orange-500" />
+                <div>
+                  <p className="font-semibold text-[#101536]">
+                    {client?.company_name || client?.contact_name || "Klant"}{" "}
+                    <span className="font-normal text-[#606774]">— {q.quote_number}</span>
+                  </p>
+                  {daysSince !== null && (
+                    <p className="text-xs text-[#606774]">
+                      Betaald {daysSince === 0 ? "vandaag" : `${daysSince} dag${daysSince !== 1 ? "en" : ""} geleden`}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <span className="text-sm font-bold text-[#101536]">
+                €{Number(q.total).toLocaleString("nl-NL", { minimumFractionDigits: 0 })}
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
   );
 }

@@ -95,7 +95,7 @@ export async function generateQuarterZip(year: number, quarter: number): Promise
     supabase.from("business_units").select("id, name, short_code").eq("company_id", COMPANY_ID).eq("active", true),
     supabase
       .from("invoice_archive")
-      .select("file_path, invoices(invoice_number, issue_date, total, status, business_unit_id, clients(contact_name, company_name))")
+      .select("file_path, invoices(invoice_number, issue_date, total, status, business_unit_id, clients(contact_name, company_name), quotes(quote_number, accepted_at, payment_received_at, payment_reference))")
       .eq("company_id", COMPANY_ID)
       .eq("year", year)
       .eq("quarter", quarter),
@@ -115,7 +115,15 @@ export async function generateQuarterZip(year: number, quarter: number): Promise
   // 2. Factuur PDFs — per business unit
   const invoiceArchives = (archives ?? []) as Array<{
     file_path: string;
-    invoices: { invoice_number: string; issue_date: string; total: number; status: string; business_unit_id: string | null; clients: { contact_name: string; company_name?: string | null } | null } | null;
+    invoices: {
+      invoice_number: string;
+      issue_date: string;
+      total: number;
+      status: string;
+      business_unit_id: string | null;
+      clients: { contact_name: string; company_name?: string | null } | null;
+      quotes: { quote_number: string; accepted_at: string | null; payment_received_at: string | null; payment_reference: string | null } | null;
+    } | null;
   }>;
 
   await Promise.all(
@@ -155,20 +163,42 @@ export async function generateQuarterZip(year: number, quarter: number): Promise
   );
 
   // 4. CSV per business unit + gecombineerd rapport
-  const csvHeader = ["Datum", "Nummer", "Bedrijfsunit", "Klant", "Excl. BTW", "BTW", "Incl. BTW", "Status"].join(";");
+  const csvHeader = [
+    "Factuurnummer",
+    "Offertenummer",
+    "Klant",
+    "Bedrijfsunit",
+    "Datum factuur",
+    "Datum akkoord",
+    "Datum betaling",
+    "Referentie",
+    "Excl. BTW",
+    "BTW (21%)",
+    "Incl. BTW",
+    "Status",
+  ].join(";");
+
+  const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString("nl-NL") : "";
+
   const csvRows = invoiceArchives
     .filter((a) => a.invoices)
     .map((a) => {
       const inv = a.invoices!;
+      const q = inv.quotes;
       const clientName = inv.clients?.company_name ?? inv.clients?.contact_name ?? "";
       const buName = inv.business_unit_id ? (buMap.get(inv.business_unit_id) ?? "Overig") : "Overig";
+      const exclBtw = Number(inv.total) / 1.21;
       return [
-        new Date(inv.issue_date).toLocaleDateString("nl-NL"),
         inv.invoice_number,
-        buName,
+        q?.quote_number ?? "",
         clientName,
-        euro(Number(inv.total) / 1.21),
-        euro(Number(inv.total) - Number(inv.total) / 1.21),
+        buName,
+        fmt(inv.issue_date),
+        fmt(q?.accepted_at ?? null),
+        fmt(q?.payment_received_at ?? null),
+        q?.payment_reference ?? "",
+        euro(exclBtw),
+        euro(Number(inv.total) - exclBtw),
         euro(Number(inv.total)),
         { draft: "Concept", sent: "Verzonden", paid: "Betaald", overdue: "Verlopen" }[inv.status] ?? inv.status,
       ].join(";");

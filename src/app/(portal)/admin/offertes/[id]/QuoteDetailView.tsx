@@ -239,13 +239,9 @@ export default function QuoteDetailView({ quote }: { quote: Quote }) {
           )}
 
           {wf === "wacht_betaling" && (
-            <ActionButton
-              label="Betaling ontvangen ✓"
-              icon={<Banknote size={15} />}
-              loading={transitioning === "betaald"}
-              color="green"
-              onClick={() => handleTransition("betaald")}
-            />
+            <p className="rounded-xl bg-amber-50 border border-amber-100 px-3 py-2 text-xs text-amber-700">
+              Betaalinstructies verstuurd — zie betaalkaart rechts.
+            </p>
           )}
 
           {wf === "betaald" && (
@@ -317,6 +313,70 @@ export default function QuoteDetailView({ quote }: { quote: Quote }) {
               <p className="font-semibold text-red-600 capitalize">{wf}</p>
             </div>
           )}
+        </div>
+
+        {/* Betaling kaart */}
+        <div className="rounded-[24px] border border-white/60 bg-white/85 p-6 shadow-[0_8px_32px_rgba(16,21,54,.06)] backdrop-blur-xl">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#606774]">Betaling</p>
+          <div className="space-y-3">
+            {/* Status */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-[#606774]">Status</span>
+              {quote.payment_received_at ? (
+                <span className="flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Ontvangen
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-600">
+                  <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                  Niet betaald
+                </span>
+              )}
+            </div>
+            {/* Datum */}
+            {quote.payment_received_at && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[#606774]">Datum</span>
+                <span className="font-medium text-[#101536]">
+                  {new Date(quote.payment_received_at).toLocaleDateString("nl-NL")}
+                </span>
+              </div>
+            )}
+            {/* Referentie */}
+            {(quote as { payment_reference?: string | null }).payment_reference && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[#606774]">Referentie</span>
+                <span className="font-mono text-xs text-[#101536]">{(quote as { payment_reference?: string }).payment_reference}</span>
+              </div>
+            )}
+            {/* Bedrag */}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[#606774]">Bedrag</span>
+              <span className="font-bold text-[#101536]">{euro(quote.total)}</span>
+            </div>
+
+            {/* Actie-knoppen betaling */}
+            {wf === "wacht_betaling" && (
+              <div className="pt-1 space-y-2">
+                <ActionButton
+                  label="Betaling ontvangen ✓"
+                  icon={<Banknote size={15} />}
+                  loading={transitioning === "betaald"}
+                  color="green"
+                  onClick={() => handleTransition("betaald")}
+                />
+                <button
+                  disabled
+                  title="Nog niet beschikbaar"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#101536]/10 bg-white px-4 py-2.5 text-sm text-[#606774] opacity-50 cursor-not-allowed"
+                >
+                  Stuur herinnering
+                  <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-500">binnenkort</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Tijdlijn */}
