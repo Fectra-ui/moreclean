@@ -1,47 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { loginAction } from "./actions";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect");
+  const redirectTo = searchParams.get("redirect");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const formData = new FormData(e.currentTarget);
+    if (redirectTo) formData.set("redirect", redirectTo);
 
-    if (error) {
-      setError("E-mailadres of wachtwoord onjuist.");
-      setLoading(false);
-      return;
-    }
-
-    // Fetch role to redirect to correct portal
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user.id)
-      .single();
-
-    const role = profile?.role;
-    const destination = redirect
-      || (role === "admin" ? "/admin" : role === "employee" ? "/medewerker" : "/klant");
-
-    window.location.href = destination;
+    startTransition(async () => {
+      const result = await loginAction(formData);
+      if (result?.error) setError(result.error);
+    });
   }
 
   async function handleForgotPassword() {
@@ -66,6 +51,7 @@ export default function LoginForm() {
         </label>
         <input
           id="email"
+          name="email"
           type="email"
           autoComplete="email"
           required
@@ -97,6 +83,7 @@ export default function LoginForm() {
         <div className="relative">
           <input
             id="password"
+            name="password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             required
@@ -131,7 +118,7 @@ export default function LoginForm() {
       {/* SUBMIT */}
       <button
         type="submit"
-        disabled={loading}
+        disabled={isPending}
         className="
           flex w-full items-center justify-center gap-2 rounded-2xl
           bg-gradient-to-r from-[#667FB0] via-[#95AEC1] to-[#4D7EBA]
@@ -141,8 +128,8 @@ export default function LoginForm() {
           disabled:opacity-70 disabled:cursor-not-allowed disabled:translate-y-0
         "
       >
-        {loading && <Loader2 size={16} className="animate-spin" />}
-        {loading ? "Inloggen..." : "Inloggen"}
+        {isPending && <Loader2 size={16} className="animate-spin" />}
+        {isPending ? "Inloggen..." : "Inloggen"}
       </button>
     </form>
   );
