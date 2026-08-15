@@ -10,11 +10,11 @@ export async function POST(request: NextRequest) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, company_id")
     .eq("id", user.id)
     .single();
 
-  if ((profile as { role: string } | null)?.role !== "admin") {
+  if ((profile as { role: string; company_id: string | null } | null)?.role !== "admin") {
     return NextResponse.json({ error: "Geen toegang" }, { status: 403 });
   }
 
@@ -27,13 +27,23 @@ export async function POST(request: NextRequest) {
   }
 
   const service = createServiceClient();
-  const { error } = await service.auth.admin.inviteUserByEmail(email, {
-    data: { role },
+  const companyId = (profile as { company_id: string | null }).company_id;
+  if (!companyId) return NextResponse.json({ error: "Beheerder is niet aan een bedrijf gekoppeld" }, { status: 409 });
+
+  const { data: invited, error } = await service.auth.admin.inviteUserByEmail(email, {
+    data: { role, company_id: companyId },
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.nl"}/reset-password`,
   });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  if (invited.user) {
+    await service.from("profiles").update({ role, company_id: companyId }).eq("id", invited.user.id);
+    if (role === "customer") {
+      await service.from("clients").update({ profile_id: invited.user.id }).eq("company_id", companyId).ilike("email", email);
+    }
   }
 
   return NextResponse.json({ ok: true });

@@ -27,13 +27,20 @@ export async function getCurrentProfile(): Promise<Profile> {
 /** Vereist admin-rol, anders redirect naar /klant */
 export async function requireAdmin(): Promise<{ profile: Profile }> {
   const profile = await getCurrentProfile();
-  if (profile.role !== "admin") redirect("/klant");
+  if (profile.role !== "admin") redirect(profile.role === "employee" ? "/medewerker" : "/klant");
   return { profile };
 }
 
-/** Vereist employee- of admin-rol */
+/** Vereist uitsluitend de medewerkerrol. */
 export async function requireEmployee(): Promise<{ profile: Profile }> {
   const profile = await getCurrentProfile();
-  if (profile.role !== "employee" && profile.role !== "admin") redirect("/klant");
+  if (profile.role !== "employee") redirect(profile.role === "admin" ? "/admin" : "/klant");
+  return { profile };
+}
+
+/** Vereist uitsluitend de klantrol. */
+export async function requireCustomer(): Promise<{ profile: Profile }> {
+  const profile = await getCurrentProfile();
+  if (profile.role !== "customer") redirect(profile.role === "admin" ? "/admin" : "/medewerker");
   return { profile };
 }

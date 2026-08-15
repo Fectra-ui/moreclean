@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { X, Loader2, UserPlus } from "lucide-react";
 
-export default function InviteModal() {
+export default function InviteModal({ defaultRole = "employee", buttonLabel = "Uitnodigen" }: { defaultRole?: "admin" | "employee" | "customer"; buttonLabel?: string }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"admin" | "employee">("employee");
+  const [role, setRole] = useState<"admin" | "employee" | "customer">(defaultRole);
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
 
@@ -29,7 +29,7 @@ export default function InviteModal() {
     } else {
       setFeedback({ type: "ok", msg: `Uitnodiging verstuurd naar ${email}` });
       setEmail("");
-      setRole("employee");
+      setRole(defaultRole);
     }
   }
 
@@ -40,7 +40,7 @@ export default function InviteModal() {
         className="flex items-center gap-2 rounded-2xl bg-[#101536] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
       >
         <UserPlus size={16} />
-        Uitnodigen
+        {buttonLabel}
       </button>
 
       {open && (
@@ -75,8 +75,8 @@ export default function InviteModal() {
                 <label className="mb-1.5 block text-sm font-medium text-[#101536]">
                   Rol
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {(["employee", "admin"] as const).map((r) => (
+                <div className="grid grid-cols-3 gap-2">
+                  {(["customer", "employee", "admin"] as const).map((r) => (
                     <button
                       key={r}
                       type="button"
@@ -87,7 +87,7 @@ export default function InviteModal() {
                           : "border-[#101536]/10 bg-[#F3F5F7] text-[#606774] hover:border-[#4D7EBA]/30"
                       }`}
                     >
-                      {r === "employee" ? "👷 Medewerker" : "🛠 Beheerder"}
+                      {r === "customer" ? "👤 Klant" : r === "employee" ? "👷 Medewerker" : "🛠 Beheerder"}
                     </button>
                   ))}
                 </div>

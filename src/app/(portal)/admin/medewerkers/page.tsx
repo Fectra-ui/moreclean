@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { createServiceClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { Users } from "lucide-react";
 import InviteModal from "./InviteModal";
 
 export const metadata: Metadata = { title: "Medewerkers" };
 
 export default async function MedewerkersPage() {
-  const { profile } = await requireAdmin();
+  await requireAdmin();
   const supabase = createServiceClient();
 
   const { data: employees } = await supabase
     .from("profiles")
-    .select("id, first_name, last_name, phone, created_at, role")
+    .select("id, first_name, last_name, phone, created_at, role, is_owner")
     .in("role", ["employee", "admin"])
     .order("last_name");
 
@@ -49,7 +48,7 @@ export default async function MedewerkersPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(employees as Array<{ id: string; first_name: string | null; last_name: string | null; phone: string | null; created_at: string; role: string }>).map((emp) => {
+          {(employees as Array<{ id: string; first_name: string | null; last_name: string | null; phone: string | null; created_at: string; role: string; is_owner: boolean }>).map((emp) => {
             const name = [emp.first_name, emp.last_name].filter(Boolean).join(" ") || "Onbekend";
             const initials = [emp.first_name?.[0], emp.last_name?.[0]].filter(Boolean).join("").toUpperCase() || "?";
             const completed = countByEmployee[emp.id] ?? 0;
@@ -62,7 +61,7 @@ export default async function MedewerkersPage() {
                   <div>
                     <p className="font-semibold text-[#101536]">{name}</p>
                     <span className={`text-xs font-medium ${emp.role === "admin" ? "text-violet-600" : "text-[#4D7EBA]"}`}>
-                      {emp.role === "admin" ? "Beheerder" : "Medewerker"}
+                      {emp.is_owner ? "Hoofdadmin" : emp.role === "admin" ? "Beheerder" : "Medewerker"}
                     </span>
                   </div>
                 </div>

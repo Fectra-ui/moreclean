@@ -59,6 +59,7 @@ export interface Profile {
   phone: string | null;
   avatar_path: string | null;
   active: boolean;
+  is_owner: boolean;
   created_at: string;
   updated_at: string;
 }

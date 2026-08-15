@@ -14,7 +14,7 @@ export default function PortalHeader({ profile, title }: PortalHeaderProps) {
   const initials = [profile.first_name?.[0], profile.last_name?.[0]].filter(Boolean).join("").toUpperCase() || (profile.email?.[0] ?? "?").toUpperCase();
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Goedemorgen" : hour < 18 ? "Goedemiddag" : "Goedenavond";
-  const roleLabel: Record<string, string> = { admin: "Admin", employee: "Medewerker", client: "Klant" };
+  const roleLabel: Record<string, string> = { admin: "Admin", employee: "Medewerker", customer: "Klant" };
 
   return (
     <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-2 border-b border-[#101536]/06 bg-white/90 py-2 pl-16 pr-3 backdrop-blur-xl sm:pr-6 md:px-8">
@@ -45,7 +45,7 @@ export default function PortalHeader({ profile, title }: PortalHeaderProps) {
           </div>
           <div className="hidden md:block">
             <p className="text-sm font-semibold text-[#101536]">{name}</p>
-            <p className="text-xs text-[#606774]">{roleLabel[profile.role] ?? profile.role}</p>
+            <p className="text-xs text-[#606774]">{profile.is_owner ? "Hoofdadmin" : (roleLabel[profile.role] ?? profile.role)}</p>
           </div>
         </div>
       </div>

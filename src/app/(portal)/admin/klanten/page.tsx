@@ -5,6 +5,7 @@ import { getCompanyId } from "@/lib/auth/getCompanyId";
 import ClientTable from "./ClientTable";
 import Link from "next/link";
 import { UserPlus } from "lucide-react";
+import InviteModal from "../medewerkers/InviteModal";
 
 export const metadata: Metadata = { title: "Klanten" };
 
@@ -44,6 +45,8 @@ export default async function KlantenPage({ searchParams }: { searchParams: Prom
           <h1 className="text-2xl font-bold text-[#101536]">Klanten</h1>
           <p className="mt-1 text-sm text-[#606774]">{total} klanten in totaal</p>
         </div>
+        <div className="flex flex-wrap justify-end gap-2">
+        <InviteModal defaultRole="customer" buttonLabel="Klant uitnodigen" />
         <Link
           href="/admin/klanten/nieuw"
           className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(77,126,186,.25)] transition hover:-translate-y-0.5 hover:shadow-[0_15px_40px_rgba(77,126,186,.32)]"
@@ -51,6 +54,7 @@ export default async function KlantenPage({ searchParams }: { searchParams: Prom
           <UserPlus size={16} />
           Nieuwe klant
         </Link>
+        </div>
       </div>
 
       {/* TABLE (client component handles search/filter) */}
