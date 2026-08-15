@@ -22,7 +22,7 @@ export default async function BonnetiePage() {
     .from("appointment_employees")
     .select("appointment_id, appointments(id, scheduled_date, clients(contact_name, company_name))")
     .eq("employee_id", user.id)
-    .gte("appointments.scheduled_date", new Date(Date.now() - 30 * 86400000).toISOString().split("T")[0])
+    .gte("appointments.scheduled_date", new Date(new Date().getTime() - 30 * 86400000).toISOString().split("T")[0])
     .lte("appointments.scheduled_date", today)
     .limit(20);
 

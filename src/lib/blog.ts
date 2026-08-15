@@ -1,26 +1,31 @@
 import { blogPosts } from "@/data/blog";
 import type { BlogPost } from "@/types/blog";
+import { createServiceClient } from "@/lib/supabase/server";
 
-export function getAllPosts(): BlogPost[] {
-  return [...blogPosts].sort(
+export async function getAllPosts(): Promise<BlogPost[]> {
+  const posts = new Map(blogPosts.map(p => [p.slug, { ...p, published: true }]));
+  try {
+    const { data } = await createServiceClient().from("blog_posts").select("slug,payload,published,deleted");
+    for (const row of data ?? []) {
+      if (row.deleted) posts.delete(row.slug);
+      else posts.set(row.slug, { ...(row.payload as BlogPost), slug: row.slug, published: row.published });
+    }
+  } catch {}
+  return [...posts.values()].filter(p => p.published !== false).sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 }
 
-export function getPostBySlug(slug: string): BlogPost | undefined {
-  return blogPosts.find((p) => p.slug === slug);
+export async function getPostBySlug(slug: string): Promise<BlogPost | undefined> {
+  return (await getAllPosts()).find((p) => p.slug === slug);
 }
 
-export function getRelatedPosts(post: BlogPost, limit = 2): BlogPost[] {
+export function getRelatedPosts(post: BlogPost, posts: BlogPost[], limit = 2): BlogPost[] {
   if (!post.related || post.related.length === 0) return [];
   return post.related
-    .map((slug) => getPostBySlug(slug))
+    .map((slug) => posts.find(p => p.slug === slug))
     .filter((p): p is BlogPost => p !== undefined)
     .slice(0, limit);
-}
-
-export function getFeaturedPost(): BlogPost | undefined {
-  return blogPosts.find((p) => p.featured);
 }
 
 function slugify(text: string): string {

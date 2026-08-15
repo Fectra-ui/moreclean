@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Send, MessageSquare } from "lucide-react";
 
@@ -27,21 +27,23 @@ export default function AdminBerichtenClient({ conversations, currentUserId }: {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     if (!selected) return;
-    setLoading(true);
-    supabase
-      .from("messages")
-      .select("id, body, created_at, sender_id, profiles!sender_id(first_name, last_name, role)")
-      .eq("conversation_id", selected.id)
-      .order("created_at")
-      .then(({ data }) => { setMessages((data ?? []) as unknown as Message[]); setLoading(false); });
-    // Mark as read
-    supabase.from("messages").update({ read_at: new Date().toISOString() })
-      .eq("conversation_id", selected.id).is("read_at", null).neq("sender_id", currentUserId);
-  }, [selected?.id]);
+    const conversationId = selected.id;
+    const timer = window.setTimeout(async () => {
+      setLoading(true);
+      const { data } = await supabase.from("messages")
+        .select("id, body, created_at, sender_id, profiles!sender_id(first_name, last_name, role)")
+        .eq("conversation_id", conversationId).order("created_at");
+      setMessages((data ?? []) as unknown as Message[]);
+      setLoading(false);
+      await supabase.from("messages").update({ read_at: new Date().toISOString() })
+        .eq("conversation_id", conversationId).is("read_at", null).neq("sender_id", currentUserId);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [selected, currentUserId, supabase]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -55,7 +57,7 @@ export default function AdminBerichtenClient({ conversations, currentUserId }: {
           if (data) setMessages((prev) => [...prev, data as unknown as Message]);
         }).subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [selected?.id]);
+  }, [selected, supabase]);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();

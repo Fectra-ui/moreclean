@@ -21,4 +21,5 @@ export interface BlogPost {
   keywords?: string[];
   faq?: FAQ[];
   related?: string[]; // slugs
+  published?: boolean;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Send, MessageSquare } from "lucide-react";
 
@@ -33,21 +33,21 @@ export default function MedewerkerBerichtenClient({
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     if (!selected) return;
-    setLoading(true);
-    supabase
-      .from("messages")
+    const conversationId = selected.id;
+    const timer = window.setTimeout(async () => {
+      setLoading(true);
+      const { data } = await supabase.from("messages")
       .select("id, body, created_at, sender_id, profiles!sender_id(first_name, last_name, role)")
-      .eq("conversation_id", selected.id)
-      .order("created_at")
-      .then(({ data }) => {
-        setMessages((data ?? []) as unknown as Message[]);
-        setLoading(false);
-      });
-  }, [selected?.id]);
+        .eq("conversation_id", conversationId).order("created_at");
+      setMessages((data ?? []) as unknown as Message[]);
+      setLoading(false);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [selected, supabase]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -66,7 +66,7 @@ export default function MedewerkerBerichtenClient({
         })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [selected?.id]);
+  }, [selected, supabase]);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();

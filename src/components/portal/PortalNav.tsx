@@ -28,6 +28,7 @@ const adminNav: NavItem[] = [
   { label: "Kilometers", href: "/admin/kilometers", icon: <CarIcon /> },
   { label: "Medewerkers", href: "/admin/medewerkers", icon: <TeamIcon /> },
   { label: "Berichten", href: "/admin/berichten", icon: <ChatIcon /> },
+  { label: "Blog", href: "/admin/blog", icon: <DocumentIcon /> },
   { label: "Rapportages", href: "/admin/rapportages", icon: <ChartIcon /> },
   { label: "Instellingen", href: "/admin/instellingen", icon: <SettingsIcon /> },
 ];
@@ -43,6 +44,8 @@ const employeeNav: NavItem[] = [
 const customerNav: NavItem[] = [
   { label: "Overzicht", href: "/klant", icon: <GridIcon /> },
   { label: "Afspraken", href: "/klant/afspraken", icon: <CalendarIcon /> },
+  { label: "Offertes", href: "/klant/offertes", icon: <DocumentIcon /> },
+  { label: "Facturen", href: "/klant/facturen", icon: <ReceiptIcon /> },
   { label: "Berichten", href: "/klant/berichten", icon: <ChatIcon /> },
   { label: "Mijn account", href: "/klant/gegevens", icon: <UserIcon /> },
 ];

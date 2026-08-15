@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://moreclean.nl/blog" },
 };
 
-export default function BlogPage() {
-  const posts = getAllPosts();
+export default async function BlogPage() {
+  const posts = await getAllPosts();
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#F3F5F7] px-6 pb-24 pt-32 text-[#121212]">

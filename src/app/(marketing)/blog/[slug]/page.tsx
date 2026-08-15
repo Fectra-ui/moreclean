@@ -12,12 +12,12 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
+  return (await getAllPosts()).map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) return {};
 
   const title = post.seoTitle || post.title;
@@ -57,12 +57,12 @@ function formatDateDutch(iso: string): string {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) notFound();
 
   const contentWithIds = injectHeadingIds(post.content);
   const headings = extractHeadings(contentWithIds);
-  const relatedPosts = getRelatedPosts(post);
+  const relatedPosts = getRelatedPosts(post, await getAllPosts());
 
   const blogPostingSchema = {
     "@context": "https://schema.org",
@@ -297,4 +297,3 @@ export default async function BlogPostPage({ params }: Props) {
     </div>
   );
 }
-

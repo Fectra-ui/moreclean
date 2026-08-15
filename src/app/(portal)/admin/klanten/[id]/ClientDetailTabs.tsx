@@ -283,7 +283,7 @@ function TabOnderhoud({ schedules, clientId }: { schedules: unknown[]; clientId:
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-[#101536]">Onderhoudsschema's</h3>
+        <h3 className="text-sm font-semibold text-[#101536]">Onderhoudsschema&apos;s</h3>
         <Link href={`/admin/klanten/${clientId}/onderhoud/nieuw`} className="rounded-xl bg-[#4D7EBA] px-4 py-2 text-xs font-semibold text-white hover:bg-[#667FB0]">
           + Toevoegen
         </Link>

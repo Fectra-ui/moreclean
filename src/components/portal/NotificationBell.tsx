@@ -49,7 +49,10 @@ export default function NotificationBell({ userId }: { userId: string }) {
   }, []);
 
   // Initiële load
-  useEffect(() => { fetchAll(); }, [fetchAll]);
+  useEffect(() => {
+    const timer = window.setTimeout(fetchAll, 0);
+    return () => window.clearTimeout(timer);
+  }, [fetchAll]);
 
   // Supabase Realtime — vervangt de 30-seconden polling
   useEffect(() => {

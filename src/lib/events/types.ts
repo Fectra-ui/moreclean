@@ -26,7 +26,7 @@ export interface QuoteCreatedPayload {
   total: number;
 }
 
-export interface QuoteSentPayload extends QuoteCreatedPayload {}
+export type QuoteSentPayload = QuoteCreatedPayload;
 
 export interface QuoteAcceptedPayload {
   quoteId: string;

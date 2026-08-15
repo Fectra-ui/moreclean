@@ -358,18 +358,18 @@ async function WachtOpPlanningSection({ companyId }: { companyId: string }) {
           Wacht op planning
           <span className="ml-2 rounded-full bg-orange-100 px-2.5 py-0.5 text-sm font-bold text-orange-600">{data.length}</span>
         </h2>
-        <a href="/admin/offertes" className="text-sm font-medium text-[#4D7EBA] hover:underline">
+        <Link href="/admin/offertes" className="text-sm font-medium text-[#4D7EBA] hover:underline">
           Alle offertes →
-        </a>
+        </Link>
       </div>
       <div className="space-y-2">
         {data.map((q: { id: string; quote_number: string; total: number; payment_received_at: string | null; clients: unknown }) => {
           const client = q.clients as unknown as { contact_name: string; company_name: string | null } | null;
           const daysSince = q.payment_received_at
-            ? Math.floor((Date.now() - new Date(q.payment_received_at).getTime()) / 86_400_000)
+            ? Math.floor((new Date().getTime() - new Date(q.payment_received_at).getTime()) / 86_400_000)
             : null;
           return (
-            <a
+            <Link
               key={q.id}
               href={`/admin/offertes/${q.id}`}
               className="flex items-center justify-between rounded-[20px] border border-orange-100 bg-orange-50/60 px-5 py-4 transition hover:bg-orange-50 hover:-translate-y-0.5"
@@ -391,7 +391,7 @@ async function WachtOpPlanningSection({ companyId }: { companyId: string }) {
               <span className="text-sm font-bold text-[#101536]">
                 €{Number(q.total).toLocaleString("nl-NL", { minimumFractionDigits: 0 })}
               </span>
-            </a>
+            </Link>
           );
         })}
       </div>

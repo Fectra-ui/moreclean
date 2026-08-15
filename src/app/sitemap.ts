@@ -3,8 +3,9 @@ import { getAllPosts } from "@/lib/blog";
 
 const lastModified = new Date("2026-06-28");
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://moreclean.nl";
+  const posts = await getAllPosts();
 
   return [
     { url: `${base}/`, priority: 1, lastModified, changeFrequency: "weekly" },
@@ -23,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/algemene-voorwaarden`, priority: 0.3, lastModified, changeFrequency: "yearly" },
 
     { url: `${base}/blog`, priority: 0.8, lastModified, changeFrequency: "weekly" },
-    ...getAllPosts().map((post) => ({
+    ...posts.map((post) => ({
       url: `${base}/blog/${post.slug}`,
       priority: 0.7,
       lastModified: new Date(post.date),

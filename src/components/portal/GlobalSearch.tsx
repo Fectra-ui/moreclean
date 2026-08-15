@@ -30,7 +30,7 @@ export default function GlobalSearch() {
 
   // Debounced search
   useEffect(() => {
-    if (query.length < 2) { setResults([]); return; }
+    if (query.length < 2) return;
 
     const timer = setTimeout(async () => {
       setLoading(true);

@@ -39,6 +39,21 @@ function SaveButton({ saving, saved }: { saving: boolean; saved: boolean }) {
   );
 }
 
+function PwInput({ value, onChange, placeholder, show, onToggle }: {
+  value: string; onChange: (v: string) => void; placeholder: string; show: boolean; onToggle: () => void;
+}) {
+  return (
+    <div className="relative">
+      <input type={show ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder} className={`${INP} pr-11`} autoComplete="new-password" />
+      <button type="button" onClick={onToggle} aria-label={show ? "Wachtwoord verbergen" : "Wachtwoord tonen"}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#606774] hover:text-[#101536]">
+        {show ? <EyeOff size={16} /> : <Eye size={16} />}
+      </button>
+    </div>
+  );
+}
+
 // ── Sectie 1: Persoonsgegevens ─────────────────────────────────────────────
 
 function GegevensSection({ client }: { client: Props["client"] }) {
@@ -153,30 +168,6 @@ function WachtwoordSection() {
       setTimeout(() => setSaved(false), 3000);
     }
     setSaving(false);
-  }
-
-  function PwInput({ value, onChange, placeholder, show, onToggle }: {
-    value: string; onChange: (v: string) => void; placeholder: string; show: boolean; onToggle: () => void;
-  }) {
-    return (
-      <div className="relative">
-        <input
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={`${INP} pr-11`}
-          autoComplete="new-password"
-        />
-        <button
-          type="button"
-          onClick={onToggle}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#606774] hover:text-[#101536]"
-        >
-          {show ? <EyeOff size={16} /> : <Eye size={16} />}
-        </button>
-      </div>
-    );
   }
 
   return (
