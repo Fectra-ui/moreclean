@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getInvoiceFull } from "@/lib/services/finance/invoices";
 import { getCompany } from "@/lib/services/crm/company";
 import { InvoicePdf } from "@/lib/services/pdf/invoicePdf";
@@ -30,7 +30,8 @@ export async function GET(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const svc = createServiceClient();
+  const { data: profile } = await svc.from("profiles").select("role").eq("id", user.id).single();
   if (!profile || !["admin", "customer"].includes(profile.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -43,7 +44,7 @@ export async function GET(
   if (!invoice) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   if (profile.role === "customer") {
-    const { data: client } = await supabase.from("clients").select("id").eq("profile_id", user.id).single();
+    const { data: client } = await svc.from("clients").select("id").eq("profile_id", user.id).single();
     if (!client || client.id !== invoice.client.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

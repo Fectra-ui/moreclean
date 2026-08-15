@@ -6,7 +6,7 @@ import { trackEvent } from "@/lib/gtag";
 
 export default function MobileCTA() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#101536]/95 backdrop-blur-xl md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#101536]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
       <div className="grid grid-cols-3">
         <a
           href="tel:+31613672320"

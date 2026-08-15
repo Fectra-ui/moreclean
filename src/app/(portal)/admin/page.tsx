@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { isSetupComplete } from "@/lib/services/setup";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import StatCard from "@/components/portal/StatCard";
 import { getInvoiceStats } from "@/lib/services/invoices";
@@ -21,7 +21,7 @@ export default async function AdminDashboardPage() {
   const setupDone = await isSetupComplete().catch(() => true);
   if (!setupDone) redirect("/admin/setup");
 
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -267,10 +267,10 @@ export default async function AdminDashboardPage() {
 }
 
 async function PlatformHealthCheck({ companyId }: { companyId: string }) {
-  const { createClient } = await import("@/lib/supabase/server");
+  const { createServiceClient } = await import("@/lib/supabase/server");
   const { getCompany } = await import("@/lib/services/crm/company");
 
-  const supabase = await createClient();
+  const supabase = createServiceClient();
   const [company, vehiclesResult, employeesResult, clientsResult] = await Promise.all([
     getCompany().catch(() => null),
     supabase.from("vehicles").select("id", { count: "exact" }).eq("company_id", companyId).eq("status", "active"),
@@ -339,8 +339,8 @@ async function PlatformHealthCheck({ companyId }: { companyId: string }) {
 }
 
 async function WachtOpPlanningSection({ companyId }: { companyId: string }) {
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
+  const { createServiceClient } = await import("@/lib/supabase/server");
+  const supabase = createServiceClient();
   const { data } = await supabase
     .from("quotes")
     .select("id, quote_number, total, payment_received_at, clients(contact_name, company_name)")
@@ -363,7 +363,7 @@ async function WachtOpPlanningSection({ companyId }: { companyId: string }) {
         </a>
       </div>
       <div className="space-y-2">
-        {data.map((q) => {
+        {data.map((q: { id: string; quote_number: string; total: number; payment_received_at: string | null; clients: unknown }) => {
           const client = q.clients as unknown as { contact_name: string; company_name: string | null } | null;
           const daysSince = q.payment_received_at
             ? Math.floor((Date.now() - new Date(q.payment_received_at).getTime()) / 86_400_000)

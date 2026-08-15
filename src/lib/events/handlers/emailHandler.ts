@@ -177,7 +177,7 @@ register("invoice.overdue", [
       .eq("id", p.invoiceId)
       .single();
     if (!inv) return;
-    const client = (inv.clients as { contact_name: string; company_name?: string } | null);
+    const client = inv.clients as unknown as { contact_name: string; company_name?: string } | null;
     const tpl = invoiceReminderEmail({
       clientName: client?.company_name ?? client?.contact_name ?? "Klant",
       invoiceNumber: p.invoiceNumber,

@@ -114,7 +114,7 @@ export async function generateQuarterZip(year: number, quarter: number): Promise
   const zipFiles: Record<string, Uint8Array> = {};
 
   // 2. Factuur PDFs — per business unit
-  const invoiceArchives = (archives ?? []) as Array<{
+  const invoiceArchives = (archives ?? []) as unknown as Array<{
     file_path: string;
     invoices: {
       invoice_number: string;
@@ -140,7 +140,7 @@ export async function generateQuarterZip(year: number, quarter: number): Promise
   );
 
   // 3. Bonnetjes — per business unit
-  const receiptList = (receipts ?? []) as Array<{
+  const receiptList = (receipts ?? []) as unknown as Array<{
     file_path: string | null;
     file_name: string | null;
     supplier: string | null;

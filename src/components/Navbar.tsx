@@ -61,7 +61,7 @@ export default function Navbar() {
 
             ${
               scrolled || open || !isHome
-                ? "border-white/60 bg-white/55 shadow-[0_8px_32px_rgba(16,21,54,.08),0_1px_0_rgba(255,255,255,.95)_inset] backdrop-blur-2xl backdrop-saturate-150"
+                ? "border-[#101536]/10 bg-white/95 shadow-[0_8px_32px_rgba(16,21,54,.12),0_1px_0_rgba(255,255,255,.95)_inset] backdrop-blur-2xl backdrop-saturate-150"
                 : "border-white/35 bg-white/[0.07] shadow-[0_8px_32px_rgba(0,0,0,.12),0_1px_0_rgba(255,255,255,.55)_inset] backdrop-blur-md"
             }
 

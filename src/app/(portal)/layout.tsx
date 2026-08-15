@@ -17,9 +17,9 @@ export default async function PortalLayout({ children }: { children: React.React
   return (
     <div className="flex min-h-screen bg-[#F3F5F7]">
       <PortalNav role={profile.role as UserRole} />
-      <div className="ml-64 flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col md:ml-64">
         <PortalHeader profile={profile} unreadCount={unreadCount} />
-        <main className="flex-1 overflow-auto p-8">{children}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

@@ -52,7 +52,11 @@ body {
   text-rendering: optimizeLegibility;
 
   -webkit-font-smoothing: antialiased;
+  padding-bottom: env(safe-area-inset-bottom);
 }
+
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid rgba(77, 126, 186, 0.55); outline-offset: 3px; }
 
 * {
   border-color: rgba(16,21,54,0.08);

@@ -18,16 +18,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Geen toegang" }, { status: 403 });
   }
 
-  const { email, role } = await request.json();
+  const body = await request.json().catch(() => null) as { email?: unknown; role?: unknown } | null;
+  const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+  const role = body?.role;
 
-  if (!email || !["admin", "employee", "customer"].includes(role)) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !["admin", "employee", "customer"].includes(String(role))) {
     return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
   }
 
   const service = createServiceClient();
   const { error } = await service.auth.admin.inviteUserByEmail(email, {
     data: { role },
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.nl"}/portal/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.nl"}/reset-password`,
   });
 
   if (error) {

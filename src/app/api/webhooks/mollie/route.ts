@@ -41,11 +41,14 @@ export async function POST(req: NextRequest) {
   // Check idempotency — don't process twice
   const { data: existing } = await supabase
     .from("invoices")
-    .select("status, client_id, total")
+    .select("status, client_id, total, mollie_payment_id")
     .eq("id", invoiceId)
     .single();
 
   if (!existing) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+  if (existing.mollie_payment_id !== payment.id || Math.abs(Number(existing.total) - Number(payment.amount.value)) > 0.001) {
+    return NextResponse.json({ error: "Payment does not match invoice" }, { status: 400 });
+  }
   if (existing.status === "paid") return NextResponse.json({ ok: true }); // already processed
 
   const paidAt = new Date().toISOString();

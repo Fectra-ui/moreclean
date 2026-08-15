@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import type { UserRole } from "@/types/database";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -46,9 +48,16 @@ const customerNav: NavItem[] = [
 ];
 
 export default function PortalNav({ role }: { role: UserRole }) {
+  const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const nav = role === "admin" ? adminNav : role === "employee" ? employeeNav : customerNav;
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -57,9 +66,21 @@ export default function PortalNav({ role }: { role: UserRole }) {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-[#101536]/06 bg-white/90 backdrop-blur-xl">
+    <>
+    <button
+      type="button"
+      onClick={() => setOpen((value) => !value)}
+      className="fixed left-3 top-3 z-[60] flex size-10 items-center justify-center rounded-xl border border-[#101536]/10 bg-white text-[#101536] shadow-sm md:hidden"
+      aria-label={open ? "Navigatie sluiten" : "Navigatie openen"}
+      aria-expanded={open}
+      aria-controls="portal-navigation"
+    >
+      {open ? <X size={20} /> : <Menu size={20} />}
+    </button>
+    {open && <button type="button" aria-label="Navigatie sluiten" className="fixed inset-0 z-40 bg-[#101536]/40 backdrop-blur-sm md:hidden" onClick={() => setOpen(false)} />}
+    <aside id="portal-navigation" className={`fixed left-0 top-0 z-50 flex h-dvh w-[min(18rem,86vw)] flex-col border-r border-[#101536]/06 bg-white/95 shadow-2xl backdrop-blur-xl transition-transform duration-300 md:z-40 md:w-64 md:translate-x-0 md:shadow-none ${open ? "translate-x-0" : "-translate-x-full"}`}>
       {/* LOGO */}
-      <div className="flex h-16 items-center border-b border-[#101536]/06 px-6">
+      <div className="flex h-16 items-center border-b border-[#101536]/06 px-16 md:px-6">
         <Link href="/" className="flex items-center">
           <Image src="/images/logo.png" alt="More Clean" width={44} height={44} className="h-auto w-auto" />
         </Link>
@@ -80,6 +101,7 @@ export default function PortalNav({ role }: { role: UserRole }) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setOpen(false)}
               className={`
                 mb-1 flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200
                 ${active
@@ -108,6 +130,7 @@ export default function PortalNav({ role }: { role: UserRole }) {
         </button>
       </div>
     </aside>
+    </>
   );
 }
 

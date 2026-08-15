@@ -15,22 +15,6 @@ export async function getCompanyId(): Promise<string> {
     .single();
 
   const companyId = (profile as { company_id: string | null } | null)?.company_id;
-  if (companyId) return companyId;
-
-  // Stap 2: profiel heeft geen company_id — zoek de eerste company op
-  // (voor single-tenant deployments is er maar één company)
-  const { data: company } = await svc
-    .from("companies")
-    .select("id")
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .single();
-
-  const foundId = (company as { id: string } | null)?.id;
-  if (!foundId) throw new Error("Geen bedrijf gevonden in de database");
-
-  // Koppel het profiel meteen zodat volgende calls stap 1 pakken
-  await svc.from("profiles").update({ company_id: foundId }).eq("id", user.id);
-
-  return foundId;
+  if (!companyId) throw new Error("Gebruikersprofiel is niet aan een bedrijf gekoppeld");
+  return companyId;
 }

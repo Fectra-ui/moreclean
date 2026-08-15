@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { getCompanyId } from "@/lib/auth/getCompanyId";
-const ALLOWED_EXT = ["png", "jpg", "jpeg", "webp", "svg"];
+const ALLOWED_TYPES: Record<string, string> = {
+  "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp",
+};
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -17,9 +19,9 @@ export async function POST(req: NextRequest) {
   const file = formData.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "Geen bestand" }, { status: 400 });
 
-  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-  if (!ALLOWED_EXT.includes(ext)) {
-    return NextResponse.json({ error: "Alleen PNG, JPG, WEBP of SVG toegestaan" }, { status: 400 });
+  const ext = ALLOWED_TYPES[file.type];
+  if (!ext) {
+    return NextResponse.json({ error: "Alleen PNG, JPG of WEBP toegestaan" }, { status: 400 });
   }
   if (file.size > 2 * 1024 * 1024) {
     return NextResponse.json({ error: "Maximum bestandsgrootte is 2MB" }, { status: 400 });

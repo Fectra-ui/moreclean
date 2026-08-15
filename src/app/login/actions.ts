@@ -16,7 +16,8 @@ export async function loginAction(formData: FormData) {
 
   const profile = await getCurrentProfile();
   const role = profile.role;
-  const destination = redirectTo
+  const safeRedirect = redirectTo?.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : null;
+  const destination = safeRedirect
     || (role === "admin" ? "/admin" : role === "employee" ? "/medewerker" : "/klant");
 
   redirect(destination);

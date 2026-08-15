@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { redirect } from "next/navigation";
 import { getBusinessHealth, getClientProfitability } from "@/lib/services/accounting/expenses";
@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Rapportages" };
 export default async function RapportagesPage() {
   await requireAdmin();
   const companyId = await getCompanyId();
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   const currentYear = new Date().getFullYear();
 
@@ -26,7 +26,7 @@ export default async function RapportagesPage() {
   ]);
 
   const totalApts = appointmentStats.data?.length ?? 0;
-  const completedApts = appointmentStats.data?.filter((a) => a.status === "completed").length ?? 0;
+  const completedApts = appointmentStats.data?.filter((a: { status: string }) => a.status === "completed").length ?? 0;
   const completionRate = totalApts > 0 ? Math.round((completedApts / totalApts) * 100) : 0;
 
   const totalRevenue = health.reduce((s, m) => s + Number(m.total_costs), 0);
