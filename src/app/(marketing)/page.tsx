@@ -29,18 +29,18 @@ export default function HomePage() {
     <div className="overflow-hidden bg-[#F3F5F7] text-[#121212]">
 
       {/* ================= HERO ================= */}
-      <section className="relative min-h-screen overflow-hidden bg-[#101536]">
+      <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#101536] md:min-h-screen">
         {/* VIDEO BACKGROUND */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 h-full min-h-[100svh] w-full md:min-h-full">
           <video
             autoPlay
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             poster="/images/hero-bg.jpg"
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-center scale-[1.08] will-change-transform"
+            className="absolute inset-0 block h-full min-h-full w-full min-w-full object-cover object-[55%_center] md:scale-[1.08] md:object-center md:will-change-transform"
           >
             <source src="/video/hero-video.mp4" type="video/mp4" />
           </video>
@@ -62,13 +62,14 @@ export default function HomePage() {
             relative
             z-10
             flex
-            min-h-screen
+            min-h-[100svh]
             items-start
             justify-center
             px-5
             pt-[195px]
             pb-[100px]
             md:px-6
+            md:min-h-screen
             md:pt-[200px]
             md:pb-[120px]
           "
