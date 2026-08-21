@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Sparkles, Building2, Home, SunMedium } from "lucide-react";
+import { ArrowRight, Check, Droplets, Sparkles, Building2, Home, SunMedium } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Onze Diensten | Glasbewassing & Schoonmaak | More Clean",
@@ -13,24 +14,38 @@ export const metadata: Metadata = {
 
 const services = [
   {
-    icon: Sparkles,
+    id: "glasbewassing",
+    icon: Droplets,
     title: "Glasbewassing",
     text: "Streeploze ramen voor woningen, winkels en bedrijfspanden. Professioneel, veilig en representatief resultaat.",
+    image: "/images/Glasbewassing foto.png",
+    includes: ["Ramen en kozijnen", "Woningen, winkels en bedrijfspanden", "Eenmalig of periodiek onderhoud"],
+    detail: "Heldere ramen maken direct verschil. We stemmen de glasbewassing af op uw woning of pand, met oog voor ramen, kozijnen en een verzorgde uitstraling.",
   },
   {
+    id: "zonnepanelen-reinigen",
     icon: SunMedium,
     title: "Zonnepanelen Reinigen",
     text: "Meer rendement en langere levensduur dankzij specialistische reiniging zonder schade of strepen.",
+    image: "/images/Zonnepanelen foto.png",
+    includes: ["Reiniging zonder agressieve chemicaliën", "Veilig werken op en rond het dak", "Voor woningen en bedrijfspanden"],
+    detail: "Vuil, stof en aanslag kunnen het rendement van zonnepanelen verminderen. Met een zorgvuldige reiniging helpen we uw panelen weer optimaal licht op te vangen.",
   },
   {
+    id: "zakelijke-schoonmaak",
     icon: Building2,
     title: "Zakelijke Schoonmaak",
     text: "Schone kantoren, winkels en werkplekken zorgen voor een professionele uitstraling en prettige werkomgeving.",
+    includes: ["Kantoren, winkels en werkplekken", "Een vaste of flexibele frequentie", "Afspraken passend bij uw bedrijfsvoering"],
+    detail: "Een representatieve werkplek geeft vertrouwen aan medewerkers, bezoekers en klanten. We maken samen een praktische aanpak die aansluit bij uw ruimte en planning.",
   },
   {
+    id: "particuliere-schoonmaak",
     icon: Home,
     title: "Particuliere Schoonmaak",
-    text: "Betrouwbare hulp voor een fris, schoon en verzorgd thuis. Flexibel en zorgvuldig uitgevoerd.",
+    text: "Van ramen tot overkappingen en rolluiken: zorgvuldig onderhoud voor een fris en verzorgd huis.",
+    includes: ["Glasbewassing rond de woning", "Overkappingen en rolluiken reinigen", "Zonnepanelen als onderdeel van uw onderhoud"],
+    detail: "Naast ramen helpen we ook met de onderdelen die een woning snel een verzorgde uitstraling geven, zoals overkappingen en rolluiken. Zo kunt u meerdere schoonmaakklussen in één keer afstemmen.",
   },
 ];
 
@@ -63,8 +78,9 @@ export default function DienstenPage() {
           const Icon = service.icon;
 
           return (
-            <div
+            <Link
               key={service.title}
+              href={`#${service.id}`}
               className="rounded-[32px] border border-white/60 bg-white/75 p-6 shadow-[0_20px_80px_rgba(0,0,0,.08)] backdrop-blur-3xl transition duration-300 hover:-translate-y-2"
             >
               <div className="mb-5 inline-flex rounded-2xl bg-[#4D7EBA]/20 p-4 text-[#95AEC1]">
@@ -75,50 +91,38 @@ export default function DienstenPage() {
 
               <p className="mt-4 text-[#606774]">{service.text}</p>
 
-              <Link
-                href="/offerte"
-                className="
-                  group
-                  relative
-                  mt-8
-                  inline-flex
-                  items-center
-                  gap-2
-                  overflow-hidden
-                  rounded-2xl
-                  bg-gradient-to-r
-                  from-[#667FB0]
-                  via-[#95AEC1]
-                  to-[#4D7EBA]
-                  px-5
-                  py-3
-                  text-sm
-                  font-semibold
-                  text-white
-                  shadow-[0_15px_40px_rgba(77,126,186,.22)]
-                  transition-all
-                  duration-500
-                  hover:-translate-y-1
-                  hover:shadow-[0_25px_60px_rgba(77,126,186,.34)]
-                "
-              >
-                <span className="relative z-10">Offerte aanvragen</span>
-                <span className="relative z-10 transition duration-300 group-hover:translate-x-1">→</span>
-                <div
-                  className="
-                    absolute
-                    inset-0
-                    opacity-0
-                    transition
-                    duration-500
-                    group-hover:opacity-100
-                    bg-[linear-gradient(120deg,transparent,rgba(255,255,255,.25),transparent)]
-                    translate-x-[-120%]
-                    group-hover:translate-x-[120%]
-                  "
-                />
-              </Link>
-            </div>
+              <span className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#4D7EBA]">
+                Bekijk wat we doen <ArrowRight size={16} />
+              </span>
+            </Link>
+          );
+        })}
+      </section>
+
+      {/* SERVICE DETAILS */}
+      <section className="mx-auto mt-20 max-w-7xl space-y-12">
+        {services.map((service, index) => {
+          const Icon = service.icon;
+          return (
+            <article id={service.id} key={service.id} className="scroll-mt-28 overflow-hidden rounded-[32px] border border-white/60 bg-white shadow-[0_20px_80px_rgba(0,0,0,.08)]">
+              <div className={`grid ${service.image ? "lg:grid-cols-2" : ""}`}>
+                {service.image && (
+                  <div className="relative min-h-72 lg:min-h-full">
+                    <Image src={service.image} alt={service.title} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+                  </div>
+                )}
+                <div className="p-8 sm:p-10 lg:p-12">
+                  <div className="mb-5 inline-flex rounded-2xl bg-[#4D7EBA]/15 p-3 text-[#4D7EBA]"><Icon size={24} /></div>
+                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#4D7EBA]">Dienst {index + 1}</p>
+                  <h2 className="mt-3 text-3xl font-bold text-[#101536] md:text-4xl">{service.title}</h2>
+                  <p className="mt-5 max-w-2xl text-lg leading-relaxed text-[#606774]">{service.detail}</p>
+                  <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+                    {service.includes.map((item) => <li key={item} className="flex items-start gap-2 text-sm font-medium text-[#101536]"><Check className="mt-0.5 shrink-0 text-[#4D7EBA]" size={16} />{item}</li>)}
+                  </ul>
+                  <Link href="/offerte" className="mt-9 inline-flex items-center gap-2 rounded-2xl bg-[#4D7EBA] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#3e6da5]">Offerte aanvragen <ArrowRight size={16} /></Link>
+                </div>
+              </div>
+            </article>
           );
         })}
       </section>

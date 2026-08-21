@@ -50,14 +50,14 @@ export default function HomePage() {
           />
 
           {/* OVERLAY */}
-          <div className="absolute inset-0 bg-black/45" />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#101536]/80 via-[#101536]/45 to-[#4D7EBA]/25" />
+          <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#101536]/55 via-[#101536]/25 to-[#4D7EBA]/12" />
 
           {/* EXTRA GRADIENT */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(149,174,193,.25),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(149,174,193,.12),transparent_55%)]" />
 
           {/* GLOW */}
-          <div className="absolute left-1/2 top-[-300px] h-[900px] w-[900px] -translate-x-1/2 rounded-full bg-[#95AEC1]/20 blur-3xl" />
+          <div className="absolute left-1/2 top-[-300px] h-[900px] w-[900px] -translate-x-1/2 rounded-full bg-[#95AEC1]/10 blur-3xl" />
         </div>
 
         {/* HERO CONTENT */}
@@ -371,6 +371,7 @@ export default function HomePage() {
                 title: "Glasbewassing",
                 icon: Droplets,
                 image: "/images/Glasbewassing foto.png",
+                href: "/diensten#glasbewassing",
                 text: "Professionele glasbewassing voor woningen, winkels en bedrijfspanden.",
                 features: [
                   "Streeploos resultaat",
@@ -382,6 +383,7 @@ export default function HomePage() {
                 title: "Zonnepanelen reinigen",
                 icon: SunMedium,
                 image: "/images/Zonnepanelen foto.png",
+                href: "/diensten#zonnepanelen-reinigen",
                 text: "Meer rendement dankzij professionele reiniging zonder chemicaliën.",
                 features: [
                   "Meer rendement",
@@ -434,7 +436,7 @@ export default function HomePage() {
                   </div>
 
                   <Link
-                    href="/diensten"
+                    href={service.href}
                     className="mt-10 inline-flex items-center gap-2 font-semibold text-[#4D7EBA]"
                   >
                     Meer informatie
