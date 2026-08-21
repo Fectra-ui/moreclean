@@ -30,20 +30,16 @@ export default function HomePage() {
 
       {/* ================= HERO ================= */}
       <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#101536] md:min-h-screen">
-        {/* VIDEO BACKGROUND */}
+        {/* HERO BACKGROUND */}
         <div className="absolute inset-0 h-full min-h-[100svh] w-full md:min-h-full">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="/images/hero-bg.jpg"
-            aria-hidden="true"
-            className="absolute inset-0 block h-full min-h-full w-full min-w-full object-cover object-[55%_center] md:scale-[1.08] md:object-center md:will-change-transform"
-          >
-            <source src="/video/hero-video.mp4" type="video/mp4" />
-          </video>
+          <Image
+            src="/images/Achtergrond foto.png"
+            alt=""
+            fill
+            preload
+            sizes="100vw"
+            className="object-cover object-[55%_center] md:scale-[1.08] md:object-center"
+          />
 
           {/* OVERLAY */}
           <div className="absolute inset-0 bg-black/45" />
@@ -366,7 +362,7 @@ export default function HomePage() {
               {
                 title: "Glasbewassing",
                 icon: Droplets,
-                image: "/images/service-glass.jpg",
+                image: "/images/Glasbewassing foto.png",
                 text: "Professionele glasbewassing voor woningen, winkels en bedrijfspanden.",
                 features: [
                   "Streeploos resultaat",
@@ -377,7 +373,7 @@ export default function HomePage() {
               {
                 title: "Zonnepanelen reinigen",
                 icon: SunMedium,
-                image: "/images/service-solar.jpg",
+                image: "/images/Zonnepanelen foto.png",
                 text: "Meer rendement dankzij professionele reiniging zonder chemicaliën.",
                 features: [
                   "Meer rendement",
