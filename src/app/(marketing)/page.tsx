@@ -36,9 +36,17 @@ export default function HomePage() {
             src="/images/Achtergrond foto.png"
             alt=""
             fill
+            aria-hidden="true"
+            sizes="100vw"
+            className="scale-110 object-cover object-center blur-xl md:hidden"
+          />
+          <Image
+            src="/images/Achtergrond foto.png"
+            alt=""
+            fill
             preload
             sizes="100vw"
-            className="object-cover object-[55%_center] md:scale-[1.08] md:object-center"
+            className="object-contain object-center md:scale-[1.08] md:object-cover md:object-center"
           />
 
           {/* OVERLAY */}
