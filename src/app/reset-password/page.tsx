@@ -1,38 +1,90 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
-function ResetForm() {
+export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [sessionStatus, setSessionStatus] = useState<"checking" | "ready" | "invalid" | "unavailable">("checking");
+  const submitInFlight = useRef(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Supabase puts the token in the URL hash; the client handles it automatically
-  }, [searchParams]);
+    let active = true;
+    const supabase = createClient();
+
+    async function checkSession() {
+      try {
+        // getSession waits for Supabase to process a PKCE redirect before reading the session.
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (!active) return;
+
+        // An unprocessed callback must not fall back to another signed-in account.
+        const query = new URLSearchParams(window.location.search);
+        const hash = new URLSearchParams(window.location.hash.slice(1));
+        const callbackFailed = query.has("code") || query.has("error") || query.has("error_code") ||
+          hash.has("access_token") || hash.has("error") || hash.has("error_code");
+        if (sessionError || !session || callbackFailed) {
+          setSessionStatus("invalid");
+          return;
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (!active) return;
+        setSessionStatus(userError ? "unavailable" : !user || user.id !== session.user.id ? "invalid" : "ready");
+      } catch {
+        if (active) setSessionStatus("unavailable");
+      }
+    }
+
+    void checkSession();
+    return () => { active = false; };
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitInFlight.current || sessionStatus !== "ready" || done) return;
+    submitInFlight.current = true;
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({ password });
+    try {
+      const supabase = createClient();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        setSessionStatus("invalid");
+        return;
+      }
 
-    if (error) {
-      setError("Er ging iets mis. Probeer opnieuw of vraag een nieuwe link aan.");
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        setSessionStatus("unavailable");
+        return;
+      }
+      if (!user || user.id !== session.user.id) {
+        setSessionStatus("invalid");
+        return;
+      }
+
+      const { data, error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError || !data.user) {
+        setError("Het wachtwoord kon niet worden opgeslagen. Probeer opnieuw of vraag een nieuwe link aan.");
+        return;
+      }
+
+      setDone(true);
+      setTimeout(() => router.push("/login"), 2000);
+    } catch {
+      setError("Het wachtwoord kon niet worden opgeslagen. Controleer uw verbinding en probeer opnieuw.");
+    } finally {
+      submitInFlight.current = false;
       setLoading(false);
-      return;
     }
-
-    setDone(true);
-    setTimeout(() => router.push("/login"), 2000);
   }
 
   return (
@@ -41,7 +93,17 @@ function ResetForm() {
         <h1 className="text-2xl font-bold text-[#101536]">Nieuw wachtwoord instellen</h1>
         <p className="mt-2 text-sm text-[#606774]">Kies een sterk wachtwoord voor uw account.</p>
 
-        {done ? (
+        {sessionStatus === "checking" ? (
+          <p className="mt-6 text-sm text-[#606774]">Herstellink controleren...</p>
+        ) : sessionStatus === "invalid" ? (
+          <p className="mt-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+            Deze herstellink is ongeldig of verlopen. Vraag een nieuwe link aan via de inlogpagina.
+          </p>
+        ) : sessionStatus === "unavailable" ? (
+          <p className="mt-6 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+            De herstelsessie kon niet worden gecontroleerd. Controleer uw verbinding en laad de pagina opnieuw.
+          </p>
+        ) : done ? (
           <p className="mt-6 rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3 text-sm text-emerald-700">
             Wachtwoord opgeslagen! U wordt doorgestuurd...
           </p>
@@ -71,13 +133,5 @@ function ResetForm() {
         )}
       </div>
     </div>
-  );
-}
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense>
-      <ResetForm />
-    </Suspense>
   );
 }
