@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { trackEvent } from "@/lib/gtag";
 
 export default function ContactForm() {
+  const router = useRouter();
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
@@ -36,7 +38,7 @@ export default function ContactForm() {
         value: 1,
       });
       form.reset();
-      window.location.assign("/bedankt");
+      router.push("/bedankt");
     } catch {
       setError("Versturen is niet gelukt. Controleer uw verbinding en probeer het opnieuw.");
     } finally {
