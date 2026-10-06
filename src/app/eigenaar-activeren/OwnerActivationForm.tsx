@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function OwnerActivationForm() {
+  const submittingRef = useRef(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +14,8 @@ export default function OwnerActivationForm() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (loading) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
     setError(null);
     try {
@@ -29,6 +31,7 @@ export default function OwnerActivationForm() {
     } catch {
       setError("Activeren is niet gelukt. Controleer uw verbinding en probeer opnieuw.");
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   }
