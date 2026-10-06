@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import Script from "next/script";
 
@@ -12,6 +12,13 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://moreclean.nl"),
+  applicationName: "More Clean",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "More Clean",
+    statusBarStyle: "default",
+  },
 
   title: {
     default: "More Clean | Glasbewassing & Schoonmaakbedrijf Limburg",
@@ -62,7 +69,12 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
+    apple: "/icons/more-clean-192.png",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#101536",
 };
 
 export default function RootLayout({

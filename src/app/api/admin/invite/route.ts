@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { createServiceClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   // Verify caller is an admin
@@ -8,7 +7,11 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
 
-  const { data: profile } = await supabase
+  // This endpoint already authenticates the caller using their session above.
+  // Read the authorization profile with the server-only client so an RLS
+  // lookup cannot turn a valid admin into a false 403 response.
+  const service = createServiceClient();
+  const { data: profile } = await service
     .from("profiles")
     .select("role, company_id")
     .eq("id", user.id)
@@ -26,7 +29,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
   }
 
-  const service = createServiceClient();
   const companyId = (profile as { company_id: string | null }).company_id;
   if (!companyId) return NextResponse.json({ error: "Beheerder is niet aan een bedrijf gekoppeld" }, { status: 409 });
 
