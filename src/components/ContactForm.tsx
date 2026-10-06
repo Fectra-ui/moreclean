@@ -1,9 +1,49 @@
 "use client";
 
+import { useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { trackEvent } from "@/lib/gtag";
 
 export default function ContactForm() {
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (sending) return;
+
+    const form = event.currentTarget;
+    setSending(true);
+    setError("");
+
+    try {
+      const response = await fetch("https://formspree.io/f/xnjlwrpv", {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" },
+      });
+
+      if (!response.ok) {
+        setError(response.status === 429
+          ? "U heeft zojuist al een bericht verstuurd. Probeer het over een moment opnieuw."
+          : "Versturen is niet gelukt. Probeer het opnieuw of neem telefonisch contact op.");
+        return;
+      }
+
+      trackEvent("generate_lead", {
+        event_category: "Contact",
+        event_label: "Contactformulier verzonden",
+        value: 1,
+      });
+      form.reset();
+      window.location.assign("/bedankt");
+    } catch {
+      setError("Versturen is niet gelukt. Controleer uw verbinding en probeer het opnieuw.");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <section className="mx-auto mt-20 grid max-w-7xl gap-8 md:grid-cols-2">
       {/* LEFT SIDE */}
@@ -163,17 +203,7 @@ export default function ContactForm() {
           action="https://formspree.io/f/xnjlwrpv"
           method="POST"
           className="mt-6 space-y-5"
-          onSubmit={() => {
-            trackEvent("generate_lead", {
-              event_category: "Contact",
-              event_label: "Contactformulier verzonden",
-              value: 1,
-            });
-
-            setTimeout(() => {
-              window.location.href = "/bedankt";
-            }, 500);
-          }}
+          onSubmit={handleSubmit}
         >
           <input type="hidden" name="_next" value="https://www.moreclean.nl/bedankt" />
           <input type="text" name="_gotcha" className="hidden" tabIndex={-1} autoComplete="off" />
@@ -233,8 +263,15 @@ export default function ContactForm() {
             />
           </div>
 
+          {error && (
+            <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
+            disabled={sending}
             className="
               group
               relative
@@ -254,9 +291,11 @@ export default function ContactForm() {
               duration-500
               hover:-translate-y-1
               hover:shadow-[0_30px_80px_rgba(77,126,186,.38)]
+              disabled:cursor-not-allowed
+              disabled:opacity-70
             "
           >
-            <span className="relative z-10">Bericht Verzenden</span>
+            <span className="relative z-10">{sending ? "Bericht versturen…" : "Bericht Verzenden"}</span>
 
             <div
               className="
