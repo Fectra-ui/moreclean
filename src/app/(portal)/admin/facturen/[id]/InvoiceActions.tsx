@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Send, CheckCircle2, FileX, Download, ExternalLink } from "lucide-react";
 
@@ -14,11 +14,13 @@ interface Props {
 
 export default function InvoiceActions({ invoiceId, status, type, invoiceNumber, paymentUrl }: Props) {
   const router = useRouter();
+  const actionInFlightRef = useRef(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const action = async (endpoint: string, key: string, redirect?: string) => {
-    if (loading) return;
+    if (actionInFlightRef.current) return;
+    actionInFlightRef.current = true;
     setLoading(key);
     setError(null);
     try {
@@ -30,6 +32,7 @@ export default function InvoiceActions({ invoiceId, status, type, invoiceNumber,
     } catch {
       setError("Actie mislukt. Controleer uw verbinding en probeer opnieuw.");
     } finally {
+      actionInFlightRef.current = false;
       setLoading(null);
     }
   };
