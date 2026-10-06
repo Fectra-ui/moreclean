@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { X, Loader2, UserPlus } from "lucide-react";
 
 export default function InviteModal({ defaultRole = "employee", buttonLabel = "Uitnodigen" }: { defaultRole?: "admin" | "employee" | "customer"; buttonLabel?: string }) {
+  const submittingRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"admin" | "employee" | "customer">(defaultRole);
@@ -12,7 +13,8 @@ export default function InviteModal({ defaultRole = "employee", buttonLabel = "U
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (loading) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
     setFeedback(null);
     try {
@@ -32,6 +34,7 @@ export default function InviteModal({ defaultRole = "employee", buttonLabel = "U
     } catch {
       setFeedback({ type: "err", msg: "Verzenden mislukt. Controleer uw verbinding en probeer opnieuw." });
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   }
