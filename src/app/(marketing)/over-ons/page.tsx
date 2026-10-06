@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Leer More Clean kennen. Een modern schoonmaakbedrijf uit Limburg gebouwd op kwaliteit, betrouwbaarheid en persoonlijke service.",
   alternates: {
-    canonical: "https://moreclean.nl/over-ons",
+    canonical: "https://www.moreclean.nl/over-ons",
   },
 };
 

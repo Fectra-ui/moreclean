@@ -343,7 +343,7 @@ function CompanyStep({
         </div>
         <div>
           <Label>Website</Label>
-          <Input name="site_url" defaultValue={initialCompany?.site_url ?? ""} placeholder="https://moreclean.nl" />
+          <Input name="site_url" defaultValue={initialCompany?.site_url ?? ""} placeholder="https://www.moreclean.nl" />
         </div>
         <div>
           <Label>IBAN</Label>

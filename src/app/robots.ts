@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/bedankt"],
       },
     ],
-    sitemap: "https://moreclean.nl/sitemap.xml",
+    sitemap: "https://www.moreclean.nl/sitemap.xml",
   };
 }

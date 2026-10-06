@@ -25,7 +25,7 @@ import type {
   InvoiceOverduePayload,
 } from "@/lib/events/types";
 
-const PORTAL_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.nl";
+const PORTAL_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.moreclean.nl";
 const klantPortal = (path: string) => `${PORTAL_BASE}/klant${path}`;
 
 // Haal client-e-mailadres op (gecacht per request is niet nodig — handler loopt zelden)

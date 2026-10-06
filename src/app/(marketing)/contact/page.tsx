@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Neem contact op met More Clean. Bel, mail of stuur een WhatsApp voor glasbewassing, zonnepanelen reinigen of schoonmaakdiensten in Limburg.",
   alternates: {
-    canonical: "https://moreclean.nl/contact",
+    canonical: "https://www.moreclean.nl/contact",
   },
 };
 

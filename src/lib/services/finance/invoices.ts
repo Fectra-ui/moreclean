@@ -336,7 +336,7 @@ async function createMolliePayment(inv: InvoiceFull): Promise<{ id: string; chec
   const apiKey = process.env.MOLLIE_API_KEY;
   if (!apiKey) throw new Error("MOLLIE_API_KEY not set");
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.nl";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.moreclean.nl";
 
   const res = await fetch("https://api.mollie.com/v2/payments", {
     method: "POST",

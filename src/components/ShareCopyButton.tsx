@@ -8,7 +8,7 @@ export default function ShareCopyButton({ slug }: { slug: string }) {
 
   function handleCopy() {
     navigator.clipboard
-      .writeText(`https://moreclean.nl/blog/${slug}`)
+      .writeText(`https://www.moreclean.nl/blog/${slug}`)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);

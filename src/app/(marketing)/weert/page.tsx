@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Professioneel schoonmaakbedrijf in Weert voor glasbewassing, glazenwasser service, zonnepanelen reinigen en schoonmaakdiensten. Snel, betrouwbaar en resultaatgericht.",
   alternates: {
-    canonical: "https://moreclean.nl/weert",
+    canonical: "https://www.moreclean.nl/weert",
   },
 };
 

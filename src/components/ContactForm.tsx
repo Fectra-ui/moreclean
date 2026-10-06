@@ -175,7 +175,7 @@ export default function ContactForm() {
             }, 500);
           }}
         >
-          <input type="hidden" name="_next" value="https://moreclean.nl/bedankt" />
+          <input type="hidden" name="_next" value="https://www.moreclean.nl/bedankt" />
           <input type="text" name="_gotcha" className="hidden" tabIndex={-1} autoComplete="off" />
           <input type="hidden" name="_subject" value="Nieuw contactbericht - More Clean" />
 

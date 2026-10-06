@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Professioneel schoonmaakbedrijf in Limburg voor glasbewassing, ramen wassen, zonnepanelen reinigen en zakelijke of particuliere schoonmaak. Vraag vrijblijvend een offerte aan.",
   alternates: {
-    canonical: "https://moreclean.nl/limburg",
+    canonical: "https://www.moreclean.nl/limburg",
   },
 };
 

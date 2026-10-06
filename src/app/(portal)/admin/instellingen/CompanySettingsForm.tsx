@@ -121,7 +121,7 @@ export default function CompanySettingsForm({ company }: Props) {
             <input className={input} value={values.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+31 6 12345678" />
           </Field>
           <Field label="Website">
-            <input className={input} value={values.site_url} onChange={(e) => set("site_url", e.target.value)} placeholder="https://moreclean.nl" />
+            <input className={input} value={values.site_url} onChange={(e) => set("site_url", e.target.value)} placeholder="https://www.moreclean.nl" />
           </Field>
         </div>
       </section>

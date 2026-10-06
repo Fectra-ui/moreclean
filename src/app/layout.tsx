@@ -11,7 +11,7 @@ const geistSans = Geist({
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://moreclean.nl"),
+  metadataBase: new URL("https://www.moreclean.nl"),
   applicationName: "More Clean",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "More Clean",
     description:
       "Premium schoonmaakdiensten in Limburg. Glasbewassing, zonnepanelen reinigen en meer.",
-    url: "https://moreclean.nl",
+    url: "https://www.moreclean.nl",
     siteName: "More Clean",
     locale: "nl_NL",
     type: "website",
@@ -86,7 +86,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: "More Clean",
-    url: "https://moreclean.nl",
+    url: "https://www.moreclean.nl",
     telephone: "+31613672320",
     email: "info@moreclean.nl",
 
@@ -101,7 +101,7 @@ export default function RootLayout({
 
     openingHours: ["Mo-Fr 08:00-18:00", "Sa 09:00-16:00"],
 
-    image: "https://moreclean.nl/images/hero-bg.jpg",
+    image: "https://www.moreclean.nl/images/hero-bg.jpg",
 
     description:
       "Professionele glasbewassing, zonnepanelen reinigen en schoonmaakdiensten in Roermond, Limburg en omgeving.",

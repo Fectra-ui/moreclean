@@ -212,7 +212,7 @@ export function QuotePdf({ quote, company }: Props) {
             {"  ·  "}{company.phone}{"  ·  "}{company.email}
           </Text>
           <Text style={[styles.footerText, { marginTop: 3 }]}>
-            Op alle offertes zijn onze algemene voorwaarden van toepassing · moreclean.nl/algemene-voorwaarden
+            Op alle offertes zijn onze algemene voorwaarden van toepassing · www.moreclean.nl/algemene-voorwaarden
           </Text>
         </View>
       </Page>

@@ -23,7 +23,7 @@ export function emailLayout(content: string, previewText = ""): string {
         <!-- Header -->
         <tr>
           <td style="background:#101536;border-radius:16px 16px 0 0;padding:28px 40px;text-align:center">
-            <img src="https://moreclean.nl/images/logo-wit.png" alt="More Clean" width="140" height="auto"
+            <img src="https://www.moreclean.nl/images/logo-wit.png" alt="More Clean" width="140" height="auto"
               style="display:inline-block;height:auto;border:0" onerror="this.style.display='none'" />
             <div style="color:#95AEC1;font-size:13px;margin-top:4px;letter-spacing:.5px">Professionele schoonmaak</div>
           </td>

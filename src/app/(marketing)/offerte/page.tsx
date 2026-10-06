@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Vraag vrijblijvend een gratis offerte aan voor glasbewassing, zonnepanelen reinigen of schoonmaakdiensten in Limburg. Reactie binnen 24 uur.",
   alternates: {
-    canonical: "https://moreclean.nl/offerte",
+    canonical: "https://www.moreclean.nl/offerte",
   },
 };
 

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Blog & Kennisbank | More Clean",
   description:
     "Professionele tips en kennis over glasbewassing, zonnepanelen reinigen en schoonmaakdiensten in Limburg. Ontdek onze artikelen en kennisbank.",
-  alternates: { canonical: "https://moreclean.nl/blog" },
+  alternates: { canonical: "https://www.moreclean.nl/blog" },
 };
 
 export default async function BlogPage() {

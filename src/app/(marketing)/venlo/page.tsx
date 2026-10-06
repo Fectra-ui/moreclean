@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Professionele glazenwasser in Venlo voor glasbewassing, ramen wassen, zonnepanelen reinigen en schoonmaakdiensten. Vraag vrijblijvend een offerte aan.",
   alternates: {
-    canonical: "https://moreclean.nl/venlo",
+    canonical: "https://www.moreclean.nl/venlo",
   },
 };
 

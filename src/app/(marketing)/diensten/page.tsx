@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "Professionele glasbewassing, zonnepanelen reinigen, zakelijke en particuliere schoonmaak in Roermond en Limburg. Bekijk al onze diensten.",
   alternates: {
-    canonical: "https://moreclean.nl/diensten",
+    canonical: "https://www.moreclean.nl/diensten",
   },
 };
 

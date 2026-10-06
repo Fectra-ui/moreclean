@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       to: recipient,
       replyTo: email,
       subject: `Nieuwe offerteaanvraag: ${name}`,
-      html: `<!doctype html><html lang="nl"><body style="margin:0;padding:32px;background:#F3F5F7;font-family:Arial,sans-serif;color:#101536"><table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;width:100%;background:#fff;border-radius:16px;padding:32px"><tr><td><h1 style="margin:0 0 8px;font-size:24px">Nieuwe offerteaanvraag</h1><p style="margin:0 0 24px;color:#606774">Via moreclean.nl</p><table width="100%" cellpadding="0" cellspacing="0" role="presentation">${rows}</table></td></tr></table></td></tr></table></body></html>`,
+      html: `<!doctype html><html lang="nl"><body style="margin:0;padding:32px;background:#F3F5F7;font-family:Arial,sans-serif;color:#101536"><table width="100%" cellpadding="0" cellspacing="0" role="presentation"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;width:100%;background:#fff;border-radius:16px;padding:32px"><tr><td><h1 style="margin:0 0 8px;font-size:24px">Nieuwe offerteaanvraag</h1><p style="margin:0 0 24px;color:#606774">Via www.moreclean.nl</p><table width="100%" cellpadding="0" cellspacing="0" role="presentation">${rows}</table></td></tr></table></td></tr></table></body></html>`,
     });
   } catch (error) {
     console.error("Quote request email failed:", error);

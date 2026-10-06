@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
   const { data: invited, error } = await service.auth.admin.inviteUserByEmail(email, {
     data: { role, company_id: companyId },
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://moreclean.nl"}/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.moreclean.nl"}/reset-password`,
   });
 
   if (error) {

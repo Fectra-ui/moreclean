@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug, getRelatedPosts, extractHeadings, injectHeadingIds } from "@/lib/blog";
+import { sanitizeBlogHtml } from "@/lib/blogHtml";
 import BlogTOC from "@/components/BlogTOC";
 import BlogCard from "@/components/BlogCard";
 import ShareCopyButton from "@/components/ShareCopyButton";
@@ -27,11 +28,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     keywords: post.keywords,
-    alternates: { canonical: `https://moreclean.nl/blog/${post.slug}` },
+    alternates: { canonical: `https://www.moreclean.nl/blog/${post.slug}` },
     openGraph: {
       title,
       description,
-      url: `https://moreclean.nl/blog/${post.slug}`,
+      url: `https://www.moreclean.nl/blog/${post.slug}`,
       type: "article",
       publishedTime: post.date,
       authors: [post.author],
@@ -60,7 +61,7 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
-  const contentWithIds = injectHeadingIds(post.content);
+  const contentWithIds = injectHeadingIds(sanitizeBlogHtml(post.content));
   const headings = extractHeadings(contentWithIds);
   const relatedPosts = getRelatedPosts(post, await getAllPosts());
 
@@ -69,7 +70,7 @@ export default async function BlogPostPage({ params }: Props) {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
-    image: `https://moreclean.nl${post.image}`,
+    image: `https://www.moreclean.nl${post.image}`,
     author: {
       "@type": "Organization",
       name: post.author,
@@ -77,11 +78,11 @@ export default async function BlogPostPage({ params }: Props) {
     publisher: {
       "@type": "Organization",
       name: "More Clean",
-      url: "https://moreclean.nl",
+      url: "https://www.moreclean.nl",
     },
     datePublished: post.date,
     dateModified: post.date,
-    mainEntityOfPage: `https://moreclean.nl/blog/${post.slug}`,
+    mainEntityOfPage: `https://www.moreclean.nl/blog/${post.slug}`,
   };
 
   const faqSchema = post.faq && post.faq.length > 0
@@ -246,7 +247,7 @@ export default async function BlogPostPage({ params }: Props) {
 
                   <a
                     href={`https://wa.me/?text=${encodeURIComponent(
-                      post.title + " — https://moreclean.nl/blog/" + post.slug
+                      post.title + " — https://www.moreclean.nl/blog/" + post.slug
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"

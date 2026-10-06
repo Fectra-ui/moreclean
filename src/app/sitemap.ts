@@ -4,7 +4,7 @@ import { getAllPosts } from "@/lib/blog";
 const lastModified = new Date("2026-06-28");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = "https://moreclean.nl";
+  const base = "https://www.moreclean.nl";
   const posts = await getAllPosts();
 
   return [

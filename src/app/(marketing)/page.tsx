@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description:
     "Professionele glasbewassing, zonnepanelen reinigen en schoonmaakdiensten in Roermond, Limburg en omgeving. Vraag direct vrijblijvend een offerte aan.",
   alternates: {
-    canonical: "https://moreclean.nl",
+    canonical: "https://www.moreclean.nl",
   },
 };
 

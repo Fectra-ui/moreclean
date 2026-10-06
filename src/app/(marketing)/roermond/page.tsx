@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Professionele glasbewassing in Roermond. Ramen wassen, ramen lappen, zonnepanelen reinigen en schoonmaakdiensten voor particulieren en bedrijven. Vraag direct vrijblijvend een offerte aan.",
   alternates: {
-    canonical: "https://moreclean.nl/roermond",
+    canonical: "https://www.moreclean.nl/roermond",
   },
 };
 

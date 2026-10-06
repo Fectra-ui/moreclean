@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Lees de algemene voorwaarden van More Clean voor onze schoonmaak- en glasbewassingsservices.",
   alternates: {
-    canonical: "https://moreclean.nl/algemene-voorwaarden",
+    canonical: "https://www.moreclean.nl/algemene-voorwaarden",
   },
 };
 

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Lees het privacybeleid van More Clean. Hoe wij omgaan met uw persoonsgegevens.",
   alternates: {
-    canonical: "https://moreclean.nl/privacy",
+    canonical: "https://www.moreclean.nl/privacy",
   },
 };
 

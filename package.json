@@ -16,19 +16,25 @@
     "fflate": "^0.8.3",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.11.0",
-    "next": "^16.3.1",
+    "next": "^16.3.8",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sanitize-html": "^2.18.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sanitize-html": "^2.16.2",
     "eslint": "^9",
-    "eslint-config-next": "^16.3.1",
+    "eslint-config-next": "^16.3.8",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "baseline-browser-mapping": "2.11.27",
+    "source-map-js": "1.2.2"
   }
 }

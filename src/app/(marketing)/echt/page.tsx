@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Professionele glasbewassing in Echt. Ramen wassen, zonnepanelen reinigen en schoonmaakdiensten voor particulieren en bedrijven. Vraag vrijblijvend een offerte aan bij More Clean.",
   alternates: {
-    canonical: "https://moreclean.nl/echt",
+    canonical: "https://www.moreclean.nl/echt",
   },
 };
 
