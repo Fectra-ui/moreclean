@@ -12,24 +12,27 @@ export default function InviteModal({ defaultRole = "employee", buttonLabel = "U
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setFeedback(null);
-
-    const res = await fetch("/api/admin/invite", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, role }),
-    });
-
-    const data = await res.json();
-    setLoading(false);
-
-    if (!res.ok) {
-      setFeedback({ type: "err", msg: data.error ?? "Er ging iets mis." });
-    } else {
-      setFeedback({ type: "ok", msg: `Uitnodiging verstuurd naar ${email}` });
-      setEmail("");
-      setRole(defaultRole);
+    try {
+      const res = await fetch("/api/admin/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, role }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setFeedback({ type: "err", msg: data.error ?? "Er ging iets mis." });
+      } else {
+        setFeedback({ type: "ok", msg: `Uitnodiging verstuurd naar ${email}` });
+        setEmail("");
+        setRole(defaultRole);
+      }
+    } catch {
+      setFeedback({ type: "err", msg: "Verzenden mislukt. Controleer uw verbinding en probeer opnieuw." });
+    } finally {
+      setLoading(false);
     }
   }
 
