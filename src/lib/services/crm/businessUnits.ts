@@ -79,12 +79,14 @@ export async function updateBusinessUnit(
 ): Promise<{ error: string | null }> {
   const companyId = await getCompanyId();
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("business_units")
     .update(patch)
     .eq("id", id)
-    .eq("company_id", companyId);
-  return { error: error?.message ?? null };
+    .eq("company_id", companyId)
+    .select("id")
+    .maybeSingle();
+  return { error: error?.message ?? (!data ? "Bedrijfsunit niet gevonden of geen toegang." : null) };
 }
 
 /** Geeft de BU-naam voor een factuurprefix: MC-2026-0001 */

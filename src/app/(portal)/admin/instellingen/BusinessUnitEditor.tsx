@@ -9,6 +9,7 @@ export default function BusinessUnitEditor({ bu }: { bu: BusinessUnit }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(bu.name);
   const [description, setDescription] = useState(bu.description ?? "");
   const [email, setEmail] = useState(bu.email ?? "");
@@ -19,15 +20,26 @@ export default function BusinessUnitEditor({ bu }: { bu: BusinessUnit }) {
   const [active, setActive] = useState(bu.active);
 
   const save = async () => {
+    if (loading) return;
     setLoading(true);
-    await fetch(`/api/business-units/${bu.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description, email, phone, primary_color: color, vat_text: vatText, payment_terms: parseInt(paymentTerms, 10), active }),
-    });
-    router.refresh();
-    setLoading(false);
-    setOpen(false);
+    setError(null);
+    try {
+      const response = await fetch(`/api/business-units/${bu.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description, email, phone, primary_color: color, vat_text: vatText, payment_terms: parseInt(paymentTerms, 10), active }),
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error ?? "Opslaan mislukt.");
+      }
+      router.refresh();
+      setOpen(false);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Opslaan mislukt.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -112,6 +124,7 @@ export default function BusinessUnitEditor({ bu }: { bu: BusinessUnit }) {
             <span className="text-sm text-[#606774]">{active ? "Actief" : "Inactief — verborgen in selectielijsten"}</span>
           </div>
 
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
           <div className="flex justify-end gap-3 pt-2">
             <button onClick={() => setOpen(false)}
               className="rounded-2xl border border-[#101536]/10 px-4 py-2 text-sm font-semibold text-[#606774] transition hover:bg-[#F3F5F7]">
