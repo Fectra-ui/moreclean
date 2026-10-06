@@ -12,6 +12,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [resetPending, setResetPending] = useState(false);
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
@@ -30,16 +31,30 @@ export default function LoginForm() {
   }
 
   async function handleForgotPassword() {
+    if (resetPending) return;
     if (!email) {
       setError("Vul eerst uw e-mailadres in.");
       return;
     }
-    const supabase = createClient();
-    await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Vul een geldig e-mailadres in.");
+      return;
+    }
+    setResetPending(true);
     setError(null);
-    setInfo("Reset-link verstuurd! Controleer uw e-mail.");
+    setInfo(null);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      setInfo("Als dit e-mailadres bekend is, ontvangt u een reset-link.");
+    } catch {
+      setError("De reset-link kon niet worden verstuurd. Probeer het later opnieuw.");
+    } finally {
+      setResetPending(false);
+    }
   }
 
   return (
@@ -75,9 +90,10 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={handleForgotPassword}
+            disabled={resetPending}
             className="text-xs text-[#4D7EBA] hover:underline"
           >
-            Vergeten?
+            {resetPending ? "Versturen…" : "Vergeten?"}
           </button>
         </div>
         <div className="relative">
@@ -109,10 +125,10 @@ export default function LoginForm() {
 
       {/* FEEDBACK */}
       {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 border border-red-100">{error}</p>
+        <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 border border-red-100">{error}</p>
       )}
       {info && (
-        <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 border border-emerald-100">{info}</p>
+        <p role="status" className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 border border-emerald-100">{info}</p>
       )}
 
       {/* SUBMIT */}
