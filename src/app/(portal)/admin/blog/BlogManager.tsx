@@ -11,7 +11,16 @@ export default function BlogManager(){
  const set=<K extends keyof BlogPost>(k:K,v:BlogPost[K])=>setPost(p=>({...p,[k]:v}));
  async function save(){setMsg("");const r=await fetch("/api/admin/blog",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(post)});const d=await r.json();setMsg(r.ok?"Opgeslagen":d.error);if(r.ok)load()}
  async function upload(file:File){const f=new FormData();f.set("file",file);const r=await fetch("/api/admin/blog/image",{method:"POST",body:f});const d=await r.json();if(r.ok)set("image",d.url);else setMsg(d.error)}
- async function remove(){if(!confirm("Artikel verwijderen?"))return;await fetch(`/api/admin/blog?slug=${encodeURIComponent(post.slug)}`,{method:"DELETE"});setPost({...blank});load()}
+ async function remove(){
+  if(!confirm("Artikel verwijderen?"))return;
+  setMsg("");
+  try {
+   const response=await fetch(`/api/admin/blog?slug=${encodeURIComponent(post.slug)}`,{method:"DELETE"});
+   if(!response.ok){const result=await response.json().catch(()=>({}));setMsg(result.error??"Verwijderen mislukt.");return}
+   setPost({...blank});
+   load();
+  } catch {setMsg("Verwijderen mislukt. Probeer opnieuw.")}
+ }
  return <div className="grid gap-6 xl:grid-cols-[280px_1fr]">
   <aside className="rounded-2xl bg-white p-4 shadow-sm"><button onClick={()=>setPost({...blank})} className="mb-4 w-full rounded-xl bg-[#101536] px-4 py-3 text-sm font-semibold text-white">Nieuw artikel</button><div className="space-y-2">{posts.map(p=><button key={p.slug} onClick={()=>setPost({...p})} className="w-full rounded-xl border p-3 text-left"><span className="block font-semibold text-[#101536]">{p.title}</span><span className="text-xs text-[#606774]">{p.published===false?"Concept":"Gepubliceerd"}</span></button>)}</div></aside>
   <section className="rounded-2xl bg-white p-4 shadow-sm sm:p-6"><h1 className="text-2xl font-bold">Blogbeheer</h1><p className="mb-6 mt-1 text-sm text-[#606774]">Alle velden en de foto zijn per artikel aanpasbaar.</p>

@@ -34,6 +34,6 @@ export async function DELETE(req: NextRequest) {
   if (!auth.identity) return NextResponse.json({ error: "Geen toegang" }, { status: auth.status });
   const slug = req.nextUrl.searchParams.get("slug");
   if (!slug) return NextResponse.json({ error: "Slug ontbreekt" }, { status: 400 });
-  await createServiceClient().from("blog_posts").upsert({ slug, payload: {}, published: false, deleted: true, updated_by: auth.identity.userId });
-  return NextResponse.json({ ok: true });
+  const { error } = await createServiceClient().from("blog_posts").upsert({ slug, payload: {}, published: false, deleted: true, updated_by: auth.identity.userId });
+  return error ? NextResponse.json({ error: error.message }, { status: 500 }) : NextResponse.json({ ok: true });
 }
