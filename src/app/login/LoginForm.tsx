@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { loginAction } from "./actions";
 
 export default function LoginForm() {
+  const loginInFlightRef = useRef(false);
+  const resetInFlightRef = useRef(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -19,19 +21,25 @@ export default function LoginForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (loginInFlightRef.current) return;
+    loginInFlightRef.current = true;
     setError(null);
 
     const formData = new FormData(e.currentTarget);
     if (redirectTo) formData.set("redirect", redirectTo);
 
     startTransition(async () => {
-      const result = await loginAction(formData);
-      if (result?.error) setError(result.error);
+      try {
+        const result = await loginAction(formData);
+        if (result?.error) setError(result.error);
+      } finally {
+        loginInFlightRef.current = false;
+      }
     });
   }
 
   async function handleForgotPassword() {
-    if (resetPending) return;
+    if (resetInFlightRef.current) return;
     if (!email) {
       setError("Vul eerst uw e-mailadres in.");
       return;
@@ -40,6 +48,7 @@ export default function LoginForm() {
       setError("Vul een geldig e-mailadres in.");
       return;
     }
+    resetInFlightRef.current = true;
     setResetPending(true);
     setError(null);
     setInfo(null);
@@ -53,6 +62,7 @@ export default function LoginForm() {
     } catch {
       setError("De reset-link kon niet worden verstuurd. Probeer het later opnieuw.");
     } finally {
+      resetInFlightRef.current = false;
       setResetPending(false);
     }
   }
