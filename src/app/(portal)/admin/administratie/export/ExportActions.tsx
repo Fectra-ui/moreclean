@@ -19,6 +19,7 @@ export default function ExportActions({ year, quarter, status }: Props) {
 
   const handleExport = async () => {
     setDownloading(true);
+    setError(null);
     try {
       const res = await fetch(`/api/accounting/quarter?year=${year}&quarter=${quarter}&action=export`);
       if (!res.ok) { setError("Export mislukt. Probeer opnieuw."); return; }
@@ -30,6 +31,8 @@ export default function ExportActions({ year, quarter, status }: Props) {
       a.click();
       URL.revokeObjectURL(url);
       setDone(true);
+    } catch {
+      setError("Export mislukt. Controleer uw verbinding en probeer opnieuw.");
     } finally {
       setDownloading(false);
     }
@@ -38,14 +41,20 @@ export default function ExportActions({ year, quarter, status }: Props) {
   const handleClose = async () => {
     if (!confirm(`Kwartaal Q${quarter} ${year} afsluiten? Dit kan niet ongedaan worden gemaakt.`)) return;
     setClosing(true);
-    const res = await fetch("/api/accounting/quarter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ year, quarter, action: "close" }),
-    });
-    setClosing(false);
-    if (res.ok) router.refresh();
-    else setError("Afsluiten mislukt. Probeer opnieuw.");
+    setError(null);
+    try {
+      const res = await fetch("/api/accounting/quarter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ year, quarter, action: "close" }),
+      });
+      if (!res.ok) { setError("Afsluiten mislukt. Probeer opnieuw."); return; }
+      router.refresh();
+    } catch {
+      setError("Afsluiten mislukt. Controleer uw verbinding en probeer opnieuw.");
+    } finally {
+      setClosing(false);
+    }
   };
 
   return (
