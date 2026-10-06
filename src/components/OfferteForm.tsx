@@ -2,8 +2,43 @@
 
 import { trackEvent } from "@/lib/gtag";
 import { CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 
 export default function OfferteForm() {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (submitting) return;
+
+    setSubmitting(true);
+    setError(null);
+    const form = event.currentTarget;
+    const fields = new FormData(form);
+
+    try {
+      const response = await fetch("/api/quote-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fields.get("naam"), email: fields.get("email"), phone: fields.get("telefoon"),
+          service: fields.get("dienst"), message: fields.get("bericht"), website: fields.get("_gotcha"),
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Versturen is niet gelukt.");
+
+      trackEvent("generate_lead", {
+        event_category: "Offerte", event_label: "Offerte formulier verzonden", value: 1,
+      });
+      window.location.assign("/bedankt");
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "Versturen is niet gelukt.");
+      setSubmitting(false);
+    }
+  }
+
   return (
     <section className="mx-auto mt-20 grid max-w-7xl gap-8 md:grid-cols-2">
       {/* LEFT */}
@@ -31,24 +66,10 @@ export default function OfferteForm() {
         <h2 className="text-3xl font-bold text-[#101536]">Offerteformulier</h2>
 
         <form
-          action="https://formspree.io/f/xnjlwrpv"
-          method="POST"
           className="mt-6 space-y-5"
-          onSubmit={() => {
-            trackEvent("generate_lead", {
-              event_category: "Offerte",
-              event_label: "Offerte formulier verzonden",
-              value: 1,
-            });
-
-            setTimeout(() => {
-              window.location.href = "/bedankt";
-            }, 500);
-          }}
+          onSubmit={handleSubmit}
         >
-          <input type="hidden" name="_next" value="https://moreclean.nl/bedankt" />
           <input type="text" name="_gotcha" className="hidden" tabIndex={-1} autoComplete="off" />
-          <input type="hidden" name="_subject" value="Nieuwe offerte aanvraag - More Clean" />
 
           <div>
             <label htmlFor="offerte-naam" className="mb-1.5 block text-sm font-medium text-[#101536]">
@@ -122,11 +143,14 @@ export default function OfferteForm() {
             />
           </div>
 
+          {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+
           <button
             type="submit"
-            className="w-full rounded-full bg-[#4D7EBA] px-6 py-4 font-semibold text-white transition hover:scale-[1.02]"
+            disabled={submitting}
+            className="w-full rounded-full bg-[#4D7EBA] px-6 py-4 font-semibold text-white transition hover:scale-[1.02] disabled:cursor-wait disabled:opacity-70"
           >
-            Offerte Aanvragen
+            {submitting ? "Versturen…" : "Offerte Aanvragen"}
           </button>
         </form>
       </div>
