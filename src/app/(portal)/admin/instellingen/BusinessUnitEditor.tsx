@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import type { BusinessUnit } from "@/lib/services/crm/businessUnits";
 
 export default function BusinessUnitEditor({ bu }: { bu: BusinessUnit }) {
   const router = useRouter();
+  const savingRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,8 @@ export default function BusinessUnitEditor({ bu }: { bu: BusinessUnit }) {
   const [active, setActive] = useState(bu.active);
 
   const save = async () => {
-    if (loading) return;
+    if (savingRef.current) return;
+    savingRef.current = true;
     setLoading(true);
     setError(null);
     try {
@@ -38,6 +40,7 @@ export default function BusinessUnitEditor({ bu }: { bu: BusinessUnit }) {
     } catch (error) {
       setError(error instanceof Error ? error.message : "Opslaan mislukt.");
     } finally {
+      savingRef.current = false;
       setLoading(false);
     }
   };
