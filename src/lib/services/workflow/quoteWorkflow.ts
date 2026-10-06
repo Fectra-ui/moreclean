@@ -1,5 +1,4 @@
 import { createServiceClient } from "@/lib/supabase/server";
-import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 // Re-export shared pure types so existing server-side imports keep working
 export type { WorkflowState, WorkflowStep } from "./quoteWorkflowTypes";
@@ -13,7 +12,9 @@ import { canTransition } from "./quoteWorkflowTypes";
 export async function transitionQuote(
   quoteId: string,
   to: WorkflowState,
-  actorId?: string,
+  actorId: string,
+  companyId: string,
+  clientId: string,
   payload: Record<string, unknown> = {}
 ): Promise<{ error: string | null }> {
   const svc = createServiceClient();
@@ -23,9 +24,10 @@ export async function transitionQuote(
     .from("quotes")
     .select("id, workflow_state, client_id")
     .eq("id", quoteId)
+    .eq("company_id", companyId)
     .single();
 
-  if (readErr || !quote) return { error: "Offerte niet gevonden" };
+  if (readErr || !quote || quote.client_id !== clientId) return { error: "Offerte niet gevonden" };
 
   const from = (quote.workflow_state ?? "concept") as WorkflowState;
   if (!canTransition(from, to)) {
@@ -56,11 +58,18 @@ export async function transitionQuote(
   if (to === "uitgevoerd")     patch.work_completed_at = new Date().toISOString();
   if (to === "afgewezen")      patch.rejected_at       = new Date().toISOString();
 
-  const { error: updateErr } = await svc.from("quotes").update(patch).eq("id", quoteId);
+  const { data: updated, error: updateErr } = await svc.from("quotes")
+    .update(patch)
+    .eq("id", quoteId)
+    .eq("company_id", companyId)
+    .eq("client_id", clientId)
+    .eq("workflow_state", from)
+    .select("id")
+    .maybeSingle();
   if (updateErr) return { error: updateErr.message };
+  if (!updated) return { error: "Offerte is intussen gewijzigd; vernieuw de pagina" };
 
   // Log domain event
-  const companyId = await getCompanyId();
   await svc.from("domain_events").insert({
     type:           `quote.${to.replace("_", ".")}`,
     aggregate_type: "quote",
@@ -72,7 +81,7 @@ export async function transitionQuote(
 
   // Side effects
   if (to === "betaald") {
-    await onBetaaldReceived(quoteId, svc);
+    await onBetaaldReceived(quoteId, companyId, svc);
   }
 
   return { error: null };
@@ -82,10 +91,10 @@ export async function transitionQuote(
 
 async function onBetaaldReceived(
   quoteId: string,
+  companyId: string,
   svc: ReturnType<typeof createServiceClient>
 ) {
   // Notify all admins: klaar voor planning
-  const companyId = await getCompanyId();
   const { data: admins } = await svc
     .from("profiles")
     .select("id")
