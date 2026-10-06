@@ -13,18 +13,24 @@ export default function OwnerActivationForm() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError(null);
-    const form = new FormData(event.currentTarget);
-    const response = await fetch("/api/auth/activate-owner", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(Object.fromEntries(form)),
-    });
-    const result = await response.json().catch(() => ({}));
-    setLoading(false);
-    if (!response.ok) return setError(result.error ?? "Activeren is niet gelukt.");
-    setDone(true);
+    try {
+      const form = new FormData(event.currentTarget);
+      const response = await fetch("/api/auth/activate-owner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(form)),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) { setError(result.error ?? "Activeren is niet gelukt."); return; }
+      setDone(true);
+    } catch {
+      setError("Activeren is niet gelukt. Controleer uw verbinding en probeer opnieuw.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
