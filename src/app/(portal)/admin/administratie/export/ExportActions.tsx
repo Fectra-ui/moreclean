@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Lock, Loader2, CheckCircle2 } from "lucide-react";
 
@@ -12,12 +12,16 @@ interface Props {
 
 export default function ExportActions({ year, quarter, status }: Props) {
   const router = useRouter();
+  const exportingRef = useRef(false);
+  const closingRef = useRef(false);
   const [downloading, setDownloading] = useState(false);
   const [closing, setClosing] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleExport = async () => {
+    if (exportingRef.current) return;
+    exportingRef.current = true;
     setDownloading(true);
     setError(null);
     try {
@@ -34,12 +38,15 @@ export default function ExportActions({ year, quarter, status }: Props) {
     } catch {
       setError("Export mislukt. Controleer uw verbinding en probeer opnieuw.");
     } finally {
+      exportingRef.current = false;
       setDownloading(false);
     }
   };
 
   const handleClose = async () => {
+    if (closingRef.current) return;
     if (!confirm(`Kwartaal Q${quarter} ${year} afsluiten? Dit kan niet ongedaan worden gemaakt.`)) return;
+    closingRef.current = true;
     setClosing(true);
     setError(null);
     try {
@@ -53,6 +60,7 @@ export default function ExportActions({ year, quarter, status }: Props) {
     } catch {
       setError("Afsluiten mislukt. Controleer uw verbinding en probeer opnieuw.");
     } finally {
+      closingRef.current = false;
       setClosing(false);
     }
   };
