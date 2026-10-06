@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 export default function MileageApproveButton({ id }: { id: string }) {
   const router = useRouter();
+  const approvingRef = useRef(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const approve = async () => {
+    if (approvingRef.current) return;
+    approvingRef.current = true;
     setLoading(true);
     setError(false);
     try {
@@ -19,6 +22,7 @@ export default function MileageApproveButton({ id }: { id: string }) {
     } catch {
       setError(true);
     } finally {
+      approvingRef.current = false;
       setLoading(false);
     }
   };
