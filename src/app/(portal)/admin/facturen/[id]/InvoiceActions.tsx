@@ -18,14 +18,20 @@ export default function InvoiceActions({ invoiceId, status, type, invoiceNumber,
   const [error, setError] = useState<string | null>(null);
 
   const action = async (endpoint: string, key: string, redirect?: string) => {
+    if (loading) return;
     setLoading(key);
     setError(null);
-    const res = await fetch(`/api/invoices/${invoiceId}/${endpoint}`, { method: "POST" });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error ?? "Er is een fout opgetreden"); setLoading(null); return; }
-    if (redirect) router.push(redirect);
-    else router.refresh();
-    setLoading(null);
+    try {
+      const res = await fetch(`/api/invoices/${invoiceId}/${endpoint}`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { setError(data.error ?? "Er is een fout opgetreden"); return; }
+      if (redirect) router.push(redirect);
+      else router.refresh();
+    } catch {
+      setError("Actie mislukt. Controleer uw verbinding en probeer opnieuw.");
+    } finally {
+      setLoading(null);
+    }
   };
 
   const isCredit = type === "credit";
