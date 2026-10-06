@@ -1,18 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { trackEvent } from "@/lib/gtag";
 
 export default function ContactForm() {
   const router = useRouter();
+  const submittingRef = useRef(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (sending) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
 
     const form = event.currentTarget;
     setSending(true);
@@ -42,6 +44,7 @@ export default function ContactForm() {
     } catch {
       setError("Versturen is niet gelukt. Controleer uw verbinding en probeer het opnieuw.");
     } finally {
+      submittingRef.current = false;
       setSending(false);
     }
   }
