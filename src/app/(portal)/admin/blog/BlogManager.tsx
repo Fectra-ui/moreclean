@@ -1,18 +1,33 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BlogPost, BlogCategory } from "@/types/blog";
 
 const blank: BlogPost = { slug:"",title:"",description:"",content:"<h2>Tussenkop</h2>\n<p>Schrijf hier de tekst.</p>",category:"Schoonmaak",image:"",author:"More Clean",date:new Date().toISOString().slice(0,10),readTime:4,published:false,keywords:[],faq:[],related:[] };
 const input="w-full rounded-xl border border-[#101536]/10 bg-[#F8F9FB] px-3 py-2.5 text-sm outline-none focus:border-[#4D7EBA]";
 export default function BlogManager(){
+ const savingRef=useRef(false),deletingRef=useRef(false);
  const [posts,setPosts]=useState<BlogPost[]>([]),[post,setPost]=useState<BlogPost>({...blank}),[msg,setMsg]=useState("");
  const load=()=>fetch("/api/admin/blog").then(r=>r.json()).then(setPosts);
  useEffect(()=>{load()},[]);
  const set=<K extends keyof BlogPost>(k:K,v:BlogPost[K])=>setPost(p=>({...p,[k]:v}));
- async function save(){setMsg("");const r=await fetch("/api/admin/blog",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(post)});const d=await r.json();setMsg(r.ok?"Opgeslagen":d.error);if(r.ok)load()}
+ async function save(){
+  if(savingRef.current)return;
+  savingRef.current=true;
+  setMsg("");
+  try {
+   const r=await fetch("/api/admin/blog",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(post)});
+   const d=await r.json().catch(()=>({}));
+   if(!r.ok){setMsg(d.error??"Opslaan mislukt. Probeer opnieuw.");return}
+   setMsg("Opgeslagen");
+   load();
+  } catch {setMsg("Opslaan mislukt. Controleer uw verbinding en probeer opnieuw.")}
+  finally {savingRef.current=false}
+ }
  async function upload(file:File){const f=new FormData();f.set("file",file);const r=await fetch("/api/admin/blog/image",{method:"POST",body:f});const d=await r.json();if(r.ok)set("image",d.url);else setMsg(d.error)}
  async function remove(){
+  if(deletingRef.current)return;
   if(!confirm("Artikel verwijderen?"))return;
+  deletingRef.current=true;
   setMsg("");
   try {
    const response=await fetch(`/api/admin/blog?slug=${encodeURIComponent(post.slug)}`,{method:"DELETE"});
@@ -20,6 +35,7 @@ export default function BlogManager(){
    setPost({...blank});
    load();
   } catch {setMsg("Verwijderen mislukt. Probeer opnieuw.")}
+  finally {deletingRef.current=false}
  }
  return <div className="grid gap-6 xl:grid-cols-[280px_1fr]">
   <aside className="rounded-2xl bg-white p-4 shadow-sm"><button onClick={()=>setPost({...blank})} className="mb-4 w-full rounded-xl bg-[#101536] px-4 py-3 text-sm font-semibold text-white">Nieuw artikel</button><div className="space-y-2">{posts.map(p=><button key={p.slug} onClick={()=>setPost({...p})} className="w-full rounded-xl border p-3 text-left"><span className="block font-semibold text-[#101536]">{p.title}</span><span className="text-xs text-[#606774]">{p.published===false?"Concept":"Gepubliceerd"}</span></button>)}</div></aside>
