@@ -13,7 +13,8 @@ export default async function OpdrachtPage({ params }: { params: Promise<{ id: s
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profileError) throw profileError;
   if (!profile || !["admin", "employee"].includes(profile.role)) redirect("/klant");
 
   const [appointment, vehicles] = await Promise.all([

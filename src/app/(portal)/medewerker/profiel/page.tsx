@@ -10,11 +10,13 @@ export default async function MedewerkerProfielPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("id, first_name, last_name, role, phone, avatar_url, company_id")
+    .select("id, first_name, last_name, role, phone, avatar_path, company_id")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
+
+  if (profileError) throw profileError;
 
   if (!profile || !["employee", "admin"].includes((profile as { role: string }).role)) redirect("/klant");
   if (!profile.company_id) throw new Error("Medewerker is niet aan een bedrijf gekoppeld");
@@ -58,7 +60,7 @@ export default async function MedewerkerProfielPage() {
       <MedewerkerProfielForm
         profile={{ ...profile, role: (profile as { role: string }).role } as {
           id: string; first_name: string | null; last_name: string | null;
-          role: string; phone: string | null; avatar_url: string | null;
+          role: string; phone: string | null; avatar_path: string | null;
         }}
         email={user.email ?? ""}
       />

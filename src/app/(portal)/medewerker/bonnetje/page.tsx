@@ -11,7 +11,8 @@ export default async function BonnetiePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profileError) throw profileError;
   if (!profile || !["admin", "employee"].includes((profile as { role: string }).role)) {
     redirect("/klant");
   }

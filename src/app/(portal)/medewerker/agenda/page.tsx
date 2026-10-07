@@ -14,7 +14,8 @@ export default async function MedewerkerAgendaPage({
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("role, company_id").eq("id", user.id).single();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role, company_id").eq("id", user.id).maybeSingle();
+  if (profileError) throw profileError;
   if (!["employee", "admin"].includes((profile as { role: string } | null)?.role ?? "")) redirect("/klant");
   if (!profile?.company_id) throw new Error("Medewerker is niet aan een bedrijf gekoppeld");
 

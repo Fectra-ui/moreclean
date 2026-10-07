@@ -11,7 +11,8 @@ export default async function MedewerkerBerichtenPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profileError) throw profileError;
   if (!["employee", "admin"].includes((profile as { role: string } | null)?.role ?? "")) redirect("/klant");
 
   // Employee inbox: all conversations they're part of (via messages they sent or received)

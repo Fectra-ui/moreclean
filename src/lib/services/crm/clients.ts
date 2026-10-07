@@ -114,8 +114,7 @@ export async function getClientDetail(id: string): Promise<ClientWithSchedules |
         appointment_employees (
           profiles (first_name, last_name)
         ),
-        appointment_services (description, quantity),
-        files (type, storage_path)
+        appointment_services (description, quantity)
       ),
       quotes (id, quote_number, status, total, created_at, valid_until),
       invoices (id, invoice_number, status, total, issue_date, due_date),

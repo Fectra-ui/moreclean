@@ -89,13 +89,19 @@ export async function getAppointmentFull(id: string): Promise<AppointmentFull | 
       ),
       appointment_materials ( id, name, quantity, unit, note ),
       appointment_time_logs ( id, type, started_at, ended_at, duration_min ),
-      appointment_signatures ( signed_by_name, signed_at ),
-      files ( id, type, storage_path, file_name, created_at )
+      appointment_signatures ( signed_by_name, signed_at )
     `)
     .eq("id", id)
     .single();
 
   if (error || !a) return null;
+
+  const { data: files, error: filesError } = await supabase
+    .from("files")
+    .select("id, type, storage_path, file_name, created_at")
+    .eq("owner_type", "appointment")
+    .eq("owner_id", id);
+  if (filesError) throw filesError;
 
   const c = a.clients as unknown as AppointmentFull["client"] | null;
   const emps = a.appointment_employees as unknown as Array<{
@@ -132,7 +138,7 @@ export async function getAppointmentFull(id: string): Promise<AppointmentFull | 
     })) ?? [],
     materials: (a.appointment_materials as unknown as MaterialEntry[]) ?? [],
     time_logs: (a.appointment_time_logs as unknown as TimeLog[]) ?? [],
-    files: (a.files as unknown as FileEntry[]) ?? [],
+    files: files ?? [],
     signature: sig,
   };
 }

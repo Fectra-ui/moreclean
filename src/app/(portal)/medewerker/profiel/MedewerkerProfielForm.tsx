@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 interface Props {
-  profile: { id: string; first_name: string | null; last_name: string | null; role: string; phone: string | null; avatar_url: string | null };
+  profile: { id: string; first_name: string | null; last_name: string | null; role: string; phone: string | null; avatar_path: string | null };
   email: string;
 }
 
@@ -23,12 +23,23 @@ export default function MedewerkerProfielForm({ profile, email }: Props) {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setSaved(false);
     setError(null);
-    const supabase = createClient();
-    const { error: err } = await supabase.from("profiles").update(values).eq("id", profile.id);
-    if (err) setError(err.message);
-    else setSaved(true);
-    setSaving(false);
+    try {
+      const supabase = createClient();
+      const { data, error: err } = await supabase.from("profiles")
+        .update(values)
+        .eq("id", profile.id)
+        .select("id")
+        .single();
+      if (err) throw err;
+      if (data?.id !== profile.id) throw new Error("Profiel kon niet worden opgeslagen.");
+      setSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Profiel kon niet worden opgeslagen.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const inp = "w-full rounded-xl border border-[#101536]/10 bg-[#F8F9FB] px-3 py-2.5 text-sm text-[#101536] focus:border-[#4D7EBA]/40 focus:outline-none focus:ring-2 focus:ring-[#4D7EBA]/10 transition";

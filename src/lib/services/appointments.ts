@@ -18,8 +18,7 @@ export async function getAppointmentsByDate(
       appointment_services (
         *,
         services (name, category)
-      ),
-      files (*)
+      )
     `)
     .eq("company_id", companyId)
     .eq("scheduled_date", date)
@@ -40,8 +39,7 @@ export async function getAppointmentsByEmployee(
       *,
       clients (contact_name, company_name, phone, address, city),
       appointment_employees!inner (employee_id, role),
-      appointment_services (*, services (name, category)),
-      files (*)
+      appointment_services (*, services (name, category))
     `)
     .eq("appointment_employees.employee_id", employeeId)
     .eq("company_id", companyId)
@@ -64,8 +62,7 @@ export async function getAppointmentById(id: string): Promise<AppointmentWithDet
       ),
       appointment_services (*, services (*)),
       appointment_status_history (*),
-      appointment_signatures (*),
-      files (*)
+      appointment_signatures (*)
     `)
     .eq("id", id)
     .single();
