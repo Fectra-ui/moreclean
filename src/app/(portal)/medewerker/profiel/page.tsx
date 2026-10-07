@@ -12,11 +12,12 @@ export default async function MedewerkerProfielPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, first_name, last_name, role, phone, avatar_url")
+    .select("id, first_name, last_name, role, phone, avatar_url, company_id")
     .eq("id", user.id)
     .single();
 
   if (!profile || !["employee", "admin"].includes((profile as { role: string }).role)) redirect("/klant");
+  if (!profile.company_id) throw new Error("Medewerker is niet aan een bedrijf gekoppeld");
 
   const { data: mileageStats } = await supabase
     .from("mileage_logs")
@@ -26,11 +27,14 @@ export default async function MedewerkerProfielPage() {
 
   const totalKm = (mileageStats ?? []).reduce((s, m) => s + (m.km ?? 0), 0);
 
-  const { data: completedCount } = await supabase
+  const { count: completedCount, error: completedCountError } = await supabase
     .from("appointments")
-    .select("id", { count: "exact", head: true })
-    .contains("employee_ids", [user.id])
+    .select("id, appointment_employees!inner(employee_id)", { count: "exact", head: true })
+    .eq("appointment_employees.employee_id", user.id)
+    .eq("company_id", profile.company_id)
     .eq("status", "completed");
+  if (completedCountError) throw completedCountError;
+  if (completedCount === null) throw new Error("Afgeronde opdrachten konden niet worden geteld");
 
   return (
     <div className="space-y-6 max-w-xl">
@@ -42,7 +46,7 @@ export default async function MedewerkerProfielPage() {
       {/* STATS */}
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-2xl border border-[#101536]/08 bg-white p-5 text-center shadow-sm">
-          <p className="text-3xl font-bold text-[#4D7EBA]">{completedCount?.toString() ?? "0"}</p>
+          <p className="text-3xl font-bold text-[#4D7EBA]">{completedCount}</p>
           <p className="mt-1 text-xs text-[#606774]">Opdrachten afgerond</p>
         </div>
         <div className="rounded-2xl border border-[#101536]/08 bg-white p-5 text-center shadow-sm">

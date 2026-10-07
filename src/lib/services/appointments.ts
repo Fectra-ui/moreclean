@@ -30,7 +30,8 @@ export async function getAppointmentsByDate(
 
 export async function getAppointmentsByEmployee(
   employeeId: string,
-  date: string
+  date: string,
+  companyId: string
 ): Promise<AppointmentWithDetails[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -43,6 +44,7 @@ export async function getAppointmentsByEmployee(
       files (*)
     `)
     .eq("appointment_employees.employee_id", employeeId)
+    .eq("company_id", companyId)
     .eq("scheduled_date", date)
     .order("scheduled_start");
   if (error) throw error;

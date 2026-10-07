@@ -7,27 +7,32 @@ import InviteModal from "./InviteModal";
 export const metadata: Metadata = { title: "Medewerkers" };
 
 export default async function MedewerkersPage() {
-  await requireAdmin();
+  const { profile } = await requireAdmin();
+  if (!profile.company_id) throw new Error("Beheerder is niet aan een bedrijf gekoppeld");
   const supabase = createServiceClient();
 
-  const { data: employees } = await supabase
+  const { data: employees, error: employeesError } = await supabase
     .from("profiles")
     .select("id, first_name, last_name, phone, created_at, role, is_owner")
+    .eq("company_id", profile.company_id)
     .in("role", ["employee", "admin"])
     .order("last_name");
+  if (employeesError) throw employeesError;
 
   // Per employee: appointments completed this month
   const monthStart = new Date().toISOString().slice(0, 7) + "-01";
-  const { data: completions } = await supabase
+  const { data: completions, error: completionsError } = await supabase
     .from("appointments")
-    .select("employee_ids")
+    .select("appointment_employees(employee_id)")
+    .eq("company_id", profile.company_id)
     .eq("status", "completed")
     .gte("scheduled_date", monthStart);
+  if (completionsError) throw completionsError;
 
   const countByEmployee: Record<string, number> = {};
-  (completions ?? []).forEach((a: Record<string, unknown>) => {
-    ((a.employee_ids as string[]) ?? []).forEach((eid) => {
-      countByEmployee[eid] = (countByEmployee[eid] ?? 0) + 1;
+  (completions ?? []).forEach((appointment) => {
+    appointment.appointment_employees.forEach(({ employee_id }) => {
+      countByEmployee[employee_id] = (countByEmployee[employee_id] ?? 0) + 1;
     });
   });
 

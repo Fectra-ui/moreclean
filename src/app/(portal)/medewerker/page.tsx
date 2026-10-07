@@ -13,9 +13,10 @@ export default async function MedewerkerDashboardPage() {
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
   if (!profile || !["employee", "admin"].includes(profile.role)) redirect("/klant");
+  if (!profile.company_id) throw new Error("Medewerker is niet aan een bedrijf gekoppeld");
 
   const today = new Date().toISOString().split("T")[0];
-  const appointments = await getAppointmentsByEmployee(user.id, today);
+  const appointments = await getAppointmentsByEmployee(user.id, today, profile.company_id);
 
   const completed = appointments.filter((a) => a.status === "completed").length;
   const remaining = appointments.filter((a) => a.status === "scheduled").length;

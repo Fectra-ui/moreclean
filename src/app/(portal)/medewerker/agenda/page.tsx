@@ -14,8 +14,9 @@ export default async function MedewerkerAgendaPage({
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("profiles").select("role, company_id").eq("id", user.id).single();
   if (!["employee", "admin"].includes((profile as { role: string } | null)?.role ?? "")) redirect("/klant");
+  if (!profile?.company_id) throw new Error("Medewerker is niet aan een bedrijf gekoppeld");
 
   const sp = await searchParams;
 
@@ -31,14 +32,16 @@ export default async function MedewerkerAgendaPage({
   const from = monday.toISOString().split("T")[0];
   const to = sunday.toISOString().split("T")[0];
 
-  const { data: appointments } = await supabase
+  const { data: appointments, error: appointmentsError } = await supabase
     .from("appointments")
-    .select("id, scheduled_date, scheduled_start, scheduled_end, status, address, city, clients(contact_name, company_name, phone)")
-    .contains("employee_ids", [user.id])
+    .select("id, scheduled_date, scheduled_start, scheduled_end, status, address, city, clients(contact_name, company_name, phone), appointment_employees!inner(employee_id)")
+    .eq("appointment_employees.employee_id", user.id)
+    .eq("company_id", profile.company_id)
     .gte("scheduled_date", from)
     .lte("scheduled_date", to)
     .order("scheduled_date")
     .order("scheduled_start");
+  if (appointmentsError) throw appointmentsError;
 
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(monday);
