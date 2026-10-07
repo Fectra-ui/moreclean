@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
-import { getCompanyId } from "@/lib/auth/getCompanyId";
 
 export async function GET() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const companyId = await getCompanyId();
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role, company_id")
+    .eq("id", user.id)
+    .single();
+  if (profileError || profile?.role !== "admin" || !profile.company_id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const svc = createServiceClient();
 
   const { data: rows } = await svc
@@ -28,7 +35,7 @@ export async function GET() {
       invoices (invoice_number),
       business_units (name)
     `)
-    .eq("company_id", companyId)
+    .eq("company_id", profile.company_id)
     .in("workflow_state", ["wacht_betaling", "betaald", "planning", "uitvoering", "uitgevoerd", "gefactureerd", "factuur_betaald"])
     .order("accepted_at", { ascending: false });
 

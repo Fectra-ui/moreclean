@@ -159,16 +159,24 @@ export async function sendQuote(quoteId: string, sentBy: string): Promise<void> 
   if (error) throw error;
 }
 
-export async function acceptQuote(quoteId: string): Promise<void> {
-  const supabase = await createClient();
-  const { error } = await supabase
+export async function acceptQuote(quoteId: string, companyId: string, clientId: string): Promise<boolean> {
+  const supabase = createServiceClient();
+  const { data: updated, error } = await supabase
     .from("quotes")
-    .update({ status: "accepted", accepted_at: new Date().toISOString() })
-    .eq("id", quoteId);
+    .update({ status: "accepted", workflow_state: "akkoord", accepted_at: new Date().toISOString() })
+    .eq("id", quoteId)
+    .eq("company_id", companyId)
+    .eq("client_id", clientId)
+    .eq("status", "sent")
+    .eq("workflow_state", "verzonden")
+    .select("id")
+    .maybeSingle();
   if (error) throw error;
+  if (!updated) return false;
 
   // Trigger auto-workflow
   await runQuoteAcceptedWorkflow(quoteId);
+  return true;
 }
 
 export async function markPaymentReceived(quoteId: string): Promise<void> {
