@@ -179,13 +179,18 @@ export async function acceptQuote(quoteId: string, companyId: string, clientId: 
   return true;
 }
 
-export async function markPaymentReceived(quoteId: string): Promise<void> {
+export async function markPaymentReceived(quoteId: string, companyId: string, clientId: string): Promise<boolean> {
   const svc = createServiceClient();
-  const { error } = await svc
+  const { data: updated, error } = await svc
     .from("quotes")
     .update({ payment_received_at: new Date().toISOString() })
-    .eq("id", quoteId);
+    .eq("id", quoteId)
+    .eq("company_id", companyId)
+    .eq("client_id", clientId)
+    .select("id")
+    .maybeSingle();
   if (error) throw error;
+  if (!updated) return false;
 
   // Log in activity_log
   await svc.from("activity_log").insert({
@@ -194,6 +199,7 @@ export async function markPaymentReceived(quoteId: string): Promise<void> {
     action: "payment_received",
     metadata: {},
   });
+  return true;
 }
 
 export async function rejectQuote(quoteId: string): Promise<void> {

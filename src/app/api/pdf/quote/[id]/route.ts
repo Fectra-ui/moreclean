@@ -24,25 +24,31 @@ export async function GET(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const svc = createServiceClient();
-  const { data: profile } = await svc.from("profiles").select("role").eq("id", user.id).single();
-  if (!profile || !["admin", "customer"].includes(profile.role)) {
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role, company_id")
+    .eq("id", user.id)
+    .single();
+  if (profileError || !profile?.company_id || !["admin", "customer"].includes(profile.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const svc = createServiceClient();
   const [quoteResult, company] = await Promise.all([
-    svc.from("quotes").select(`*, quote_items (*), clients (*)`).eq("id", id).single(),
+    svc.from("quotes").select(`*, quote_items (*), clients (*)`).eq("id", id).eq("company_id", profile.company_id).single(),
     getCompany(),
   ]);
 
   const { data: quote, error } = quoteResult;
   if (error || !quote) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  if (profile.role === "customer") {
-    const { data: client } = await svc.from("clients").select("id").eq("profile_id", user.id).single();
-    if (!client || client.id !== quote.client_id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+  const { data: client } = await svc.from("clients")
+    .select("id, profile_id")
+    .eq("id", quote.client_id)
+    .eq("company_id", profile.company_id)
+    .single();
+  if (!client || (profile.role === "customer" && client.profile_id !== user.id)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const companyInfo = company
