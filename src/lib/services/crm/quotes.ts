@@ -2,6 +2,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { Quote, QuoteWithItems, QuoteItem, Client } from "@/types/database";
 import { sendNotification } from "@/lib/services/notifications";
 import { getCompanyId } from "@/lib/auth/getCompanyId";
+import { sendQuoteToClient } from "@/lib/services/crm/sendQuoteToClient";
 
 // ── READ ───────────────────────────────────────────────────
 
@@ -151,12 +152,9 @@ export async function updateQuoteTotals(quoteId: string, items: QuoteLineItem[],
 // ── WORKFLOW ───────────────────────────────────────────────
 
 export async function sendQuote(quoteId: string, sentBy: string): Promise<void> {
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("quotes")
-    .update({ status: "sent", sent_at: new Date().toISOString() })
-    .eq("id", quoteId);
-  if (error) throw error;
+  // Keep the legacy service entrypoint, but never perform an independent status write.
+  void sentBy;
+  await sendQuoteToClient(quoteId);
 }
 
 export async function acceptQuote(quoteId: string, companyId: string, clientId: string): Promise<boolean> {

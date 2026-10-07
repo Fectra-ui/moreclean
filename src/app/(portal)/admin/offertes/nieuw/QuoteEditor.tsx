@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, ChevronDown, Loader2, ExternalLink, Building2, User } from "lucide-react";
 import { clientDisplayName, clientSubName } from "@/lib/utils/client";
@@ -43,6 +43,8 @@ export default function QuoteEditor({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const submitting = useRef(false);
+  const createdQuoteId = useRef<string | null>(null);
 
   // Quote meta
   const [clientId, setClientId] = useState(defaultClientId ?? "");
@@ -103,43 +105,63 @@ export default function QuoteEditor({
   }
 
   async function handleSave(sendImmediately: boolean) {
-    if (!clientId) { setError("Selecteer een klant."); return; }
-    if (items.some((i) => !i.description)) { setError("Vul alle omschrijvingen in."); return; }
+    if (submitting.current) return;
+    if (createdQuoteId.current && !sendImmediately) {
+      submitting.current = true;
+      router.push(`/admin/offertes/${createdQuoteId.current}`);
+      return;
+    }
+    if (!createdQuoteId.current && !clientId) { setError("Selecteer een klant."); return; }
+    if (!createdQuoteId.current && items.some((i) => !i.description)) { setError("Vul alle omschrijvingen in."); return; }
 
+    submitting.current = true;
     setLoading(true);
     setError(null);
 
-    const res = await fetch("/api/quotes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client_id: clientId,
-        subject,
-        intro_text: introText,
-        notes,
-        internal_notes: internalNotes,
-        valid_until: validUntil,
-        discount_pct: discountPct,
-        items: items.map((i) => ({
-          service_id: i.service_id || null,
-          description: i.description,
-          quantity: i.quantity,
-          unit_price: i.unit_price,
-        })),
-        created_by: userId,
-        send: sendImmediately,
-      }),
-    });
+    let navigating = false;
+    try {
+      const retryExisting = createdQuoteId.current;
+      const res = await fetch(retryExisting ? `/api/quotes/${retryExisting}/send` : "/api/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: retryExisting ? undefined : JSON.stringify({
+          client_id: clientId,
+          subject,
+          intro_text: introText,
+          notes,
+          internal_notes: internalNotes,
+          valid_until: validUntil,
+          discount_pct: discountPct,
+          items: items.map((i) => ({
+            service_id: i.service_id || null,
+            description: i.description,
+            quantity: i.quantity,
+            unit_price: i.unit_price,
+          })),
+          created_by: userId,
+          send: sendImmediately,
+        }),
+      });
 
-    if (!res.ok) {
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        if (typeof body.id === "string") createdQuoteId.current = body.id;
+        setError(body.error ?? "Er is een fout opgetreden.");
+        return;
+      }
+
       const body = await res.json();
-      setError(body.error ?? "Er is een fout opgetreden.");
-      setLoading(false);
-      return;
+      const id = retryExisting ?? body.id;
+      navigating = true;
+      router.push(`/admin/offertes/${id}`);
+    } catch {
+      setError("De verbinding is mislukt. Controleer de offerte voordat u opnieuw probeert.");
+    } finally {
+      if (!navigating) {
+        submitting.current = false;
+        setLoading(false);
+      }
     }
-
-    const { id } = await res.json();
-    router.push(`/admin/offertes/${id}`);
   }
 
   const euro = (n: number) =>

@@ -40,17 +40,16 @@ export async function transitionQuote(
   // Mirror to legacy status field where possible
   const statusMap: Partial<Record<WorkflowState, string>> = {
     concept:        "draft",
-    verzonden:      "sent",
     akkoord:        "accepted",
     wacht_betaling: "accepted",
     betaald:        "accepted",
     afgewezen:      "rejected",
     verlopen:       "expired",
   };
+  if (to === "verzonden") return { error: "Gebruik de beveiligde offerte-verzendoperatie" };
   if (statusMap[to]) patch.status = statusMap[to];
 
   // Timestamp columns
-  if (to === "verzonden")      patch.sent_at           = new Date().toISOString();
   if (to === "akkoord")        patch.accepted_at       = new Date().toISOString();
   if (to === "betaald")        patch.payment_received_at = new Date().toISOString();
   if (to === "planning")       patch.planned_at        = new Date().toISOString();

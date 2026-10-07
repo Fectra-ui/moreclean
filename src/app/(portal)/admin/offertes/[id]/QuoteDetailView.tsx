@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Send, CheckCircle, XCircle, FileDown,
@@ -59,18 +59,33 @@ const euro = (n: number) => n.toLocaleString("nl-NL", { style: "currency", curre
 export default function QuoteDetailView({ quote }: { quote: Quote }) {
   const [, startTransition] = useTransition();
   const [loading, setLoading] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const submitting = useRef(false);
   const client = quote.clients;
   const state = quote.workflow_state ?? "concept";
 
   async function transition(to: WorkflowState) {
+    if (submitting.current) return;
+    submitting.current = true;
     setLoading(to);
-    const res = await fetch(`/api/quotes/${quote.id}/workflow`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to }),
-    });
-    if (res.ok) startTransition(() => window.location.reload());
-    else setLoading(null);
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/quotes/${quote.id}/workflow`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? "De actie is mislukt.");
+      }
+      startTransition(() => window.location.reload());
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "De actie is mislukt.");
+    } finally {
+      submitting.current = false;
+      setLoading(null);
+    }
   }
 
   return (
@@ -180,6 +195,8 @@ export default function QuoteDetailView({ quote }: { quote: Quote }) {
             <ActionBtn label="Verzenden naar klant" icon={<Send size={14} />} color="blue"
               loading={loading === "verzonden"} onClick={() => transition("verzonden")} />
           )}
+
+          {actionError && <p role="alert" className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">{actionError}</p>}
 
           {state === "verzonden" && (
             <>

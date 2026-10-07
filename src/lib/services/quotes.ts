@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Quote, QuoteWithItems } from "@/types/database";
+import { sendQuoteToClient } from "@/lib/services/crm/sendQuoteToClient";
 
 export async function getQuotes(
   companyId: string,
@@ -34,11 +35,14 @@ export async function updateQuoteStatus(
   id: string,
   status: Quote["status"]
 ): Promise<void> {
+  if (status === "sent") {
+    await sendQuoteToClient(id);
+    return;
+  }
   const supabase = await createClient();
   const updates: Partial<Quote> = { status };
   if (status === "accepted") updates.accepted_at = new Date().toISOString();
   if (status === "rejected") updates.rejected_at = new Date().toISOString();
-  if (status === "sent") updates.sent_at = new Date().toISOString();
 
   const { error } = await supabase
     .from("quotes")
