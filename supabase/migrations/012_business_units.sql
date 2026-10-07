@@ -59,8 +59,8 @@ alter table public.invoices
 alter table public.receipts
   add column if not exists business_unit_id uuid references public.business_units(id) on delete set null;
 
-create index if not exists on public.appointments (business_unit_id);
-create index if not exists on public.invoices (business_unit_id);
+create index if not exists idx_appointments_business_unit_id on public.appointments (business_unit_id);
+create index if not exists idx_invoices_business_unit_id on public.invoices (business_unit_id);
 
 -- ============================================================
 -- Uitgebreide service-categorieën voor media
