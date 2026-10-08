@@ -19,9 +19,9 @@ export default function PortalHeader({ profile, title }: PortalHeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-2 border-b border-[#101536]/06 bg-white/90 py-2 pl-16 pr-3 backdrop-blur-xl sm:pr-6 md:px-8">
       {/* GREETING / TITLE */}
-      <div>
+      <div className="min-w-0 flex-1">
         {title ? (
-          <h1 className="text-lg font-semibold text-[#101536]">{title}</h1>
+          <h1 className="truncate text-lg font-semibold text-[#101536]">{title}</h1>
         ) : (
           <p className="truncate text-sm font-semibold text-[#101536] sm:text-lg">
             {greeting}, {profile.first_name || name}
@@ -43,8 +43,8 @@ export default function PortalHeader({ profile, title }: PortalHeaderProps) {
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#4D7EBA] to-[#95AEC1] text-sm font-bold text-white shadow-sm">
             {initials}
           </div>
-          <div className="hidden md:block">
-            <p className="text-sm font-semibold text-[#101536]">{name}</p>
+          <div className="hidden min-w-0 max-w-32 md:block">
+            <p className="truncate text-sm font-semibold text-[#101536]">{name}</p>
             <p className="text-xs text-[#606774]">{profile.is_owner ? "Hoofdadmin" : (roleLabel[profile.role] ?? profile.role)}</p>
           </div>
         </div>
