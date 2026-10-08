@@ -3,6 +3,7 @@ import type { Quote, QuoteWithItems, QuoteItem, Client } from "@/types/database"
 import { sendNotification } from "@/lib/services/notifications";
 import { getCompanyId } from "@/lib/auth/getCompanyId";
 import { sendQuoteToClient } from "@/lib/services/crm/sendQuoteToClient";
+import { canonicalQuoteCreate, type RawQuoteCreate } from "@/lib/services/crm/quoteCreateIntent";
 
 // ── READ ───────────────────────────────────────────────────
 
@@ -55,71 +56,20 @@ export interface QuoteLineItem {
   sort_order?: number;
 }
 
-export interface CreateQuotePayload {
-  client_id: string;
-  subject?: string;
-  intro_text?: string;
-  notes?: string;
-  internal_notes?: string;
-  valid_until?: string;
-  discount_pct?: number;
-  vat_rate?: number;
-  items: QuoteLineItem[];
-  created_by: string;
-}
-
-export async function createQuote(payload: CreateQuotePayload): Promise<Quote> {
+export async function createQuote(payload: RawQuoteCreate, actorId: string): Promise<Pick<Quote, "id" | "quote_number">> {
   const companyId = await getCompanyId();
-  const supabase = await createClient();
   const svc = createServiceClient();
-
-  // Generate quote number
-  const { data: numData } = await svc.rpc("generate_quote_number", { company: companyId });
-  const quoteNumber = numData as string;
-
-  // Calculate totals
-  const { subtotal, vat_amount, total } = calcTotals(payload.items, payload.discount_pct ?? 0, payload.vat_rate ?? 21);
-
-  const { data: quote, error } = await supabase
-    .from("quotes")
-    .insert({
-      company_id: companyId,
-      client_id: payload.client_id,
-      quote_number: quoteNumber,
-      status: "draft",
-      subject: payload.subject || null,
-      intro_text: payload.intro_text || null,
-      notes: payload.notes || null,
-      internal_notes: payload.internal_notes || null,
-      valid_until: payload.valid_until || null,
-      discount_pct: payload.discount_pct ?? 0,
-      vat_amount,
-      subtotal,
-      total,
-      created_by: payload.created_by,
-    })
-    .select()
-    .single();
-
+  const { intent, hash } = canonicalQuoteCreate(payload, actorId, companyId);
+  const { data: quote, error } = await svc.rpc("create_quote_atomic", {
+    p_quote_id: intent.quote_id,
+    p_actor_id: actorId,
+    p_intent: intent,
+    p_request_hash: hash,
+  }).single();
   if (error) throw error;
-
-  // Insert line items
-  if (payload.items.length > 0) {
-    const { error: itemsError } = await supabase.from("quote_items").insert(
-      payload.items.map((item, i) => ({
-        quote_id: quote.id,
-        service_id: item.service_id || null,
-        description: item.description,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        total_price: item.quantity * item.unit_price,
-        sort_order: item.sort_order ?? i,
-      }))
-    );
-    if (itemsError) throw itemsError;
-  }
-
-  return quote as unknown as Quote;
+  const result = quote as Pick<Quote, "id" | "quote_number"> | null;
+  if (!result?.id || !result.quote_number) throw new Error("Offerte-aanmaak is niet bevestigd.");
+  return result;
 }
 
 export async function updateQuoteTotals(quoteId: string, items: QuoteLineItem[], discountPct = 0, vatRate = 21) {

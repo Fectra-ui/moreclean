@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, ChevronDown, Loader2, ExternalLink, Building2, User } from "lucide-react";
 import { clientDisplayName, clientSubName } from "@/lib/utils/client";
@@ -29,6 +29,18 @@ interface LineItem {
 
 const VAT_RATE = 21;
 
+interface CreateRequest {
+  quote_id: string;
+  client_id: string;
+  subject: string;
+  intro_text: string;
+  notes: string;
+  internal_notes: string;
+  valid_until: string;
+  discount_pct: number;
+  items: Array<Pick<LineItem, "service_id" | "description" | "quantity" | "unit_price">>;
+}
+
 export default function QuoteEditor({
   clients,
   services,
@@ -45,6 +57,10 @@ export default function QuoteEditor({
   const [error, setError] = useState<string | null>(null);
   const submitting = useRef(false);
   const createdQuoteId = useRef<string | null>(null);
+  const pendingRequest = useRef<CreateRequest | null>(null);
+  const storageKey = `moreclean:quote-create:v1:${userId}`;
+  const [storageReady, setStorageReady] = useState(false);
+  const [storageError, setStorageError] = useState(false);
 
   // Quote meta
   const [clientId, setClientId] = useState(defaultClientId ?? "");
@@ -64,15 +80,50 @@ export default function QuoteEditor({
     { id: crypto.randomUUID(), service_id: null, description: "", quantity: 1, unit_price: 0 },
   ]);
 
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      try {
+        const stored = sessionStorage.getItem(storageKey);
+        if (stored) {
+          const request = JSON.parse(stored) as CreateRequest;
+          if (!request || typeof request.quote_id !== "string" || !Array.isArray(request.items)) {
+            throw new Error("Ongeldige bewaarde offerteaanvraag");
+          }
+          pendingRequest.current = request;
+          setClientId(request.client_id);
+          setSubject(request.subject);
+          setIntroText(request.intro_text);
+          setNotes(request.notes);
+          setInternalNotes(request.internal_notes);
+          setValidUntil(request.valid_until);
+          setDiscountPct(request.discount_pct);
+          setItems(request.items.map((item) => ({ ...item, id: crypto.randomUUID() })));
+        }
+      } catch {
+        setStorageError(true);
+        setError("Deze offerteaanvraag kan niet veilig worden hersteld. Controleer bestaande offertes voordat u opnieuw begint.");
+      } finally {
+        setStorageReady(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [storageKey]);
+
   const selectedClient = clients.find((c) => c.id === clientId);
 
   // Live totals
   const { subtotal, discountAmount, vatAmount, total } = useMemo(() => {
-    const gross = items.reduce((s, i) => s + i.quantity * i.unit_price, 0);
-    const discountAmount = gross * (discountPct / 100);
-    const subtotal = gross - discountAmount;
-    const vatAmount = subtotal * (VAT_RATE / 100);
-    return { subtotal, discountAmount, vatAmount, total: subtotal + vatAmount };
+    const grossCents = items.reduce((sum, item) => sum + Math.round(item.quantity * item.unit_price * 100), 0);
+    const subtotalCents = Math.round(grossCents * (1 - discountPct / 100));
+    const vatCents = Math.round(subtotalCents * VAT_RATE / 100);
+    return {
+      subtotal: subtotalCents / 100,
+      discountAmount: (grossCents - subtotalCents) / 100,
+      vatAmount: vatCents / 100,
+      total: (subtotalCents + vatCents) / 100,
+    };
   }, [items, discountPct]);
 
   // Item operations
@@ -106,13 +157,49 @@ export default function QuoteEditor({
 
   async function handleSave(sendImmediately: boolean) {
     if (submitting.current) return;
+    if (!storageReady || storageError) return;
     if (createdQuoteId.current && !sendImmediately) {
+      try { sessionStorage.removeItem(storageKey); } catch { /* Create is already confirmed. */ }
       submitting.current = true;
       router.push(`/admin/offertes/${createdQuoteId.current}`);
       return;
     }
     if (!createdQuoteId.current && !clientId) { setError("Selecteer een klant."); return; }
     if (!createdQuoteId.current && items.some((i) => !i.description)) { setError("Vul alle omschrijvingen in."); return; }
+
+    const currentRequest = {
+      client_id: clientId,
+      subject,
+      intro_text: introText,
+      notes,
+      internal_notes: internalNotes,
+      valid_until: validUntil,
+      discount_pct: discountPct,
+      items: items.map((i) => ({
+        service_id: i.service_id || null,
+        description: i.description,
+        quantity: i.quantity,
+        unit_price: i.unit_price,
+      })),
+    };
+    if (pendingRequest.current) {
+      const submitted = { ...pendingRequest.current };
+      delete (submitted as Partial<CreateRequest>).quote_id;
+      if (JSON.stringify(submitted) !== JSON.stringify(currentRequest)) {
+        setError("Deze offerteaanvraag is al gestart met andere gegevens. Herstel de oorspronkelijke invoer of controleer de bestaande offerte.");
+        return;
+      }
+    } else if (!createdQuoteId.current) {
+      try {
+        const request = { quote_id: crypto.randomUUID(), ...currentRequest };
+        sessionStorage.setItem(storageKey, JSON.stringify(request));
+        pendingRequest.current = request;
+      } catch {
+        setStorageError(true);
+        setError("De offerteaanvraag kan niet veilig worden bewaard. Er is niets verzonden.");
+        return;
+      }
+    }
 
     submitting.current = true;
     setLoading(true);
@@ -124,34 +211,29 @@ export default function QuoteEditor({
       const res = await fetch(retryExisting ? `/api/quotes/${retryExisting}/send` : "/api/quotes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: retryExisting ? undefined : JSON.stringify({
-          client_id: clientId,
-          subject,
-          intro_text: introText,
-          notes,
-          internal_notes: internalNotes,
-          valid_until: validUntil,
-          discount_pct: discountPct,
-          items: items.map((i) => ({
-            service_id: i.service_id || null,
-            description: i.description,
-            quantity: i.quantity,
-            unit_price: i.unit_price,
-          })),
-          created_by: userId,
-          send: sendImmediately,
-        }),
+        body: retryExisting ? undefined : JSON.stringify({ ...pendingRequest.current, send: sendImmediately }),
       });
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         if (typeof body.id === "string") createdQuoteId.current = body.id;
+        if (res.status === 400 && !createdQuoteId.current) {
+          // The server definitively rejected creation; no durable intent can exist.
+          try {
+            sessionStorage.removeItem(storageKey);
+            pendingRequest.current = null;
+          } catch {
+            setStorageError(true);
+          }
+        }
         setError(body.error ?? "Er is een fout opgetreden.");
         return;
       }
 
       const body = await res.json();
       const id = retryExisting ?? body.id;
+      try { sessionStorage.removeItem(storageKey); } catch { /* Server confirmation is authoritative. */ }
+      pendingRequest.current = null;
       navigating = true;
       router.push(`/admin/offertes/${id}`);
     } catch {
@@ -340,7 +422,7 @@ export default function QuoteEditor({
 
           <button
             onClick={() => handleSave(false)}
-            disabled={loading}
+            disabled={loading || !storageReady || storageError}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#101536]/10 bg-white px-5 py-3 text-sm font-semibold text-[#101536] transition hover:bg-[#F3F5F7] disabled:opacity-60"
           >
             {loading ? <Loader2 size={14} className="animate-spin" /> : null}
@@ -349,7 +431,7 @@ export default function QuoteEditor({
 
           <button
             onClick={() => handleSave(true)}
-            disabled={loading}
+            disabled={loading || !storageReady || storageError}
             className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#667FB0] to-[#4D7EBA] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(77,126,186,.22)] transition hover:-translate-y-0.5 disabled:opacity-60"
           >
             {loading ? <Loader2 size={14} className="animate-spin" /> : <ExternalLink size={14} />}
