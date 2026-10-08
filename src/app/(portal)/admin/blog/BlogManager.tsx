@@ -2,13 +2,29 @@
 import { useEffect, useRef, useState } from "react";
 import type { BlogPost, BlogCategory } from "@/types/blog";
 
-const blank: BlogPost = { slug:"",title:"",description:"",content:"<h2>Tussenkop</h2>\n<p>Schrijf hier de tekst.</p>",category:"Schoonmaak",image:"",author:"More Clean",date:new Date().toISOString().slice(0,10),readTime:4,published:false,keywords:[],faq:[],related:[] };
+const blank: BlogPost = { slug:"",title:"",description:"",content:"<h2>Tussenkop</h2>\n<p>Schrijf hier de tekst.</p>",category:"Schoonmaak",image:"",author:"Moreclean",date:new Date().toISOString().slice(0,10),readTime:4,published:false,keywords:[],faq:[],related:[] };
 const input="w-full rounded-xl border border-[#101536]/10 bg-[#F8F9FB] px-3 py-2.5 text-sm outline-none focus:border-[#4D7EBA]";
+async function fetchPosts():Promise<BlogPost[]>{
+ const response=await fetch("/api/admin/blog",{cache:"no-store"});
+ if(!response.ok){
+  if(response.status===401||response.status===403)throw new Error("Geen toegang tot blogbeheer. Log opnieuw in of controleer uw rechten.");
+  throw new Error("Blogartikelen laden is mislukt. Probeer opnieuw.");
+ }
+ const result:unknown=await response.json().catch(()=>{throw new Error("Ongeldig antwoord bij het laden van blogartikelen.")});
+ if(!Array.isArray(result)||!result.every(item=>item&&typeof item==="object"&&typeof item.slug==="string"))throw new Error("Ongeldig antwoord bij het laden van blogartikelen.");
+ return result as BlogPost[];
+}
 export default function BlogManager(){
  const savingRef=useRef(false),deletingRef=useRef(false);
  const [posts,setPosts]=useState<BlogPost[]>([]),[post,setPost]=useState<BlogPost>({...blank}),[msg,setMsg]=useState("");
- const load=()=>fetch("/api/admin/blog").then(r=>r.json()).then(setPosts);
- useEffect(()=>{load()},[]);
+ const [loading,setLoading]=useState(true),[loadError,setLoadError]=useState("");
+ async function load(){
+  setLoading(true);setLoadError("");
+  try {setPosts(await fetchPosts())}
+  catch(error){setLoadError(error instanceof Error?error.message:"Blogartikelen laden is mislukt. Probeer opnieuw.")}
+  finally{setLoading(false)}
+ }
+ useEffect(()=>{void fetchPosts().then(setPosts).catch(error=>setLoadError(error instanceof Error?error.message:"Blogartikelen laden is mislukt. Probeer opnieuw.")).finally(()=>setLoading(false))},[]);
  const set=<K extends keyof BlogPost>(k:K,v:BlogPost[K])=>setPost(p=>({...p,[k]:v}));
  async function save(){
   if(savingRef.current)return;
@@ -18,12 +34,21 @@ export default function BlogManager(){
    const r=await fetch("/api/admin/blog",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(post)});
    const d=await r.json().catch(()=>({}));
    if(!r.ok){setMsg(d.error??"Opslaan mislukt. Probeer opnieuw.");return}
+   if(d.ok!==true){setMsg("Ongeldig antwoord na opslaan. Controleer de artikelenlijst voordat u opnieuw opslaat.");return}
    setMsg("Opgeslagen");
-   load();
+   await load();
   } catch {setMsg("Opslaan mislukt. Controleer uw verbinding en probeer opnieuw.")}
   finally {savingRef.current=false}
  }
- async function upload(file:File){const f=new FormData();f.set("file",file);const r=await fetch("/api/admin/blog/image",{method:"POST",body:f});const d=await r.json();if(r.ok)set("image",d.url);else setMsg(d.error)}
+ async function upload(file:File){
+  const f=new FormData();f.set("file",file);
+  try {
+   const r=await fetch("/api/admin/blog/image",{method:"POST",body:f});
+   const d=await r.json().catch(()=>({}));
+   if(r.ok&&typeof d.url==="string")set("image",d.url);
+   else setMsg(d.error??"Afbeelding uploaden is mislukt. Probeer opnieuw.");
+  } catch {setMsg("Afbeelding uploaden is mislukt. Controleer uw verbinding.")}
+ }
  async function remove(){
   if(deletingRef.current)return;
   if(!confirm("Artikel verwijderen?"))return;
@@ -31,14 +56,16 @@ export default function BlogManager(){
   setMsg("");
   try {
    const response=await fetch(`/api/admin/blog?slug=${encodeURIComponent(post.slug)}`,{method:"DELETE"});
-   if(!response.ok){const result=await response.json().catch(()=>({}));setMsg(result.error??"Verwijderen mislukt.");return}
+   const result=await response.json().catch(()=>({}));
+   if(!response.ok){setMsg(result.error??"Verwijderen mislukt.");return}
+   if(result.ok!==true){setMsg("Ongeldig antwoord na verwijderen. Controleer de artikelenlijst voordat u opnieuw verwijdert.");return}
    setPost({...blank});
-   load();
+   await load();
   } catch {setMsg("Verwijderen mislukt. Probeer opnieuw.")}
   finally {deletingRef.current=false}
  }
  return <div className="grid gap-6 xl:grid-cols-[280px_1fr]">
-  <aside className="rounded-2xl bg-white p-4 shadow-sm"><button onClick={()=>setPost({...blank})} className="mb-4 w-full rounded-xl bg-[#101536] px-4 py-3 text-sm font-semibold text-white">Nieuw artikel</button><div className="space-y-2">{posts.map(p=><button key={p.slug} onClick={()=>setPost({...p})} className="w-full rounded-xl border p-3 text-left"><span className="block font-semibold text-[#101536]">{p.title}</span><span className="text-xs text-[#606774]">{p.published===false?"Concept":"Gepubliceerd"}</span></button>)}</div></aside>
+  <aside className="rounded-2xl bg-white p-4 shadow-sm"><button onClick={()=>setPost({...blank})} className="mb-4 w-full rounded-xl bg-[#101536] px-4 py-3 text-sm font-semibold text-white">Nieuw artikel</button>{loading?<p role="status" className="text-sm text-[#606774]">Artikelen laden…</p>:loadError?<div role="alert" className="text-sm text-red-700"><p>{loadError}</p><button type="button" onClick={()=>{void load()}} className="mt-2 underline">Opnieuw proberen</button></div>:posts.length===0?<p className="text-sm text-[#606774]">Geen artikelen beschikbaar.</p>:<div className="space-y-2">{posts.map(p=><button key={p.slug} onClick={()=>setPost({...p})} className="w-full rounded-xl border p-3 text-left"><span className="block font-semibold text-[#101536]">{p.title}</span><span className="text-xs text-[#606774]">{p.published===false?"Concept":"Gepubliceerd"}</span></button>)}</div>}</aside>
   <section className="rounded-2xl bg-white p-4 shadow-sm sm:p-6"><h1 className="text-2xl font-bold">Blogbeheer</h1><p className="mb-6 mt-1 text-sm text-[#606774]">Alle velden en de foto zijn per artikel aanpasbaar.</p>
    <div className="grid gap-4 sm:grid-cols-2"><Field label="Titel"><input className={input} value={post.title} onChange={e=>{set("title",e.target.value);if(!post.slug)set("slug",e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""))}}/></Field><Field label="URL-slug"><input className={input} value={post.slug} onChange={e=>set("slug",e.target.value)}/></Field></div>
    <Field label="Samenvatting"><textarea className={input} rows={3} value={post.description} onChange={e=>set("description",e.target.value)}/></Field>

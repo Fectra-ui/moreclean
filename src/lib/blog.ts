@@ -1,20 +1,30 @@
 import { blogPosts } from "@/data/blog";
 import type { BlogPost } from "@/types/blog";
 import { createServiceClient } from "@/lib/supabase/server";
+import { cache } from "react";
 
-export async function getAllPosts(): Promise<BlogPost[]> {
+export const getAllPosts = cache(async (): Promise<BlogPost[]> => {
   const posts = new Map(blogPosts.map(p => [p.slug, { ...p, published: true }]));
   try {
-    const { data } = await createServiceClient().from("blog_posts").select("slug,payload,published,deleted");
-    for (const row of data ?? []) {
+    const { data, error } = await createServiceClient().from("blog_posts").select("slug,payload,published,deleted");
+    if (error || !data) {
+      console.error("Blog content query failed", { code: error?.code ?? "no_data" });
+      throw new Error("Blog content unavailable");
+    }
+    for (const row of data) {
       if (row.deleted) posts.delete(row.slug);
       else posts.set(row.slug, { ...(row.payload as BlogPost), slug: row.slug, published: row.published });
     }
-  } catch {}
+  } catch (error) {
+    if (!(error instanceof Error && error.message === "Blog content unavailable")) {
+      console.error("Blog content request failed", { kind: "network" });
+    }
+    throw new Error("Blog content unavailable");
+  }
   return [...posts.values()].filter(p => p.published !== false).sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
-}
+});
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | undefined> {
   return (await getAllPosts()).find((p) => p.slug === slug);

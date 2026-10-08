@@ -63,6 +63,7 @@ export default function BlogOverview({ posts }: BlogOverviewProps) {
           </svg>
           <input
             type="text"
+            aria-label="Zoek artikelen"
             placeholder="Zoek artikelen..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -81,6 +82,8 @@ export default function BlogOverview({ posts }: BlogOverviewProps) {
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
+            type="button"
+            aria-pressed={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
             className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] transition-all ${
               activeCategory === cat

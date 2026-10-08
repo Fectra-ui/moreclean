@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
 
+export const dynamic = "force-dynamic";
+
 const lastModified = new Date("2026-06-28");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

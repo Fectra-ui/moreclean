@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/blog";
 import BlogOverview from "@/components/BlogOverview";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Blog & Kennisbank | More Clean",
+  title: { absolute: "Blog & Kennisbank | Moreclean" },
   description:
     "Professionele tips en kennis over glasbewassing, zonnepanelen reinigen en schoonmaakdiensten in Limburg. Ontdek onze artikelen en kennisbank.",
   alternates: { canonical: "https://www.moreclean.nl/blog" },

@@ -12,8 +12,18 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateStaticParams() {
-  return (await getAllPosts()).map((post) => ({ slug: post.slug }));
+export const dynamic = "force-dynamic";
+
+function absoluteBlogImage(image: string): string {
+  return new URL(image, "https://www.moreclean.nl").toString();
+}
+
+function scriptSafeJson(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
+function blogTitle(title: string): string {
+  return `${title.replace(/\s*\|\s*More\s*Clean\s*$/i, "")} | Moreclean`;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -21,11 +31,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
-  const title = post.seoTitle || post.title;
+  const title = blogTitle(post.seoTitle || post.title);
   const description = post.seoDescription || post.description;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     keywords: post.keywords,
     alternates: { canonical: `https://www.moreclean.nl/blog/${post.slug}` },
@@ -38,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       authors: [post.author],
       images: [
         {
-          url: post.image,
+          url: absoluteBlogImage(post.image),
           width: 1200,
           height: 630,
           alt: post.title,
@@ -70,14 +80,14 @@ export default async function BlogPostPage({ params }: Props) {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
-    image: `https://www.moreclean.nl${post.image}`,
+    image: absoluteBlogImage(post.image),
     author: {
       "@type": "Organization",
       name: post.author,
     },
     publisher: {
       "@type": "Organization",
-      name: "More Clean",
+      name: "Moreclean",
       url: "https://www.moreclean.nl",
     },
     datePublished: post.date,
@@ -287,12 +297,12 @@ export default async function BlogPostPage({ params }: Props) {
       {/* JSON-LD */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingSchema) }}
+        dangerouslySetInnerHTML={{ __html: scriptSafeJson(blogPostingSchema) }}
       />
       {faqSchema && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          dangerouslySetInnerHTML={{ __html: scriptSafeJson(faqSchema) }}
         />
       )}
     </div>
