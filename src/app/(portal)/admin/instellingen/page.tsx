@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { getSetupStatus } from "@/lib/services/setup";
+import MedewerkerProfielForm from "../../medewerker/profiel/MedewerkerProfielForm";
 import Link from "next/link";
 import {
   Building2, FileText, Package, Layers, Users, Truck,
@@ -150,6 +151,8 @@ export default async function InstellingenPage() {
           Setup opnieuw starten
         </Link>
       </div>
+
+      <MedewerkerProfielForm profile={profile} email={profile.email ?? ""} />
 
       {/* Voortgangsbalk */}
       <div className="rounded-[24px] border border-white/60 bg-white/85 p-6 shadow-[0_4px_16px_rgba(16,21,54,.06)] backdrop-blur-xl">
