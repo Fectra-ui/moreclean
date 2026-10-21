@@ -1,4 +1,4 @@
-import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { publish } from "@/lib/events";
 import type { InvoiceCreatedPayload, InvoiceSentPayload, InvoicePaidPayload } from "@/lib/events/types";
 import { getCompanyId } from "@/lib/auth/getCompanyId";
@@ -121,8 +121,6 @@ export interface CreateInvoiceInput {
 export async function createInvoice(input: CreateInvoiceInput): Promise<{ id: string | null; error: string | null }> {
   const companyId = await getCompanyId();
   const supabase = await createClient();
-  const svc = createServiceClient();
-
   const vatRate = input.vatRate ?? 21;
   const discountPct = input.discountPct ?? 0;
   const subtotalRaw = input.items.reduce((s, it) => s + it.quantity * it.unitPrice, 0);
@@ -130,42 +128,25 @@ export async function createInvoice(input: CreateInvoiceInput): Promise<{ id: st
   const vatAmount = subtotal * (vatRate / 100);
   const total = subtotal + vatAmount;
 
-  // Generate invoice number via service role
-  const { data: numData } = await svc.rpc("generate_invoice_number", { company: companyId });
-  const invoiceNumber = (numData as string) ?? `MC-${new Date().getFullYear()}-0001`;
-
-  const { data: inv, error } = await supabase.from("invoices").insert({
-    company_id: companyId,
-    client_id: input.clientId,
-    appointment_id: input.appointmentId ?? null,
-    quote_id: input.quoteId ?? null,
-    invoice_number: invoiceNumber,
-    status: "draft",
-    type: "invoice",
-    issue_date: input.issueDate,
-    due_date: input.dueDate,
-    subtotal,
-    discount_pct: discountPct,
-    vat_rate: vatRate,
-    vat_amount: vatAmount,
-    total,
-    notes: input.notes ?? null,
-    created_by: input.actorId,
-  }).select("id").single();
-
-  if (error || !inv) return { id: null, error: error?.message ?? "Onbekende fout" };
-
-  await supabase.from("invoice_items").insert(
-    input.items.map((it, i) => ({
-      invoice_id: inv.id,
-      service_id: it.serviceId ?? null,
-      description: it.description,
-      quantity: it.quantity,
-      unit_price: it.unitPrice,
-      total_price: it.quantity * it.unitPrice,
-      sort_order: i,
-    }))
-  );
+  const { data: inv, error } = await supabase.rpc("create_invoice_atomic", {
+    p_invoice: {
+      client_id: input.clientId,
+      appointment_id: input.appointmentId ?? null,
+      quote_id: input.quoteId ?? null,
+      issue_date: input.issueDate,
+      due_date: input.dueDate,
+      subtotal, discount_pct: discountPct, vat_rate: vatRate, vat_amount: vatAmount, total,
+      notes: input.notes ?? null,
+    },
+    p_items: input.items.map((it) => ({
+      service_id: it.serviceId ?? null, description: it.description,
+      quantity: it.quantity, unit_price: it.unitPrice, total_price: it.quantity * it.unitPrice,
+    })),
+  });
+  if (error || !inv?.id || !inv?.invoice_number) {
+    return { id: null, error: error?.message ?? "Factuuraanmaak is niet bevestigd." };
+  }
+  const invoiceNumber = inv.invoice_number as string;
 
   // Fetch client name for event
   const { data: client } = await supabase.from("clients").select("contact_name, company_name").eq("id", input.clientId).single();
@@ -271,45 +252,15 @@ export async function markInvoicePaid(id: string, actorId: string): Promise<{ er
 export async function createCreditInvoice(originalId: string, actorId: string): Promise<{ id: string | null; error: string | null }> {
   const companyId = await getCompanyId();
   const supabase = await createClient();
-  const svc = createServiceClient();
-
-  const original = await getInvoiceFull(originalId);
-  if (!original) return { id: null, error: "Originele factuur niet gevonden" };
-
-  const { data: numData } = await svc.rpc("generate_invoice_number", { company: companyId });
-  const invoiceNumber = (numData as string) ?? `MC-CREDIT-${Date.now()}`;
   const today = new Date().toISOString().slice(0, 10);
-
-  const { data: credit, error } = await supabase.from("invoices").insert({
-    company_id: companyId,
-    client_id: original.client.id,
-    invoice_number: invoiceNumber,
-    status: "draft",
-    type: "credit",
-    credit_of: originalId,
-    issue_date: today,
-    due_date: today,
-    subtotal: -original.subtotal,
-    discount_pct: original.discount_pct,
-    vat_rate: original.vat_rate,
-    vat_amount: -original.vat_amount,
-    total: -original.total,
-    notes: `Creditfactuur voor ${original.invoice_number}`,
-    created_by: actorId,
-  }).select("id").single();
-
-  if (error || !credit) return { id: null, error: error?.message ?? "Fout" };
-
-  await supabase.from("invoice_items").insert(
-    original.items.map((it) => ({
-      invoice_id: credit.id,
-      description: it.description,
-      quantity: -it.quantity,
-      unit_price: it.unit_price,
-      total_price: -it.total_price,
-      sort_order: it.sort_order,
-    }))
-  );
+  const { data: credit, error } = await supabase.rpc("create_credit_invoice_atomic", {
+    p_original_id: originalId, p_today: today,
+  });
+  if (error || !credit?.id || !credit?.invoice_number) {
+    return { id: null, error: error?.message === "Original invoice not available"
+      ? "Originele factuur niet gevonden" : error?.message ?? "Creditfactuuraanmaak is niet bevestigd." };
+  }
+  const invoiceNumber = credit.invoice_number as string;
 
   await publish({
     type: "invoice.credit_created" as const,
@@ -321,9 +272,9 @@ export async function createCreditInvoice(originalId: string, actorId: string): 
       invoiceId: credit.id,
       invoiceNumber,
       originalInvoiceId: originalId,
-      clientId: original.client.id,
-      clientName: original.client.company_name ?? original.client.contact_name,
-      total: Math.abs(original.total),
+      clientId: credit.client_id,
+      clientName: credit.client_name,
+      total: Math.abs(Number(credit.original_total)),
     },
   });
 

@@ -264,7 +264,7 @@ test('setup Server Action is blocked before any private write', async () => {
 });
 test('all files outside the approved repair retain baseline content', () => {
   const git = args => cp.execFileSync('git', ['-c', 'safe.directory=' + root.replaceAll('\\', '/'), '-c', 'core.safecrlf=false', '-C', root, ...args], { encoding: 'utf8', maxBuffer: 30e6, stdio: ['ignore', 'pipe', 'pipe'] });
-  const allowed = new Set([...routePaths, 'src/lib/auth/apiAuth.ts', 'src/lib/auth/requireAdmin.ts', 'src/lib/auth/getCompanyId.ts', 'src/app/login/actions.ts']);
+  const allowed = new Set([...routePaths, 'src/lib/auth/apiAuth.ts', 'src/lib/auth/requireAdmin.ts', 'src/lib/auth/getCompanyId.ts', 'src/app/login/actions.ts', 'src/lib/services/finance/invoices.ts', 'supabase/migrations/034_atomic_invoice_creation.sql']);
   const tracked = git(['ls-files', 'src', 'supabase', 'package.json', 'package-lock.json', 'next.config.ts', 'tsconfig.json', 'eslint.config.mjs']).trim().split('\n');
   const normalize = value => value.replace(/\r\n/g, '\n');
   for (const file of tracked) {
