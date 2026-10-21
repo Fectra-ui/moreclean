@@ -1,3 +1,4 @@
+import { isActiveProfile } from "@/lib/auth/apiAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
@@ -23,6 +24,7 @@ export async function GET(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await isActiveProfile(user.id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
@@ -41,6 +43,10 @@ export async function GET(
 
   const { data: quote, error } = quoteResult;
   if (error || !quote) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  // Service-role reads must retain customer status restrictions.
+  if (profile.role === "customer" && !["sent", "accepted", "rejected"].includes(quote.status)) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
 
   const { data: client } = await svc.from("clients")
     .select("id, profile_id")

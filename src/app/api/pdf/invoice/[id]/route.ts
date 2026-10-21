@@ -1,3 +1,4 @@
+import { isActiveProfile } from "@/lib/auth/apiAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
@@ -29,6 +30,7 @@ export async function GET(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await isActiveProfile(user.id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const svc = createServiceClient();
   const { data: profile } = await svc.from("profiles").select("role").eq("id", user.id).single();

@@ -1,3 +1,4 @@
+import { isActiveProfile } from "@/lib/auth/apiAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { markPaymentReceived } from "@/lib/services/crm/quotes";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +8,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Geen toegang" }, { status: 401 });
+  if (!(await isActiveProfile(user.id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")

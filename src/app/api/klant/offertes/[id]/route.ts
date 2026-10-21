@@ -1,3 +1,4 @@
+import { isActiveProfile } from "@/lib/auth/apiAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 
@@ -6,6 +7,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await isActiveProfile(user.id))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const svc = createServiceClient();
 
@@ -21,5 +23,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     .single();
 
   if (error || !quote) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  // Match customer quote visibility enforced by database RLS.
+  if (!["sent", "accepted", "rejected"].includes(quote.status)) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   return NextResponse.json(quote);
 }

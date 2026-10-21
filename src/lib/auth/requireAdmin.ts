@@ -14,13 +14,13 @@ export async function getCurrentProfile(): Promise<Profile> {
   // altijd werkt ongeacht de RLS-configuratie op de profiles tabel.
   // Veilig: deze code draait uitsluitend server-side (Server Actions / Server Components).
   const svc = createServiceClient();
-  const { data: profile } = await svc
+  const { data: profile, error } = await svc
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  if (!profile) redirect("/login");
+  if (error || !profile || profile.active !== true) redirect("/login");
   return profile as Profile;
 }
 
