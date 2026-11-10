@@ -162,12 +162,15 @@ export default function HomePage() {
                 mx-auto
                 mt-7
                 max-w-[340px]
+                rounded-2xl
+                bg-[#101536]/80
+                px-4
+                py-3
                 text-base
                 font-medium
                 leading-relaxed
                 tracking-[-0.01em]
-                text-white/92
-                drop-shadow-[0_4px_20px_rgba(0,0,0,.55)]
+                text-white!
                 md:mt-8
                 md:max-w-3xl
                 md:text-xl
